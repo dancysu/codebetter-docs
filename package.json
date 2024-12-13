@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "sass": "^1.82.0",
+    "vitepress": "^1.5.0"
+  },
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
+    "pages": "bash scripts/pages.sh",
+    "main": "bash scripts/main.sh"
+  }
+}
