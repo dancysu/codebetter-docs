@@ -18,8 +18,12 @@ export const nav: Nav = [
 	{
 		text: "开发手记",
 		items: [
-			{ text: "vue3-admin-template", link: "/guide/project/vue3-admin-template/" },
+			{
+				text: "vue3-admin-template",
+				link: "/guide/project/vue3-admin-template/",
+			},
 			{ text: "vue3-ui-library", link: "/guide/project/vue3-ui-library/" },
+			{ text: "koa-server", link: "/guide/project/koa-server/" },
 		],
 	},
 ]
