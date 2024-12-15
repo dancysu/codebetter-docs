@@ -27,47 +27,69 @@ export default [
 				text: "安装 Sass",
 				link: "/guide/project/vue3-admin-template/install-sass",
 			},
-			
 		],
 	},
-    {
-        text: "代码规范",
+	{
+		text: "工程化规范",
 		collapsed: true,
-        items: [
-            {
-                text: "配置 prettier",
-                link: "/guide/project/vue3-admin-template/install-prettier",
-            },
-            {
-                text: "配置 eslint",
-                link: "/guide/project/vue3-admin-template/install-eslint",
-            },
-            {
-                text: "安装 stylelint",
-                link: "/guide/project/vue3-admin-template/install-stylelint",
-            },
-            {
-                text: "配置 husky",
-                link: "/guide/project/vue3-admin-template/install-husky",
-            },
-            {
-                text: "配置 commitlint",
-                link: "/guide/project/vue3-admin-template/install-commitlint",
-            },
-        ]
-    },
-    {
-        text: "功能实现",
-        collapsed: true,
-        items: [
-            {
-                text: "配置 mock",
-                link: "/guide/project/vue3-admin-template/install-mock",
-            },
-            {
-                text: "配置 axios",
-                link: "/guide/project/vue3-admin-template/install-axios",
-            },
-        ]
-    }
+		items: [
+			{
+				text: "代码规范",
+				items: [
+					{
+						text: "配置 prettier",
+						link: "/guide/project/vue3-admin-template/install-prettier",
+					},
+					{
+						text: "配置 eslint",
+						link: "/guide/project/vue3-admin-template/install-eslint",
+					},
+					{
+						text: "安装 stylelint",
+						link: "/guide/project/vue3-admin-template/install-stylelint",
+					},
+				],
+			},
+			{
+				text: "提交规范",
+				items: [
+					{
+						text: "配置 husky",
+						link: "/guide/project/vue3-admin-template/install-husky",
+					},
+					{
+						text: "配置 commitlint",
+						link: "/guide/project/vue3-admin-template/install-commitlint",
+					},
+				],
+			},
+
+			{
+				text: "配置 EditorConfig",
+				link: "/guide/project/vue3-admin-template/install-editorconfig",
+			},
+			{
+				text: "配置 cspell",
+				link: "/guide/project/vue3-admin-template/install-cspell",
+			},
+		],
+	},
+	{
+		text: "功能实现",
+		collapsed: true,
+		items: [
+			{
+				text: "配置 mock",
+				link: "/guide/project/vue3-admin-template/install-mock",
+			},
+			{
+				text: "配置 axios",
+				link: "/guide/project/vue3-admin-template/install-axios",
+			},
+			{
+				text: "SVG图标配置",
+				link: "/guide/project/vue3-admin-template/svg-component",
+			},
+		],
+	},
 ]

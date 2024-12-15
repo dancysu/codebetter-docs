@@ -1,4 +1,4 @@
-# 安装vue-router
+# 安装 Vue Router
 
 -----
 
@@ -34,40 +34,52 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: "/",
 		name: "home",
-		component: () => import("../pages/home/index.vue"),
+		component: () => import("@/pages/home/index.vue"),
 	},
 	{
 		path: "/login",
 		name: "login",
-		component: () => import("../pages/login/index.vue"),
+		component: () => import("@/pages/login/index.vue"),
 	},
 ]
 
 export default routes
 ```
 ```ts [自动生成一级路由（可选）]
-const pages = import.meta.glob('../pages/**/meta.ts', {
-  eager: true,
-  import: 'default'
+// 导入元数据文件
+const pages = import.meta.glob("../pages/**/meta.ts", {
+	eager: true,
+	import: "default",
 })
 
-const pageComponents = import.meta.glob('../pages/**/index.vue')
+// 导入页面组件
+const pageComponents = import.meta.glob("../pages/**/index.vue")
 
+// 创建路由配置对象
 const createRoute = ([filePath, config]: [string, unknown]) => {
-  const path = filePath.replace('../pages', '').replace('/meta.ts', '')
-  const name = path.split('./').filter(Boolean).join('-') || 'index'
-  const componentPath = filePath.replace('meta.ts', 'index.vue')
+	// 从文件路径中提取路由路径
+	const path = filePath.replace("../pages", "").replace("/meta.ts", "")
+	// 从文件路径中提取路由名称
+	const name = path.split("./").filter(Boolean).join("-") || "index"
+	// 从文件路径中提取组件路径
+	const componentPath = filePath.replace("meta.ts", "index.vue")
 
-  return {
-    path,
-    name,
-    component: pageComponents[componentPath],
-    meta: config
-  }
+	return {
+		// 路由路径
+		path,
+		// 路由名称
+		name,
+		// 路由组件
+		component: pageComponents[componentPath],
+		// 路由元数据
+		meta: config,
+	}
 }
 
+// 根据元数据文件生成路由配置数组
 const routes = Object.entries(pages).map(createRoute)
 
+// 导出路由配置
 export default routes
 ```
 
@@ -86,19 +98,19 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: "/",
 		name: "home",
-		component: () => import("../pages/home/index.vue"),
+		component: () => import("@/pages/home/index.vue"),
 	},
 	{
 		path: "/login",
 		name: "login",
-		component: () => import("../pages/login/index.vue"),
+		component: () => import("@/pages/login/index.vue"),
 	},
-	{  // [!code focus]// [!code ++]
+	{ // [!code focus]// [!code ++]
 		path: "/:pathMatch(.*)*", // [!code focus]// [!code ++]
 		name: "NotFound", // [!code focus]// [!code ++]
-		component: () => import("../pages/error/404.vue"), // [!code focus]// [!code ++]
+		component: () => import("@/pages/error/404.vue"), // [!code focus]// [!code ++]
 	}, // [!code focus]// [!code ++]
-] 
+]
 
 export default routes
 ```
@@ -117,32 +129,29 @@ export const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
 	routes,
 	scrollBehavior() { // [!code focus]// [!code ++]
-		return { // [!code focus]// [!code ++]
-			left: 0, // [!code focus]// [!code ++]
-			top: 0, // [!code focus]// [!code ++]
-		} // [!code focus]// [!code ++]
+		return { top: 0, left: 0 } // [!code focus]// [!code ++]
 	}, // [!code focus]// [!code ++]
 })
 ```
 -----
 **步骤 5：在 `main.ts` 中注册路由**
 
-在你的项目入口文件 `main.ts` 中引入并注册路由：
+在项目入口文件 `main.ts` 中引入并注册路由：
 
 ```ts
 // core
 import { createApp } from "vue"
-import { router } from "./router" // [!code focus]// [!code ++]
+import { router } from "@/router" // [!code focus]// [!code ++]
 import App from "./App.vue"
 
 // 创建应用实例
 const app = createApp(App)
 
-// 注册路由 // [!code focus]// [!code ++]
+// 挂载路由 // [!code focus]// [!code ++]
 app.use(router) // [!code focus]// [!code ++]
 
-// 路由准备就绪后挂载应用 // [!code focus]// [!code ++]
+// router 准备就绪后挂载应用 // [!code focus]// [!code ++]
 router.isReady().then(() => { // [!code focus]// [!code ++]
-	app.mount("#app") // [!code focus]// [!code ++]
+	app.mount("#app")
 }) // [!code focus]// [!code ++]
 ```
