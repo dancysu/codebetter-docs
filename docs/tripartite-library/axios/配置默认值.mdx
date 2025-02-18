@@ -1,47 +1,53 @@
 # 配置默认值
 
-你可以指定应用于每个请求的默认配置。
+你可以指定应用于每个请求的默认配置，以简化代码并提高效率。
 
-## 全局axios默认值
+## 全局 Axios 默认值
 
 ```javascript
-// 设置基础url
-axios.defaults.baseURL = 'https://api.example.com';
-// 设置超时时间
+// 设置基础 URL
+axios.defaults.baseURL = 'https://api.codebetter.cn';
+
+// 设置超时时间（单位：毫秒）
 axios.defaults.timeout = 3000;
 ```
 
-
+通过全局配置，所有通过 Axios 发起的请求都将自动应用这些默认值。
 
 ## 自定义实例默认值
 
 ```javascript
 // 创建实例时设置配置默认值
 const instance = axios.create({
-  baseURL: 'https://api.example.com'
+  baseURL: 'https://api.codebetter.cn'
 });
 
 // 创建实例后修改默认值
 instance.defaults.timeout = 5000;
 ```
 
-
+自定义实例允许你为特定用途的请求定义独立的默认配置，而不影响全局配置。
 
 ## 配置优先顺序
 
-然后`defaults`是实例的属性,最后`config`是请求的参数。后者将优先于前者。
+Axios 的配置优先顺序如下：
+
+1. 请求的参数（ `config` ）：直接在请求中指定的配置优先级最高。
+2. 实例的默认值（ `instance.defaults` ）：在实例级别设置的默认值。
+3. 全局默认值（ `axios.defaults` ）：全局范围内设置的默认值。
+
+例如：
 
 ```javascript
-// 此时,超时配置值为`0`,这是库的默认值
+// 创建实例
 const instance = axios.create();
 
-// 覆盖库的超时默认值
-// 现在所有使用此实例的请求将等待2.5秒才超时
-instance.defaults.timeout = 2500;
+// 覆盖全局超时默认值
+instance.defaults.timeout = 2500; // 实例级别的超时时间
 
-// 覆盖此请求的超时,因为众所周知它需要很长时间
+// 覆盖单个请求的超时时间
 instance.get('/longRequest', {
-  timeout: 5000
+  timeout: 5000 // 请求级别的超时时间
 });
 ```
 

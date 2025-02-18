@@ -4,25 +4,25 @@
 :::tip 解析是将 `源代码` 转换为 `抽象语法树（AST）` 的过程。
 Source Text --> Lexer --> Token --> Parser --> AST
 解析通常分为两个子阶段：`词法分析` 和 `语法分析`。
-**解析的产物是 AST**,它为后续的转换和代码生成阶段提供了基础。
+**解析的产物是 AST**，它为后续的转换和代码生成阶段提供了基础。
 :::
 ### 词法分析
 **词法分析阶段是由词法分析器（也称为扫描器）完成的。**
-词法分析器的主要任务是将源代码转换为一系列记号（tokens）,每个记号代表源代码中的一个基本语法单元。以下是词法分析器的具体功能：
+词法分析器的主要任务是将源代码转换为一系列记号（tokens），每个记号代表源代码中的一个基本语法单元。以下是词法分析器的具体功能：
 1. **读取源代码**：词法分析器从头到尾读取源代码的字符流。
-2. **识别记号**：根据语言的词法规则,将字符序列识别为有意义的记号,每个记号代表源代码中的基本单元,如关键字、标识符、操作符、字面量和分隔符。
-3. **忽略无关字符**：词法分析器通常会忽略不重要的字符,比如空格、换行和注释,以便简化后续的分析过程。
-4. **生成记号流**：**词法分析器的产物是一个记号流（token stream）**,这些记号将被传递给语法分析器进行进一步处理。
-5. **错误检测**：在识别记号的过程中,词法分析器也负责检测和报告词法错误,例如非法字符或不完整的记号。
+2. **识别记号**：根据语言的词法规则，将字符序列识别为有意义的记号，每个记号代表源代码中的基本单元，如关键字、标识符、操作符、字面量和分隔符。
+3. **忽略无关字符**：词法分析器通常会忽略不重要的字符，比如空格、换行和注释，以便简化后续的分析过程。
+4. **生成记号流**：**词法分析器的产物是一个记号流（token stream）**，这些记号将被传递给语法分析器进行进一步处理。
+5. **错误检测**：在识别记号的过程中，词法分析器也负责检测和报告词法错误，例如非法字符或不完整的记号。
 ### 语法分析
 **语法分析阶段是由语法分析器（也称为解析器）完成的。**
-语法分析器的主要任务是将词法分析器生成的记号流（token stream）转换为抽象语法树（AST）,并检查记号序列是否符合语言的语法规则。以下是语法分析器的具体功能：
-1. **读取记号流**：语法分析器接收词法分析器生成的记号流,作为输入。
-2. **构建抽象语法树（AST）**：语法分析器根据语言的语法规则,将记号流解析为抽象语法树。AST 是代码的结构化表示,反映了代码的层次结构和操作顺序。
-3. **语法检查**：语法分析器检查记号序列是否符合语言的语法规则,确保代码的语法正确性。
-   - 例如,语法分析器会检查括号是否匹配、语句是否完整等。
-4. **错误报告**：在解析过程中,如果发现语法错误,语法分析器会生成相应的错误消息,以帮助开发者定位和修复问题。
-5. **生成 AST**：**语法分析器的产物是抽象语法树（AST）**,它表示代码的语法结构,并为后续的代码转换和生成阶段提供了基础。
+语法分析器的主要任务是将词法分析器生成的记号流（token stream）转换为抽象语法树（AST），并检查记号序列是否符合语言的语法规则。以下是语法分析器的具体功能：
+1. **读取记号流**：语法分析器接收词法分析器生成的记号流，作为输入。
+2. **构建抽象语法树（AST）**：语法分析器根据语言的语法规则，将记号流解析为抽象语法树。AST 是代码的结构化表示，反映了代码的层次结构和操作顺序。
+3. **语法检查**：语法分析器检查记号序列是否符合语言的语法规则，确保代码的语法正确性。
+   - 例如，语法分析器会检查括号是否匹配、语句是否完整等。
+4. **错误报告**：在解析过程中，如果发现语法错误，语法分析器会生成相应的错误消息，以帮助开发者定位和修复问题。
+5. **生成 AST**：**语法分析器的产物是抽象语法树（AST）**，它表示代码的语法结构，并为后续的代码转换和生成阶段提供了基础。
 :::details 小案例
 对于以下 LISP 语法的函数调用：
 ```LISP
@@ -31,68 +31,68 @@ Source Text --> Lexer --> Token --> Parser --> AST
 tokens可能看起来像这样：
 ```
 [
- { type: "paren", value: "(" },
- { type: "name", value: "add" },
- { type: "number", value: "2" },
- { type: "paren", value: "(" },
- { type: "name", value: "subtract" },
- { type: "number", value: "4" },
- { type: "number", value: "2" },
- { type: "paren", value: ")" },
- { type: "paren", value: ")" },
+ { type: "paren"， value: "(" }，
+ { type: "name"， value: "add" }，
+ { type: "number"， value: "2" }，
+ { type: "paren"， value: "(" }，
+ { type: "name"， value: "subtract" }，
+ { type: "number"， value: "4" }，
+ { type: "number"， value: "2" }，
+ { type: "paren"， value: ")" }，
+ { type: "paren"， value: ")" }，
 ]
 ```
 而抽象语法树（AST）可能看起来像这样：
 ```
 {
- type: "Program",
+ type: "Program"，
  body: [
   {
-   type: "CallExpression",
-   name: "add",
+   type: "CallExpression"，
+   name: "add"，
    params: [
     {
-     type: "NumberLiteral",
-     value: "2",
-    },
+     type: "NumberLiteral"，
+     value: "2"，
+    }，
     {
-     type: "CallExpression",
-     name: "subtract",
+     type: "CallExpression"，
+     name: "subtract"，
      params: [
       {
-       type: "NumberLiteral",
-       value: "4",
-      },
+       type: "NumberLiteral"，
+       value: "4"，
+      }，
       {
-       type: "NumberLiteral",
-       value: "2",
-      },
-     ],
-    },
-   ],
-  },
- ],
+       type: "NumberLiteral"，
+       value: "2"，
+      }，
+     ]，
+    }，
+   ]，
+  }，
+ ]，
 }
 ```
 :::
 
 ## 转换（Transformation）
 转换阶段是由转换器（Transformer）完成的。
-转换器的主要任务是根据特定的转换规则或插件,对 AST 进行遍历和修改,以实现特定的功能,例如优化代码、语法降级等。以下是转换器的具体功能：
+转换器的主要任务是根据特定的转换规则或插件，对 AST 进行遍历和修改，以实现特定的功能，例如优化代码、语法降级等。以下是转换器的具体功能：
 1. **遍历 AST**：
-   - 转换器会遍历整个抽象语法树,访问每一个节点。
-   - 这个过程可以使用不同的遍历策略,例如深度优先遍历或广度优先遍历。
+   - 转换器会遍历整个抽象语法树，访问每一个节点。
+   - 这个过程可以使用不同的遍历策略，例如深度优先遍历或广度优先遍历。
 2. **应用转换规则**：
-   - 在遍历过程中,转换器会根据配置的转换规则或插件,对特定类型的节点进行修改。
-   - 例如,将箭头函数转换为普通函数表达式,或者将现代 JavaScript 语法转换为旧版本的语法。
+   - 在遍历过程中，转换器会根据配置的转换规则或插件，对特定类型的节点进行修改。
+   - 例如，将箭头函数转换为普通函数表达式，或者将现代 JavaScript 语法转换为旧版本的语法。
 3. **修改 AST**：
-   - 转换器可以对 AST 进行各种修改,包括添加、删除或替换节点。
+   - 转换器可以对 AST 进行各种修改，包括添加、删除或替换节点。
    - 这些修改可以是为了优化代码、实现语法降级、插入调试信息等。
 4. **生成新的 AST**：
-   - **转换器的产物是经过修改的 AST**,这个新的 AST 反映了应用转换规则后的代码结构。
+   - **转换器的产物是经过修改的 AST**，这个新的 AST 反映了应用转换规则后的代码结构。
 ## 代码生成（Code Generation）
 代码生成阶段是由代码生成器完成的。
-代码生成器的主要任务是将抽象语法树（AST）转换为可执行的目标代码。这个过程通常是编译器的最后一个阶段,生成的代码可以是机器码、字节码或其他形式的代码表示。
+代码生成器的主要任务是将抽象语法树（AST）转换为可执行的目标代码。这个过程通常是编译器的最后一个阶段，生成的代码可以是机器码、字节码或其他形式的代码表示。
 ## 实战：迷你编译器
 
 ```js [test.js]
@@ -120,16 +120,16 @@ function tokenizer(input) {
   let char = input[current]
   if (char === "(") {
    tokens.push({
-    type: "paren",
-    value: "(",
+    type: "paren"，
+    value: "("，
    })
    current++
    continue
   }
   if (char === ")") {
    tokens.push({
-    type: "paren",
-    value: ")",
+    type: "paren"，
+    value: ")"，
    })
    current++
    continue
@@ -143,16 +143,16 @@ function tokenizer(input) {
         // 处理数字
   let NUMBERS = /[0-9]/
   if (NUMBERS.test(char)) {
-   // 我们将创建一个`value`字符串,我们将字符推送到其中。
+   // 我们将创建一个`value`字符串，我们将字符推送到其中。
    let value = ""
-   // 然后我们将遍历序列中的每个字符,直到遇到不是数字的字符,
-   // 将每个是数字的字符推送到我们的`value`中,并在此过程中递增`current`。
+   // 然后我们将遍历序列中的每个字符，直到遇到不是数字的字符，
+   // 将每个是数字的字符推送到我们的`value`中，并在此过程中递增`current`。
    while (NUMBERS.test(char)) {
     value += char
     char = input[++current]
    }
    // 之后我们将我们的`number`标记推送到`tokens`数组中。
-   tokens.push({ type: "number", value })
+   tokens.push({ type: "number"， value })
    // 然后我们继续。
    continue
   }
@@ -167,7 +167,7 @@ function tokenizer(input) {
    }
    // 跳过结尾的双引号。
    char = input[++current]
-   tokens.push({ type: "string", value })
+   tokens.push({ type: "string"， value })
    continue
   }
   let LETTERS = /[a-z]/i
@@ -178,10 +178,10 @@ function tokenizer(input) {
     value += char
     char = input[++current]
    }
-   tokens.push({ type: "name", value })
+   tokens.push({ type: "name"， value })
    continue
   }
-  // 最后,如果我们到现在还没有匹配到一个字符,我们将抛出一个错误并完全退出。
+  // 最后，如果我们到现在还没有匹配到一个字符，我们将抛出一个错误并完全退出。
   throw new TypeError("我不知道这个字符是什么：" + char)
  }
  // 返回tokens数组。
@@ -203,28 +203,28 @@ function parser(tokens) {
   // 处理 number 类型
   if (token.type === "number") {
    current++
-   // 我们将返回一个名为`NumberLiteral`的新AST节点,并将其值设置为我们标记的值。
+   // 我们将返回一个名为`NumberLiteral`的新AST节点，并将其值设置为我们标记的值。
    return {
-    type: "NumberLiteral",
-    value: token.value,
+    type: "NumberLiteral"，
+    value: token.value，
    }
   }
         // 处理  string 类型
   if (token.type === "string") {
    current++
-            // 我们将返回一个名为`StringLiteral`的新AST节点,并将其值设置为我们标记的值。
+            // 我们将返回一个名为`StringLiteral`的新AST节点，并将其值设置为我们标记的值。
    return {
-    type: "StringLiteral",
-    value: token.value,
+    type: "StringLiteral"，
+    value: token.value，
    }
   }
         // 处理 左括号
   if (token.type === "paren" && token.value === "(") {
    token = tokens[++current]
    let node = {
-    type: "CallExpression",
-    name: token.value,
-    params: [],
+    type: "CallExpression"，
+    name: token.value，
+    params: []，
    }
             console.log(token.value)
    token = tokens[++current]
@@ -241,8 +241,8 @@ function parser(tokens) {
   throw new TypeError(token.type)
  }
  let ast = {
-  type: "Program",
-  body: [],
+  type: "Program"，
+  body: []，
  }
  
  while (current < tokens.length) {
@@ -258,28 +258,28 @@ module.exports = parser
 
 ```js [转换]
 // 遍历器
-function traverser(ast, visitor) {
- // 一个traverseArray函数,它将允许我们遍历一个数组并调用我们将定义的下一个函数：traverseNode。
- function traverseArray(array, parent) {
+function traverser(ast， visitor) {
+ // 一个traverseArray函数，它将允许我们遍历一个数组并调用我们将定义的下一个函数：traverseNode。
+ function traverseArray(array， parent) {
   array.forEach((child) => {
-   traverseNode(child, parent)
+   traverseNode(child， parent)
   })
  }
  // traverseNode将接受一个node及其parent节点。这样它可以将两者传递给我们的访问者方法。
- function traverseNode(node, parent) {
+ function traverseNode(node， parent) {
   // 我们首先测试访问者上是否存在与type匹配的方法。
   let methods = visitor[node.type]
-  // 如果该节点类型有一个enter方法,我们将使用node及其parent调用它。
+  // 如果该节点类型有一个enter方法，我们将使用node及其parent调用它。
   if (methods && methods.enter) {
-   methods.enter(node, parent)
+   methods.enter(node， parent)
   }
   // 接下来我们将根据当前节点类型分开处理。
   switch (node.type) {
    case "Program":
-    traverseArray(node.body, node)
+    traverseArray(node.body， node)
     break
    case "CallExpression":
-    traverseArray(node.params, node)
+    traverseArray(node.params， node)
     break
    case "NumberLiteral":
    case "StringLiteral":
@@ -287,13 +287,13 @@ function traverser(ast, visitor) {
    default:
     throw new TypeError(node.type)
   }
-  // 如果该节点类型有一个exit方法,我们将使用node及其parent调用它。
+  // 如果该节点类型有一个exit方法，我们将使用node及其parent调用它。
   if (methods && methods.exit) {
-   methods.exit(node, parent)
+   methods.exit(node， parent)
   }
  }
- // 最后我们通过调用traverseNode并传入我们的ast来启动遍历器,因为AST的顶层没有父节点,所以传入null。
- traverseNode(ast, null)
+ // 最后我们通过调用traverseNode并传入我们的ast来启动遍历器，因为AST的顶层没有父节点，所以传入null。
+ traverseNode(ast， null)
 }
 /**
  * 转换
@@ -302,50 +302,50 @@ function traverser(ast, visitor) {
  */
 function transformer(ast) {
  let newAst = {
-  type: "Program",
-  body: [],
+  type: "Program"，
+  body: []，
  }
- // 接下来我要作弊一点,创建一个小技巧。我们将在父节点上使用一个名为context的属性,
- // 我们将节点推送到它们父节点的context中。通常你会有一个比这更好的抽象,
- // 但为了我们的目的,这使事情变得简单。
- // 只需注意,context是从旧AST到新AST的引用。
+ // 接下来我要作弊一点，创建一个小技巧。我们将在父节点上使用一个名为context的属性，
+ // 我们将节点推送到它们父节点的context中。通常你会有一个比这更好的抽象，
+ // 但为了我们的目的，这使事情变得简单。
+ // 只需注意，context是从旧AST到新AST的引用。
  ast._context = newAst.body
  // 我们将从调用带有访问者的遍历器函数开始。
- traverser(ast, {
+ traverser(ast， {
   // 第一个访问者方法接受任何NumberLiteral
   NumberLiteral: {
    // 我们将在进入时访问它们。
-   enter(node, parent) {
-    // 我们将创建一个同样名为NumberLiteral的新节点,并将其推送到父context中。
+   enter(node， parent) {
+    // 我们将创建一个同样名为NumberLiteral的新节点，并将其推送到父context中。
     parent._context.push({
-     type: "NumberLiteral",
-     value: node.value,
+     type: "NumberLiteral"，
+     value: node.value，
     })
-   },
-  },
+   }，
+  }，
   // 接下来是StringLiteral
   StringLiteral: {
-   enter(node, parent) {
+   enter(node， parent) {
     parent._context.push({
-     type: "StringLiteral",
-     value: node.value,
+     type: "StringLiteral"，
+     value: node.value，
     })
-   },
-  },
+   }，
+  }，
   // 接下来是CallExpression。
   CallExpression: {
-   enter(node, parent) {
+   enter(node， parent) {
     // 我们开始创建一个带有嵌套Identifier的新节点CallExpression。
     let expression = {
-     type: "CallExpression",
+     type: "CallExpression"，
      callee: {
-      type: "Identifier",
-      name: node.name,
-     },
-     arguments: [],
+      type: "Identifier"，
+      name: node.name，
+     }，
+     arguments: []，
     }
-    // 接下来我们将在原始CallExpression节点上定义一个新的context,
-    // 该context将引用expression的arguments,以便我们可以推送参数。
+    // 接下来我们将在原始CallExpression节点上定义一个新的context，
+    // 该context将引用expression的arguments，以便我们可以推送参数。
     node._context = expression.arguments
     // 然后我们将检查父节点是否是CallExpression。
     // 如果不是...
@@ -353,14 +353,14 @@ function transformer(ast) {
      // 我们将用一个ExpressionStatement包装我们的CallExpression节点。
      // 我们这样做是因为JavaScript中的顶层CallExpression实际上是语句。
      expression = {
-      type: "ExpressionStatement",
-      expression: expression,
+      type: "ExpressionStatement"，
+      expression: expression，
      }
     }
-    // 最后,我们将（可能包装的）CallExpression推送到父context中。
+    // 最后，我们将（可能包装的）CallExpression推送到父context中。
     parent._context.push(expression)
-   },
-  },
+   }，
+  }，
  })
  return newAst
 }
@@ -374,35 +374,35 @@ module.exports = transformer
  */
 function codeGenerator(node) {
  switch (node.type) {
-  // 如果我们有一个Program节点。我们将遍历body中的每个节点,
-  // 并将它们传递给代码生成器,并用换行符连接它们。
+  // 如果我们有一个Program节点。我们将遍历body中的每个节点，
+  // 并将它们传递给代码生成器，并用换行符连接它们。
   case "Program":
    return node.body.map(codeGenerator).join("\n")
-  // 对于ExpressionStatement,我们将调用代码生成器处理嵌套的表达式,并添加一个分号...
+  // 对于ExpressionStatement，我们将调用代码生成器处理嵌套的表达式，并添加一个分号...
   case "ExpressionStatement":
    return (
     codeGenerator(node.expression) + ";" 
    )
-  // 对于CallExpression,我们将打印callee,添加一个左括号,
-  // 遍历arguments数组中的每个节点,并将它们传递给代码生成器,
-  // 用逗号连接它们,然后添加一个右括号。
+  // 对于CallExpression，我们将打印callee，添加一个左括号，
+  // 遍历arguments数组中的每个节点，并将它们传递给代码生成器，
+  // 用逗号连接它们，然后添加一个右括号。
   case "CallExpression":
    return (
     codeGenerator(node.callee) +
     "(" +
-    node.arguments.map(codeGenerator).join(", ") +
+    node.arguments.map(codeGenerator).join("， ") +
     ")"
    )
-  // 对于Identifier,我们将只返回node的名称。
+  // 对于Identifier，我们将只返回node的名称。
   case "Identifier":
    return node.name
-  // 对于NumberLiteral,我们将只返回node的值。
+  // 对于NumberLiteral，我们将只返回node的值。
   case "NumberLiteral":
    return node.value
-  // 对于StringLiteral,我们将在node的值周围添加引号。
+  // 对于StringLiteral，我们将在node的值周围添加引号。
   case "StringLiteral":
    return '"' + node.value + '"'
-  // 如果我们没有识别出节点,我们将抛出一个错误。
+  // 如果我们没有识别出节点，我们将抛出一个错误。
   default:
    throw new TypeError(node.type)
  }

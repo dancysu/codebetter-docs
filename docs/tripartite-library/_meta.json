@@ -1,9 +1,8 @@
 [
-    "index",
     {
         "type": "dir",
         "name": "axios",
-        "label": "axios",
+        "label": "Axios",
         "collapsible": true,
         "collapsed": true
     }

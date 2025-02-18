@@ -1,14 +1,18 @@
 [
-    "index",
+    {
+        "type": "dir",
+        "name": "installation-guide",
+        "label": "装机指南",
+        "collapsible": true,
+        "collapsed": false
+    },
+    {
+        "type": "dir",
+        "name": "ai",
+        "label": "AI大模型",
+        "collapsible": true,
+        "collapsed": true
+    },
     "编译原理",
-    "brew",
-    "coze",
-    "deepseek-r1",
-    "dify",
-    "monorepo",
-    "nginx",
-    "nvm",
-    "ohmyzsh",
-    "zsh",
-    "前端性能优化常用手段"
+    "zsh"
 ]

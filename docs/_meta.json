@@ -110,11 +110,11 @@
                     },
                     {
                         "text": "Koa",
-                        "link": "/koa/"
+                        "link": "/koa/basics/"
                     },
                     {
                         "text": "Nest",
-                        "link": "/nest/"
+                        "link": "/nest/basics/"
                     }
                 ]
             },
@@ -138,6 +138,10 @@
         "link": "/engineering/git/"
     },
     {
+        "text": "性能优化",
+        "link": "/performance/"
+    },
+    {
         "text": "云服务器",
         "link": "/cloud-server/"
     },
@@ -147,10 +151,10 @@
     },
     {
         "text": "三方库",
-        "link": "/tripartite-library/"
+        "link": "/tripartite-library/axios/"
     },
     {
         "text": "其它",
-        "link": "/others/"
+        "link": "/others/installation-guide/homebrew"
     }
 ]

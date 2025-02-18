@@ -2,13 +2,6 @@
     "index",
     {
       "type": "dir",
-      "name": "服务端",
-      "label": "服务端",
-      "collapsible": true,
-      "collapsed": false
-    },
-    {
-      "type": "dir",
       "name": "管理系统模版",
       "label": "管理系统模版",
       "collapsible": true,

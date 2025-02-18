@@ -3,6 +3,7 @@
     "prettier",
     "stylelint",
     "cspell",
+    "editorconfig",
     "husky",
     "commitlint"
 ]

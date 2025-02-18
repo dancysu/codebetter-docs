@@ -1,31 +1,46 @@
 # 取消请求
 
-cancelToken属性
+在使用 Axios 发起请求时，可以通过 `cancelToken` 属性实现请求的取消功能。
 
 ```javascript
-// 2.定义全局变量
+// 定义全局变量，用于存储取消函数
 let cancel;
 
 const getApi = () => {
-  // 检测上一次的请求是否已经完成 
-  if(cancel !== null) {
-    // 取消上一次请求
-    cancel()
+  // 检查是否有未完成的请求
+  if (cancel) {
+    // 如果有未完成的请求，取消它
+    cancel();
   }
+
   axios({
     method: "GET",
     url: "http://127.0.0.1:3000/posts",
-    // 1.添加配置对象的属性
-    cancelToken: new axios.CancelToken(function (c) {
-      // 3.将c的值赋值给cancel
+    // 创建一个 CancelToken，并将取消函数存储到全局变量
+    cancelToken: new axios.CancelToken(function executor(c) {
       cancel = c;
     }),
-  }).then((response) => {
-    cancel = null;
-  });
+  })
+    .then((response) => {
+      // 请求成功时，清空取消函数
+      cancel = null;
+      console.log("请求成功：", response.data);
+    })
+    .catch((error) => {
+      if (axios.isCancel(error)) {
+        console.log("请求已取消：", error.message);
+      } else {
+        console.error("请求失败：", error);
+      }
+    });
 };
+
 const cancelApi = () => {
-  cancel()
+  // 调用取消函数，取消请求
+  if (cancel) {
+    cancel("请求被手动取消");
+    cancel = null;
+  }
 };
 ```
 

@@ -1,1 +1,16 @@
-["index","nest"]
+[
+    {
+        "type": "dir",
+        "name": "basics",
+        "label": "基础知识",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "practice",
+        "label": "项目练习",
+        "collapsible": true,
+        "collapsed": true
+    }
+]

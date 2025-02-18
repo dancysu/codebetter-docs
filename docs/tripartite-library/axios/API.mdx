@@ -1,24 +1,28 @@
 # API
 
-`axios.request(config)`
+Axios 提供了多种请求方法，用于处理不同的 HTTP 请求类型。
 
-`axios.get(url[, config])`
+- `axios.request()`：通用请求方法，支持自定义配置。
 
-`axios.delete(url[, config])`
+- `axios.get()`：发送 GET 请求。
 
-`axios.head(url[, config])`
+- `axios.delete()`：发送 DELETE 请求。
 
-`axios.options(url[, config])`
+- `axios.head()`：发送 HEAD 请求。
 
-`axios.post(url[, data, [config]])`
+- `axios.options()`：发送 OPTIONS 请求。
 
-`axios.put(url[, data, [config]])`
+- `axios.post()`：发送 POST 请求。
 
-`axios.patch(url[, data, [config]])`
+- `axios.put()`：发送 PUT 请求。
+
+- `axios.patch()`：发送 PATCH 请求。
 
 
 
 ## axios.request()
+
+通用请求方法，支持自定义配置。
 
 ```javascript
 const requestApi = () => {
@@ -27,16 +31,22 @@ const requestApi = () => {
     url: "http://127.0.0.1:3000/posts"
   }).then((response) => {
     console.log(response);
+  }).catch((error) => {
+    console.error("请求失败：", error);
   });
-}
+};
 ```
 
 ## axios.get()
+
+发送 `GET` 请求，用于获取资源。
 
 ```javascript
 const getApi = () => {
   axios.get("http://127.0.0.1:3000/posts").then((response) => {
     console.log(response);
+  }).catch((error) => {
+    console.error("请求失败：", error);
   });
 };
 ```
@@ -45,32 +55,68 @@ const getApi = () => {
 
 ## axios.delete()
 
+发送 `DELETE` 请求，用于删除资源。
+
 ```javascript
 const deleteApi = () => {
   axios.delete("http://127.0.0.1:3000/posts/2").then((response) => {
     console.log(response);
+  }).catch((error) => {
+    console.error("请求失败：", error);
   });
 };
 ```
 
 
 
-axios.head()
+## axios.head()
 
-axios.options()
+发送 `HEAD` 请求，用于检查资源是否存在，或者获取资源的元数据（如响应头信息）。
+
+```js
+const headApi = () => {
+  axios.head("http://127.0.0.1:3000/posts").then((response) => {
+    console.log("HEAD 请求成功，响应头信息：", response.headers);
+  }).catch((error) => {
+    console.error("HEAD 请求失败：", error);
+  });
+};
+```
+
+
+
+## axios.options()
+
+发送 `OPTIONS` 请求，用于获取目标资源所支持的通信选项。
+
+它通常用于跨域请求（CORS）的预检请求，也可以用于获取资源支持的 HTTP 方法。
+
+```js
+const optionsApi = () => {
+  axios.options("http://127.0.0.1:3000/posts").then((response) => {
+    console.log("OPTIONS 请求成功，允许的 HTTP 方法：", response.headers["allow"]);
+  }).catch((error) => {
+    console.error("OPTIONS 请求失败：", error);
+  });
+};
+```
+
+
 
 ## axios.post()
 
+发送 `POST` 请求，用于创建新资源。
+
 ```javascript
 const postApi = () => {
-  axios.post(
-    "http://127.0.0.1:3000/posts", 
-    { 
-        author: "dancy", 
-        title: "学习axios" 
-    }).then((response) => {
-      console.log(response);
-    });
+  axios.post("http://127.0.0.1:3000/posts", {
+    author: "dancy",
+    title: "学习 Axios"
+  }).then((response) => {
+    console.log(response);
+  }).catch((error) => {
+    console.error("请求失败：", error);
+  });
 };
 ```
 
@@ -78,19 +124,36 @@ const postApi = () => {
 
 ## axios.put()
 
+发送 `PUT` 请求，用于更新资源。
+
 ```javascript
 const putApi = () => {
-  axios.put(
-    "http://127.0.0.1:3000/posts/2", 
-    { 
-        author: "dancy", 
-        title: "学习Javascript" 
-    }).then((response) => {
-      console.log(response);
-    });
+  axios.put("http://127.0.0.1:3000/posts/2", {
+    author: "dancy",
+    title: "学习 JavaScript"
+  }).then((response) => {
+    console.log(response);
+  }).catch((error) => {
+    console.error("请求失败：", error);
+  });
 };
 ```
 
 
 
-axios.patch()
+## axios.patch()
+
+发送 `PATCH` 请求，用于部分更新资源。
+
+```js
+const patchApi = () => {
+  axios.patch("http://127.0.0.1:3000/posts/2", {
+    title: "更新标题"
+  }).then((response) => {
+    console.log(response);
+  }).catch((error) => {
+    console.error("请求失败：", error);
+  });
+};
+```
+
