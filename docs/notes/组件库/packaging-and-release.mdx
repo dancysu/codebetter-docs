@@ -1,0 +1,182 @@
+rollup负责模块化打包
+
+gulp负责任务调度和自动化
+
+
+
+```bash
+mkdir build
+
+pnpm init
+
+pnpm install -D @vitejs/plugin-vue @rollup/plugin-node-resolve rollup-plugin-esbuild @rollup/plugin-commonjs
+```
+
+
+
+## UMD
+
+
+
+```js [build/src/common.js]
+const outputPkgDir = "suit-ui";
+
+import { fileURLToPath } from "node:url";
+import { resolve, dirname } from "node:path";
+export const filePath = fileURLToPath(import.meta.url);
+export const dirName = dirname(filePath);
+export const rootDir = resolve(dirName, "..", "..");
+export const pkgRoot = resolve(rootDir, "packages");
+export const outputDir = resolve(rootDir, outputPkgDir);
+export const outputEsm = resolve(rootDir, outputPkgDir, "es");
+export const outputCjs = resolve(rootDir, outputPkgDir, "lib");
+export const outputUmd = resolve(rootDir, outputPkgDir, "dist");
+```
+
+```js [build/src/umdBuild.js]
+import { rollup } from "rollup";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import vue from "@vitejs/plugin-vue";
+import esbuild from "rollup-plugin-esbuild";
+import {resolve} from "node:path";
+import { pkgRoot, outputUmd } from "./common.js";
+// umd打包
+const umdBuildEntry = async () => {
+  const writeBundles = await rollup({
+    input: resolve(pkgRoot, "index.ts"),
+    plugins: [vue(), nodeResolve({
+      extensions: [".ts"]
+    }), esbuild()],
+    external: ["vue"],
+  });
+  writeBundles.write({
+    format: "umd",
+    file: resolve(outputUmd, "index.full.js"),
+    name: "SuitUI",
+    globals: {
+      vue: "Vue"
+    }
+  });
+};
+umdBuildEntry()
+```
+
+```bash
+node ./build/src/umdBuild.js
+```
+
+:::
+
+
+
+### 测试UMD打包文件
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.15/vue.global.js"></script>
+    <script src="../suit-ui/dist/index.full.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <suit-button type="primary">{{message}}</suit-button>
+    </div>
+    <script>
+      const { createApp, ref } = Vue;
+      const App = {
+        setup() {
+          const message = ref("浏览器引用组件库包");
+          return {
+            message,
+          };
+        },
+      };
+      const app = createApp(App);
+      app.use(SuitUI);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
+```
+
+
+
+## ESM、CJS模块化打包
+
+```bash
+pnpm install -D fast-glob rollup-plugin-postcss
+
+node ./build/src/moduleBuild.js
+```
+
+
+
+```js
+import glob from "fast-glob";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import postcss from "rollup-plugin-postcss"
+import { rollup } from "rollup";
+import vue from "@vitejs/plugin-vue";
+import esbuild from "rollup-plugin-esbuild";
+
+import { outputPkgDir, pkgRoot, outputEsm, outputCjs } from "./common.js";
+
+const compileStyleEntry = () => {
+  const themeEntryPrefix = `@suit-ui/theme/src/`;
+  return {
+    name: "compile-style-entry",
+    resolveId(id) {
+      if (!id.startsWith(themeEntryPrefix)) return;
+      return {
+        id: id.replaceAll(themeEntryPrefix, `${outputPkgDir}/theme/src/`),
+        external: "absolute",
+      };
+    },
+  };
+};
+
+export const moduleBuildEntry = async () => {
+  const input = await glob("**/*.{js,ts,vue}", {
+    cwd: pkgRoot,
+    absolute: true,
+    onlyFiles: true,
+  });
+  const writeBundles = await rollup({
+    input,
+    plugins: [
+      compileStyleEntry(),
+      vue(),
+      nodeResolve({
+        extensions: [".ts"],
+      }),
+      esbuild(),
+      postcss({
+        pextract: true,
+      }),
+    ],
+    external: ["vue", "@vue/shared", "async-validator"],
+  });
+
+  // 多种输出格式
+  writeBundles.write({
+    format: "esm",
+    dir: outputEsm,
+    preserveModules: true,
+    entryFileNames: "[name].mjs",
+    sourcemap: true
+  })
+  writeBundles.write({
+    format: "cjs",
+    dir: outputCjs,
+    preserveModules: true,
+    entryFileNames: "[name].cjs",
+    sourcemap: true
+  })
+};
+moduleBuildEntry()
+```
+

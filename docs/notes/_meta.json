@@ -1,0 +1,31 @@
+[
+    "index",
+    {
+      "type": "dir",
+      "name": "服务端",
+      "label": "服务端",
+      "collapsible": true,
+      "collapsed": false
+    },
+    {
+      "type": "dir",
+      "name": "管理系统模版",
+      "label": "管理系统模版",
+      "collapsible": true,
+      "collapsed": true
+    },
+    {
+      "type": "dir",
+      "name": "脚手架",
+      "label": "脚手架",
+      "collapsible": true,
+      "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "组件库",
+        "label": "组件库",
+        "collapsible": true,
+        "collapsed": true
+      }
+  ]

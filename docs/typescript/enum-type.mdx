@@ -1,0 +1,87 @@
+# 枚举类型
+
+枚举类型在 TypeScript 中是一种特殊的类型,它定义了一个命名的常数集合。枚举可以用来定义一组相关的值,这些值通常被用来表示一组有限的可能状态或配置。
+
+
+
+## 数字枚举
+
+数字枚举默认从 0 开始自动编号。
+
+```ts
+enum Direction {
+	Up,
+	Down,
+	Left,
+	Right,
+}
+
+console.log(Direction.Up) // 0
+```
+
+数字枚举支持**反向映射**,使得可以通过值查找枚举成员。
+
+```ts
+console.log(Direction[0]) // Up 
+```
+
+可以手动为枚举成员赋值,未手动赋值的成员将按顺序自动递增。
+
+```ts
+enum Direction {
+	Up = 10,
+	Down,
+	Left,
+	Right,
+}
+
+console.log(Direction.Down) // 11
+```
+
+
+
+## 字符串枚举
+
+字符串枚举要求每个成员必须用字符串字面量或另一个字符串枚举成员进行初始化。
+
+```ts
+enum Direction {
+	Up = "UP",
+	Down = "DOWN",
+	Left = "LEFT",
+	Right = "RIGHT",
+}
+
+console.log(Direction.Up) // UP
+```
+
+
+
+## 异构枚举
+
+异构枚举可以包含数字和字符串。
+
+```ts
+enum Direction {
+	Up = 1,
+	Down = "DOWN"
+}
+
+```
+
+
+
+## 常量枚举
+
+使用 const 修饰符定义的常量枚举不会被编译成对象,因此更加节省资源。
+
+```ts
+const enum Direction {
+	Up = "UP",
+	Down = "DOWN",
+	Left = "LEFT",
+	Right = "RIGHT",
+}
+```
+
+在常量枚举中,成员名不会被输出到编译后的代码中,只能通过它们的值来访问。

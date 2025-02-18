@@ -1,0 +1,65 @@
+# 创建Vue3项目
+
+## create-vue
+
+`create-vue` 是Vue官方提供的新一代脚手架工具，其底层技术栈已升级至Vite，以提供更快的构建速度和更优的开发体验。通过 `create-vue`，您可以创建一个包含 TypeScript、ESLint 和 Prettier 的完整Vue3项目。
+
+::: code-group
+
+```bash [1.创建命令]
+npm create vue@latest
+```
+
+```bash [2.具体配置]
+# 请输入项目名称
+✔ Project name: … hello_vue3
+
+# 是否使用 TypeScript 语法？
+✔ Add TypeScript? … Yes
+
+# 是否启用 JSX 支持？
+✔ Add JSX Support? … No
+
+# 是否引入 Vue Router 进行单页面应用开发？
+✔ Add Vue Router for Single Page Application development? … No
+
+# 是否引入 Pinia 用于状态管理？
+✔ Add Pinia for state management? … No
+
+# 是否引入 Vitest 用于单元测试？
+✔ Add Vitest for Unit Testing? … No
+
+# 是否要引入一款端到端（End to End）测试工？
+✔ Add an End-to-End Testing Solution? › No
+
+# 是否引入 ESLint 用于代码质量检测？
+✔ Add ESLint for code quality? … Yes
+
+# 是否引入 Prettier 用于代码格式化？ 
+✔ Add Prettier for code formatting? … Yes
+```
+
+:::
+
+## vite
+
+如果您需要一个更轻量级的Vue3项目，`vite` 是一个很好的选择。它提供了一个简洁的Vue3工程模板，仅包含 TypeScript。
+
+
+
+```bash [1.创建命令]
+npm create vite@latest
+```
+
+```bash [2.具体配置]
+# 配置项目名称
+✔ Project name: … vue3-vite-app
+
+# 选择一个框架
+✔ Select a framework: › Vue
+
+# 选择一个项目模版
+✔ Select a variant: › TypeScript
+```
+
+:::

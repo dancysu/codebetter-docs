@@ -1,0 +1,94 @@
+# 链接按钮
+
+这里以 `warning` 警告按钮为例
+
+
+
+```scss {2-11,16-21} [theme/src/button.scss]
+.suit-button {
+    &.is-link{
+        &, &:hover{
+            padding: 0;
+            height: auto;
+            min-width: auto;
+            background-color: transparent;
+            border-color: transparent;
+            text-decoration: underline;
+        }
+    }
+}
+
+// 警告按钮
+.suit-button--warning {
+    &.is-link{
+        color: #4d5059;
+        &:hover{
+            color: #767a87;
+        }
+    }
+}
+```
+
+```vue {25-28,40} [components/button/src/index.vue]
+<script lang="ts" setup>
+import { useNamespace } from "@suit-ui/hooks";
+defineOptions({
+  name: "SuitButton",
+});
+const ns = useNamespace("button");
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default", // 默认值
+  },
+  round: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  text: {
+    type: Boolean,
+    default: false,
+  },
+  link: {
+    type: Boolean,
+    default: false,
+  }
+});
+</script>
+
+<template>
+  <button
+    :class="[
+      ns.b(),
+      ns.m(type),
+      ns.is('round', round),
+      ns.is('disabled', disabled),
+      ns.is('text', text),
+      ns.is('link', link)
+    ]"
+  >
+    <span>
+      <slot v-if="$slots.default"></slot>
+    </span>
+  </button>
+</template>
+```
+
+```vue {6} [play/src/App.vue]
+<template>
+  <div>
+    <suit-button>默认</suit-button>
+    <suit-button type="primary" round>主要</suit-button>
+    <suit-button type="success" disabled>成功</suit-button>
+    <suit-button type="warning" link>警告</suit-button>
+    <suit-button type="error" text>错误</suit-button>
+  </div>
+</template>
+```
+
+:::

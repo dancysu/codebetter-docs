@@ -1,0 +1,23 @@
+[
+    {
+        "type": "dir",
+        "name": "base",
+        "label": "CSS基础",
+        "collapsible": true,
+        "collapsed": false
+    },
+    {
+        "type": "dir",
+        "name": "precompiler",
+        "label": "预编译器",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "framework",
+        "label": "架构",
+        "collapsible": true,
+        "collapsed": true
+    }
+]

@@ -1,0 +1,105 @@
+# 按钮尺寸
+
+
+
+
+
+```scss {2-11} [theme/src/button.scss]
+.suit-button {
+    &.suit-button--size_small {
+        height: 24px;
+        padding: 0 10px;
+        font-size: 12px;
+        min-width: auto;
+    }
+    &.suit-button--size_large {
+        height: 40px;
+        font-size: 16px;
+    }
+}
+```
+
+```vue {41-44,60} [components/button/src/index.vue]
+<script lang="ts" setup>
+import { useNamespace } from "@suit-ui/hooks";
+defineOptions({
+  name: "SuitButton",
+});
+const ns = useNamespace("button");
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default", // 默认值
+  },
+  round: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  text: {
+    type: Boolean,
+    default: false,
+  },
+  link: {
+    type: Boolean,
+    default: false,
+  },
+  border: {
+    type: Boolean,
+    default: false,
+  },
+  dashed: {
+    type: Boolean,
+    default: false,
+  },
+  block: {
+    type: Boolean,
+    default: false,
+  },
+  size: {
+    type: String,
+    default: "",
+  },
+});
+</script>
+
+<template>
+  <button
+    :class="[
+      ns.b(),
+      ns.m(type),
+      ns.is('round', round),
+      ns.is('disabled', disabled),
+      ns.is('text', text),
+      ns.is('link', link),
+      ns.is('border', border),
+      ns.is('dashed', dashed),
+      ns.is('block', block),
+      ns.m('size', size),
+    ]"
+  >
+    <span>
+      <slot v-if="$slots.default"></slot>
+    </span>
+  </button>
+</template>
+```
+
+```vue {4-5} [play/src/App.vue]
+<template>
+  <div>
+    <suit-button>默认</suit-button>
+    <suit-button type="primary" size="small">主要</suit-button>
+    <suit-button type="success" size="large">成功</suit-button>
+    <suit-button type="warning" link>警告</suit-button>
+    <suit-button type="error" text>错误</suit-button>
+  </div>
+</template>
+
+```
+
+:::

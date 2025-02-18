@@ -1,0 +1,79 @@
+# 禁用按钮
+
+这里以 `success` 成功按钮的禁用效果为例
+
+
+
+```scss {10-16} [theme/src/button.scss]
+// 成功按钮
+.suit-button--success {
+    background-color: #14cd70;
+    border-color: #14cd70;
+    color: #fff;
+    &:hover {
+        background-color: #5adc9b;
+        border-color: #5adc9b;
+    }
+    &.is-disabled {
+        cursor: not-allowed; // 鼠标样式为禁止
+        &, &:hover, &:focus {
+            background-color: #89e6b7;
+            border-color: #89e6b7;
+        }
+    }
+}
+```
+
+```vue {17-20,26-31} [components/button/src/index.vue]
+<script lang="ts" setup>
+import { useNamespace } from "@suit-ui/hooks";
+defineOptions({
+  name: "SuitButton",
+});
+const ns = useNamespace("button");
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default", // 默认值
+  },
+  round: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+});
+</script>
+
+<template>
+  <button
+    :class="[
+      ns.b(),
+      ns.m(type),
+      ns.is('round', round),
+      ns.is('disabled', disabled),
+    ]"
+  >
+    <span>
+      <slot v-if="$slots.default"></slot>
+    </span>
+  </button>
+</template>
+```
+
+```vue {5} [play/src/App.vue]
+<template>
+  <div>
+    <suit-button>默认</suit-button>
+    <suit-button type="primary" round>主要</suit-button>
+    <suit-button type="success" disabled>成功</suit-button>
+    <suit-button type="warning">警告</suit-button>
+    <suit-button type="error">错误</suit-button>
+  </div>
+</template>
+```
+
+:::

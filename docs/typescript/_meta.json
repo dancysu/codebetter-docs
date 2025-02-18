@@ -1,0 +1,21 @@
+[
+    "index",
+    "init",
+    "run",
+    "base-type",
+    "reference-type",
+    "enum-type",
+    "interface",
+    "union-and-intersection-types",
+    "type-assertion",
+    "type-alias",
+    "any-type",
+    "unknown-type",
+    "void-type",
+    "never-type",
+    "promise",
+    "utils",
+    "function-type",
+    "class-type",
+    "generics"
+]

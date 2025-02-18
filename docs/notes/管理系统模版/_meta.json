@@ -1,0 +1,22 @@
+[
+  "index",
+  "create-a-new-project",
+  "configuration-initialization",
+  "install-vue-router",
+  "install-pinia",
+  "install-element-plus",
+  "install-sass",
+  "install-prettier",
+  "install-eslint",
+  "install-stylelint",
+  "install-husky",
+  "install-commitlint",
+  "install-editorconfig",
+  "install-cspell",
+  "wrap-axios",
+  "wrap-storage",
+  "layouts",
+  "svg-component",
+  "install-mock",
+  "fullscreen"
+]

@@ -1,0 +1,50 @@
+# storage 二次封装
+
+在项目的 `utils` 目录下,创建一个名为 `storage.ts` 的文件,用于封装对 `localStorage` 的操作。
+
+```ts
+/**
+ * Storage 二次封装
+ */
+
+const namespace = "vue3-admin";
+
+interface StorageItem {
+  [key: string]: any;
+}
+
+interface StorageInterface {
+  getStorage(): StorageItem;
+  setItem(key: string, value: any): void;
+  getItem(key: string): any;
+  removeItem(key: string): void;
+  clear(): void;
+}
+
+const storage: StorageInterface = {
+  getStorage() {
+    return JSON.parse(window.localStorage.getItem(namespace) || "{}");
+  },
+  setItem(key, value) {
+    const storage = this.getStorage();
+    storage[key] = value;
+    window.localStorage.setItem(namespace, JSON.stringify(storage));
+  },
+  getItem(key) {
+    return this.getStorage()[key];
+  },
+  removeItem(key) {
+    const storage = this.getStorage();
+    delete storage[key];
+    window.localStorage.setItem(namespace, JSON.stringify(storage));
+  },
+  clear() {
+    window.localStorage.clear();
+  },
+};
+
+export default storage;
+```
+
+
+

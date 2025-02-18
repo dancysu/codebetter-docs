@@ -1,0 +1,1097 @@
+# 数据类型
+
+
+
+## 内置类型
+
+
+
+### undefined
+
+Undefined类型只有一个值,就是特殊值 `undefined`。
+
+**当使用 `var` 或 `let` 声明了变量但没有初始化时,就相当于给变量赋予了 `undefined` 值。**
+
+```js
+let codebetter;
+console.log(codebetter == undefined); // true
+```
+
+增加这个特殊值的目的就是为了正式明确空对象指针（null）和未初始化变量的区别。
+
+
+
+注意：
+
+1. 对未声明的变量,只能执行一个有用的操作,就是对它调用 `typeof`。在对未初始化的变量调用 `typeof` 时,返回的结果是 `undefined`,但对未声明的变量调用它时,返回的结果还是 `undefined`。
+
+   ```js
+   let message;
+   console.log(typeof message); // undefined
+   console.log(typeof age); // undefined
+   ```
+
+2. `undefined` 在数值类型环境中会被当作 `NaN` 来对待,而布尔类型环境中会被当作 `false`。
+
+   ```js
+   console.log(Number(undefined)); // NaN
+   console.log(Boolean(undefined)); // false
+   ```
+
+   
+
+使用场景
+
+- 定义变量未给值就是 undefined
+- 开发中经常声明一个变量,等待传送过来的数据,如果检测变量是undefined就说明没有值传递过来	
+
+### null
+
+Null类型同样只有一个值,即特殊值 `null`.
+
+逻辑上讲,null值表示一个空对象指针,这也是给 `typeof` 传一个 `null` 会返回 `"object"` 的原因。
+
+```js
+let message = null;
+console.log(typeof message); // "object"
+```
+
+在定义将来要保存对象值的变量时,建议使用 `null` 来初始化,不要使用其他变值。这样就可以只检查这个变量的值是不是 `null` 来判断其是否在后来被重新赋予了一个对象的引用。
+
+```js
+if (message != null) {
+  // message是一个对象的引用
+}
+```
+
+`undefined` 值是由 `null` 值派生而来的,因此 ECMA-262将它们定义为**表面上相等**,用 `==` 操作符比较 `null` 和 `undefined` 始终返回 `true`。
+
+```js
+console.log(null == undefined); // true
+```
+
+
+
+注意：
+
+1. 即使 `null` 和 `undefined` 有关系,它们的用途也是完全不一样的。（永远不必显示地将变量值设置为 `undefined`,而任何时候,只要变量要保存对象,而当时又没有那个对象可保存,就要用 `null` 来填充该变量。这样可以保持 `null` 是空对象指针的语义,并进一步将其与 `undefined` 区分开来）
+
+2. `null` 在数值类型环境中会被当作 0 来对待,而布尔类型环境中会被当作 `false`。
+
+   ```js
+   console.log(Number(null)); // 0
+   console.log(Boolean(null)); // false
+   ```
+
+   
+
+null 和 undefined 区别
+
+- null表示变量没有值
+- undefined表示变量已被声明,但是并未赋值。
+
+
+
+使用场景
+
+- 官方解释：把null作为尚未创建的对象
+- 大白话：看将来有个变量里面存放一个对象,如果还没准备好对象,可以放个null
+
+
+
+### Boolean
+
+表示肯定或否定时在计算机中对应的是布尔类型数据。
+
+它有两个字面值 `true` 和 `false`,表示肯定的数据用 true（真）,表示否定的数据用 false（假）。
+
+虽然布尔值只有两个,但所有的其他类型的值都有相应布尔值的等价形式。（要将一个其他类型的值转换为布尔值,可以调用 `Boolean()` 转型函数, `Boolean()` 转型函数可以在任意类型的数据上调用,而且始终返回一个布尔值）
+
+```js
+let message = "codebetter";
+console.log(Boolean(message)); // true
+```
+
+
+
+不同类型与布尔值之间的转换规则
+
+| 数据类型  | 转换为true的值         | 转换为false的值  |
+| --------- | ---------------------- | ---------------- |
+| Boolean   | true                   | false            |
+| String    | 非空字符串             | `""`（空字符串） |
+| Number    | 非零数值（包括无穷值） | 0、NaN           |
+| Object    | 任意对象               | null             |
+| Undefined | N/A（不存在）          | undefined        |
+
+
+
+注意：
+
+1. 布尔值字面量 `true` 和 `false` 是区分大小写的。
+2. 布尔类型在控制台输出 **<font color="blue">蓝色</font>**。
+3. 布尔值很少是直接赋值得到的,都是从结果中得到,主要利用布尔值进行判断。
+4. 像 `if` 等流程控制语句会自动执行**其他类型值到布尔值**的转换。
+
+
+
+
+
+### Number
+
+Number类型使用 `IEEE 754` 格式表示整数和浮点值。
+
+不同数值类型相应地也有不同的数值字面量格式：十进制字面量、八进制字面量、十六进制字面量。
+
+- 十进制：直接写出来即可
+
+  ```js
+  let intNum = 55;
+  ```
+
+- 八进制（以8为基数）：前缀必须是 `0o`（不区分大小写）,然后是相应的八进制数字（0～7）
+
+  ```js
+  let octalNum = 0o70; // 八进制的56
+  ```
+
+- 十六进制（以16为基数）：前缀是 `0x`（区分大小写）,然后是十六进制数字（0～9以及A～F）。十六进制数字中字母大小写均可。
+
+  ```js
+  let hexNum1 = 0xa; // 十六进制10
+  let hexNum2 = 0xA; // 十六进制10
+  ```
+
+
+
+注意：
+
+1. 数值类型在控制台输出 **<font color="blue">蓝色</font>**。
+2. **使用八进制和十六进制格式创建的数值在所有数学操作中都被视为十进制数值。**
+
+
+
+#### 浮点值
+
+要定义浮点值,数值中必须包含小数点,而且小数点后面必须至少有一个数字。
+
+```js
+let floatNum = 1.1;
+```
+
+因为存储浮点值使用的内存空间是存储整数值的两倍,所以ECMAScript总是想方设法把值转换为整数。
+
+- 小数点后面没有数字的情况下,数值就会变成整数
+- 数值本身就是整数,只不过小数点后跟着0（如1.0）,也会被转换为整数
+
+```js
+let floatNum1 = 1.; // 1
+let floatNum2 = 10.0; // 10
+```
+
+**对于非常大或非常小的数值,浮点值可以用科学计数法来表示。**
+
+科学计数法用于表示一个应该乘以10的给定次幂的数值,ECMAScript中科学计数法的格式要求是一个数值（整数或浮点数）后跟一个大写或小写的字母e,再加上一个要乘的10的多少次幂。
+
+```js
+let floatNum = 2.125e7; // 31250000,以3.125作为系数,乘以10的7次幂
+```
+
+科学计数法也可以用于表示非常小的数值,默认情况下,ECMAScript会将小数点后至少包含6个零的浮点值转换为科学计数法。
+
+```js
+let floatNum = 3e-7; // 0.0000003
+```
+
+**浮点值的精确度最高可达17位小数**,但在算术计算中远不如整数精确,比如：**<font color="red">0.1 + 0.2 ≠ 0.3</font>**,而是`0.30000000000000004`。这是因为使用了 `IEEE 754` 数值,这种错误并非 ECMAScript 所独有。
+
+
+
+#### 值的范围
+
+由于内存的限制,ECMAScript并不支持表示在这个世界上的所有数值。
+
+
+
+| 属性                     | 值的范围                | 描述     |
+| ------------------------ | ----------------------- | -------- |
+| Number.MIN_VALUE         | 5e-324                  | 最小数值 |
+| Number.MAX_VALUE         | 1.7976931348623157e+308 | 最大数值 |
+| Number.NEGATIVE_INFINITY | -Infinity               | 负无穷大 |
+| Number.POSITIVE_INFINITY | Infinity                | 正无穷大 |
+
+如果某个计算得到的数值超过了 JavaScript 可以表示的范围,那么这个数值会被自动转换为一个特殊的 `Infinity`（无穷）值。
+
+- 任何无法表示的负数以 `-Infinity`（负无穷大）表示。
+- 任何无法表示的正数以 `Infinity`（正无穷大）表示。
+
+如果计算返回 `Infinity` 或 `-Infinity` ,则该值将不能再进一步用于任何计算。这是因为 `Infinity` 没有可用于计算的数值表示形式。要确定一个值是不是有限大（介于 JavaScript 能表示的最小值和最大值之间）,可以使用 `isFinite()` 函数。
+
+```js
+let rusult = Number.MAX_VALUE + Number.MAX_VALUE;
+console.log(isFinite(rusult)); // false
+```
+
+
+
+#### NaN
+
+NaN（Not a Number）,是一个特殊值,用于表示本来要返回数值的操作失败了（而不是抛出错误）。
+
+用0除任意数值在其他语言中通常都会导致错误,从而终止代码的执行,但在 ECMAScript 中,`0`、`+0` 或 `-0` 相除会返回 `NaN`。
+
+```js
+console.log(0 / 0); // NaN
+console.log(-0 / +0); // NaN
+```
+
+如果分子是非0值,分母是有符号0或无符号0,则会返回 `Infinity` 或 `-Infinity`
+
+```js
+console.log(5 / 0); // Infinity
+console.log(5 / -0); // -Infinity
+```
+
+
+
+特性
+
+1. 任何涉及NaN的操作始终返回NaN
+
+   ```js
+   console.log(NaN / 10); // NaN
+   ```
+
+2. NaN不等于包括NaN在内的任何值
+
+   ```js
+   console.log(NaN == NaN); // false
+   ```
+
+ECMAScript提供了 `isNaN()` 函数,该函数可以接收一个任意数据类型的参数,然后判断这个参数是否 “不是数值”。
+
+```js
+console.log(isNaN(NaN)); // true
+console.log(isNaN(10)); // false
+console.log(isNaN("10")); // false
+console.log(isNaN("blue")); // true
+console.log(isNaN(true)); // false
+```
+
+`isNaN()` 还可以用于测试对象。此时,首先会调用对象的 `valueOf()` 方法,然后再确定返回的数值是否可以转换为数值。如果不能,再调用 `toString()` 方法并测试其返回值。
+
+
+
+#### 数值转换
+
+有3个函数可以将非数值转换为数值：`Number()`、`parseInt()`、`parseFloat()`。
+
+Number()是转型函数,可以用于任何数据类型。后两个函数主要用于将字符串转换为数值。
+
+##### Number()
+
+- 布尔值：true转换为1,false转换为0
+
+  ```js
+  console.log(Number(true)); // 1
+  console.log(Number(false)); // 0
+  ```
+
+- 数值：直接返回
+
+  ```js
+  console.log(Number(10)); // 10
+  ```
+
+- null：返回0
+
+  ```js
+  console.log(Number(null)); // 0
+  ```
+
+- undefined：返回 NaN
+
+  ```js
+  console.log(Number(undefined)); // NaN
+  ```
+
+- 字符串
+
+  - 如果字符串包含数值字符（包括数值字符前面带加、减号）,则转换为一个十进制数值。
+
+    ```js
+    console.log(Number("1")); // 1
+    console.log(Number("-1")); // -1
+    console.log(Number("011")); // 11
+    ```
+
+  - 如果字符串包含有效的浮点值格式,则会转换为相应的浮点值（同样,忽略前面的0）
+
+    ```js
+    console.log(Number("1.1")); // 1.1
+    console.log(Number("-1.1")); // -1.1
+    console.log(Number("01.1")); // 1.1
+    ```
+
+  - 如果字符串包含有效的十六进制格式,则会转换为与该十六进制对应的十进制整数值
+
+    ```js
+    console.log(Number("0xA")); // 10
+    ```
+
+  - 如果是空字符串,则返回0
+
+    ```js
+    console.log(Number("")); // 0
+    ```
+
+  - 如果字符串中包含除上述情况之外的其他字符,则返回NaN
+
+    ```js
+    console.log(Number("123abc")); // NaN
+    ```
+
+- 对象：调用对象的 `valueOf()` 方法,并按照上述规则转换返回的值。如果返回结果为 NaN,则调用 `toString()` 方法,再按照转换字符串的规则转换。
+
+##### parseInt()
+
+`parseInt()` 函数专注于字符串是否包含数值模式。
+
+字符串最前面的空格会被忽略,从 第一个非空格字符开始转换,如果第一个字符不是数值字符、加号或减号,则立即返回 NaN（空字符串也会返回NaN）。如果第一个字符是数值字符、加号或减号,则继续依次检测每个字符,直到字符串结尾,或碰到非数值字符为止。
+
+```js
+console.log(parseInt("123abc")); // 123
+console.log(parseInt("")); // NaN
+console.log(parseInt("11.1")); // 11
+```
+
+`parseInt()` 也能识别不同的整数格式（十进制、八进制、十六进制）
+
+```js
+console.log(parseInt("10")); // 10,解释为十进制
+console.log(parseInt("0xA")); // 10,解释为十六进制整数
+```
+
+`parseInt()` 也接收第二个参数,用于指定底数（**进制数**）。
+
+```js
+console.log(parseInt("0xAF", 16)); // 175
+
+// 如果指定了十六进制参数,那么字符串的 "0x" 可以省掉
+console.log(parseInt("AF", 16)); // 175
+console.log(parseInt("AF")); // NaN
+```
+
+通过第二个参数可以极大扩展转换后获得的结果类型
+
+```js
+console.log(parseInt("10", 2)); // 2,按二进制解析
+console.log(parseInt("10", 8)); // 8,按8进制解析
+console.log(parseInt("10", 10)); // 10,按十进制解析
+console.log(parseInt("10", 16)); // 16,按十六进制解析
+```
+
+##### parseFloat()
+
+`parseFloat()` 函数的工作方式跟 `parseInt()` 函数类似,都是从位置0开始检测每个字符。同样,它也是解析到字符串末尾或解析到一个无效的浮点数值字符为止。（第一次出现的小数点是有效的,但第二次出现的小数点就无效了,此时字符串的剩余字符都会被忽略）
+
+`parseFloat()` 函数始终忽略字符串开头的0,并且只解析十进制值,因此不能指定底数（**进制数**）。十六进制数值会始终返回0。
+
+```js
+console.log(parseFloat("123abc")); // 123,按整数解析
+console.log(parseFloat("0xA")); // 0,十六进制始终返回0
+console.log(parseFloat("11.1")); // 11.1
+console.log(parseFloat("011.1")); // 11.1
+console.log(parseFloat("10.1.5")); // 10.1
+console.log(parseFloat("3.125e7")); // 31250000
+```
+
+
+
+### String
+
+通过 `单引号（''）`、`双引号（""）` 或 `反引号（``）`包裹的数据都叫字符串,单引号和双引号没有本质上的区别,需要注意的是开头和结尾的引号必须是同一种。
+
+```js
+console.log('')
+```
+
+
+
+JavaScript中字符串是不可变的
+
+
+
+#### 字符字面量
+
+字符串数据类型包含一些字符字面量,用于表示非打印字符或有其他用途的字符。
+
+| 字面量 | 含义                                                         |
+| ------ | ------------------------------------------------------------ |
+| \n     | 换行                                                         |
+| \t     | 制表                                                         |
+| \b     | 退格                                                         |
+| \r     | 回车                                                         |
+| \f     | 换页                                                         |
+| \\\    | 反斜杠（\）                                                  |
+| \\'    | 单引号（'）                                                  |
+| \\"    | 双引号（"）                                                  |
+| \\`    | 反引号（`）                                                  |
+| \xnn   | 以十六进制编码nn表示的字符（其中n是十六进制数字0～F）,例如：`\x41` 等于 'A' |
+| \unnnn | 以十六进制编码nnnn表示的Unicode字符（其中n是十六进制数字0～F）,例如：`\u03a3` 等于希腊字母 `Σ` |
+
+这些字符字面量可以出现在字符串中的任意位置,且可以作为单个字符被解释。
+
+```js
+console.log('\u03a3'); // Σ
+console.log('\u03a3'.length); // 1,转义序列表示1个字符
+```
+
+
+
+注意：
+
+- 如果字符串中包含双字节字符,那么length属性返回的值可能不是准确的字符数。
+
+
+
+#### 字符串的特点
+
+ECMAScript中的字符串是不可变的（immutable）,意思是一旦创建,它们的值就不能变了。
+
+要修改某个变量中的字符串值,必须先销毁原始的字符串,然后将包含新值的另一个字符串保存到该变量
+
+```js
+let lang = "Java";
+lang = lang + "Script"; // 首先会分配一个足够容纳10个字符的空间,然后填充上 'Java' 和 'Script'。最后销毁原始的字符串 'Java' 和字符串 'Script'。
+```
+
+
+
+#### 转换为字符串
+
+有三种方式可以把值转换为字符串“
+
+- `toString()`
+- `String()`
+- 用 `+` 加号操作符给一个值加上一个空字符串`""`,也可以将其转换为字符串
+
+##### toString()
+
+`toString()` 方法唯一的用途就是返回当前值的字符串等价物,该方法可用于**数值**、**布尔值**、**对象**和**字符串值**（字符串值的 `toString()` 方法只是简单返回自身的一个副本）。
+
+注意：`null` 和 `undefined` 值没有 `toString()` 方法
+
+```js
+let age = 28;
+console.log(age.toString()); // "28"
+```
+
+多数情况下,`toString()` 方法不接收任何参数。不过,对数值调用这个方法时,`toString()` 可以接收一个底数参数,**默认情况下,`toString()` 返回数值的十进制字符串表示**。
+
+```js
+let num = 10;
+console.log(num.toString(2)); // "1010"
+console.log(num.toString(8)); // "12"
+console.log(num.toString(10)); // "10"
+console.log(num.toString(16)); // "a"
+
+```
+
+
+
+##### String()
+
+`String()` 转型函数,它始终会返回相应类型值的字符串。
+
+`String()` 函数遵循如下规则：
+
+- 如果值有 `toString()` 方法,则调用该方法（不传参数）并返回结果。
+- 如果值是null,返回 `null`
+- 如果值是 undefined,返回 `undefined`
+
+```js
+let value1 = 10;
+let value2 = true;
+let value3 = null;
+let value4;
+console.log(String(value1)); // "10"
+console.log(String(value2)); // "true"
+console.log(String(value3)); // "null"
+console.log(String(value4)); // "undefined"
+```
+
+因为 `null` 和 `undefined` 没有 `toString()` 方法,所以 `String()` 方法就直接返回了这两个值的字面量文本。
+
+
+
+#### 模版字面量
+
+ES6 新增了使用模版字面量定义字符串的能力,与使用单引号或双引号不同,模版字面量保留换行字符,可以跨行定义字符串。
+
+```js
+let myMultiLineString = "第一行\n第二行";
+let myMultiLineTemplateLiteral = `第一行
+第二行`;
+
+console.log(myMultiLineString);
+// 第一行
+// 第二行
+
+console.log(myMultiLineTemplateLiteral);
+// 第一行
+// 第二行
+console.log(myMultiLineString === myMultiLineTemplateLiteral); // true
+```
+
+由于模版字面量会保持反引号内部的空格,因此在使用时要格外注意。
+
+##### 字符串插值
+
+模版字面量最常用的一个特性就是支持字符串插值,字符串插值通过在 `${}` 中使用一个 JavaScript 表达式实现。
+
+```js
+let age = 28;
+console.log(`I am ${age} years old.`); // I am 28 years old.
+```
+
+所有插入的值都会使用 `toString()` 强制转型为字符串,而且任何 JavaScript 表达式都可以用于插值。
+
+```js
+let foo = {
+  toString: () => "codebetter",
+};
+console.log(`${foo}`); // "codebetter"
+```
+
+
+
+##### 模版字面量标签函数
+
+模版字符串也支持定义**标签函数**（tag function）,而通过标签函数可以自定义插值行为。标签函数会接收被插值记号分隔后的模版和对每个表达式求值的结果。
+
+标签函数本身是一个常规函数,通过前缀到模版字面量来应用自定义行为。
+
+标签函数接收到的参数依次是原始字符串数组和对每个表达式求值的结果,这个函数的返回值是对模版字面量求值得到的字符串。
+
+```js
+let a = 6;
+let b = 9;
+
+function simpleTag(strings, a, b, sum) {
+  console.log(strings); // [ '', '+', '=', '' ]
+  console.log(a); // 6
+  console.log(b); // 9
+  console.log(sum); // 15
+  return "codebetter";
+}
+
+let taggedresult = simpleTag`${a}+${b}=${a + b}`;
+console.log(taggedresult); // codebetter
+```
+
+对于有 `n`个插值的模版字面量,传给标签函数的表达式参数的个数始终是 `n`,而传给标签函数的第一个参数所包含的字符串个数始终是 `n+1`。
+
+```js
+let a = 6;
+let b = 9;
+
+function simpleTag(strings, ...expressions) {
+  return (
+    strings[0] + expressions.map((e, i) => `${e}${strings[i + 1]}`).join("")
+  );
+}
+
+let taggedresult = simpleTag`${a}+${b}=${a + b}`;
+console.log(taggedresult); // "6+9=15"
+```
+
+
+
+##### 原始字符串
+
+使用模版字面量也可以直接获取原始的模版字面量内容,而不是被转换后的字符表示。
+
+可以使用默认的 `String.raw` 标签函数
+
+```js
+// Unicode示例
+console.log(`\u00A9`); // ©
+console.log(String.raw`\u00A9`); // \u00A9
+
+// 换行符示例
+console.log(`第一行\n第二行`);
+// 第一行
+// 第二行
+console.log(String.raw`第一行\n第二行`); // 第一行\n第二行
+
+// 对实际的换行符来说是不行的,它们不会被转换成转义序列的形式
+console.log(`第一行
+第二行`);
+// 第一行
+// 第二行
+console.log(String.raw`第一行
+第二行`); 
+// 第一行
+// 第二行
+```
+
+另外,也可以通过标签函数的第一个参数,即 `字符串数组的.raw` 属性取得每个字符串的原始内容
+
+```js
+function printRaw(strings) {
+  console.log(strings); // [ '©', '\n' ]
+  for (const string of strings) {
+    console.log("s", string);
+  }
+  for (const rawString of strings.raw) {
+    console.log("r", rawString);
+  }
+}
+
+printRaw`\u00A9${"and"}\n`;
+```
+
+
+
+
+
+### Bigint
+
+
+
+
+
+### Symbol
+
+ES6新增的数据类型。一种实例是唯一且不可改变的数据类型。
+
+
+
+
+
+
+
+
+
+#### 符号的基本用法
+
+符号需要使用 `Symbol()` 函数初始化。因为符号本身是原始类型,所以 `typeof` 操作符对符号返回 `symbol`。
+
+```js
+let sym = Symbol();
+console.log(typeof sym); // symbol
+```
+
+
+
+
+
+## Object
+
+ECMAScript中的对象其实就是一组数据和功能的集合。
+
+```js
+let o = new Object();
+```
+
+**ECMAScript中的Object也是派生其他对象的基类**,Object类型的所有属性和方法在派生的对象上同样存在。
+
+每个Object实例都有如下属性和方法
+
+| 属性或方法                         | 说明                                                         |
+| ---------------------------------- | ------------------------------------------------------------ |
+| constructor                        | 用于创建当前对象的函数。在前面的例子中,这个属性的值就是 `Object()` 函数。 |
+| hasOwnProperty(propertyName)       | 用于判断当前对象实例（不是原型）上是否存在给定的属性。要检查的属性名必须是字符串（`o.hasOwnProperty("name")`）或符号。 |
+| isPrototypeOf(object)              | 用于判断当前对象是否为另一个对象的原型。                     |
+| propertyIsEnumerable(propertyName) | 用于判断给定的属性是否可以使用,属性名必须是字符串。         |
+| toLocaleString()                   | 返回对象的字符串表示,该字符串反应对象所在的本地化执行环境。 |
+| toString()                         | 返回对象的字符串表示。                                       |
+| valueOf()                          | 返回对象对应的字符串、数值或布尔值表示。通常与 `toString()` 返回值相同。 |
+
+
+
+
+
+------
+
+
+
+点表示法通常优于括号表示法,因为它更简洁且更易于阅读。然而,在某些情况下你必须使用括号。例如,如果对象属性名称保存在变量中,则不能使用点表示法访问该值,但可以使用括号表示法访问该值。
+
+
+
+### 什么是对象
+
+对象（object）：JavaScript里的一种数据类型,可以理解为是一种无序的数据（键值对）集合。
+
+特点：可以详细的描述某个事物,是一个能够具体做事情的事物
+
+作用：描述复杂的数据、封装代码
+
+### 对象使用
+
+显示地创建 `Object` 的实例有两种方式。
+
+第一种方式是使用 `new` 操作符和 `Object` 构造 函数。
+
+```js
+let person = new Object();
+person.name = "dongxu";
+person.age = 27;
+```
+
+第二种方式是使用对象字面量表示法。对象字面量是对象定义的简写形式,目的是为了简化包含大量属性的对象的创建。
+
+```js
+let person = {
+  name: "dongxu",
+  age: 27
+}
+```
+
+在对象字面量表示法中,属性名可以是字符串或数值,比如：
+
+```js
+let person = {
+  name: "dongxu",
+  age: 27,
+  5: true
+}
+```
+
+这个例子会得到一个带有属性name、age和5的对象。注意,数值属性会自动转换为字符串。
+
+> 在使用字面量表示法定义对象时,并不会实际调用 Object 构造函数。
+
+
+
+- 对象由属性和方法组成
+
+  - 属性：信息或叫特征（名词）。
+    - 比如：手机尺寸、颜色等
+  - 方法：功能或叫行为（动词）。
+    - 比如：手机打电话、发短信等
+  - 注意：
+    - 属性
+      - 属性都是成对出现的,包括属性名和值,它们之间使用英文：分隔
+      - 多个属性之间使用英文,分隔
+      - 属性就是依附在对象上的变量（外面是变量,对象内是属性）
+      - 属性名可以使用""或'',一般情况下省略,除非名称遇到特殊符号如空格、中横线等。
+    - 方法
+      - 方法是由方法名和函数两部分构成,它们之间使用：分隔
+      - 多个属性之间使用英文,分隔
+      - 方法是依附在对象中的函数
+      - 方法名可以使用""或'',一般情况下省略,除非名称遇到特殊符号如空格、中横线等。
+
+- 属性
+
+  - 添加属性
+
+    ```javascript
+    //第一种
+    对象名.属性名 = 值
+    //第二种
+    对象名[属性名] = 值
+    ```
+
+  - 属性访问
+
+    声明对象,并添加了若干属性后,可以使用.或[]获得对象中属性对应的值,我们称之为属性访问。简单理解就是获得对象里面的属性值。
+
+  ```javascript
+  console.log(对象.属性名)
+  console.log(对象['属性名'])
+  ```
+
+- 方法
+
+  - 添加方法
+
+    ```javascript
+    //第一种
+    对象名.方法名 = function(){	}
+    
+    //第二种
+    对象名[方法名] = function(){ }
+    ```
+
+  - 方法访问
+
+    声明对象,并添加了若干方法后,可以使用.调用对象中函数,我们称之为方法调用。
+
+    ```javascript
+    对象.方法名()
+    ```
+
+    
+
+### 操作对象
+
+对象本质是无序的数据集合,操作数据无非就是增、删、改、查。
+
+- 查询对象：
+
+  ```javascript
+  对象.属性 或者 对象['属性']
+  
+  对象.方法()
+  ```
+
+- 重新赋值：
+
+  ```javascript
+  对象.属性 = 值
+  
+  对象.方法 = function(){}
+  ```
+
+- 对象添加新的数据：
+
+  ```javascript
+  对象.新属性名 = 新值
+  ```
+
+- 删除对象中属性：
+
+  ```javascript
+  delete 对象.属性名
+  ```
+
+新增一个属性时,首先会去对象里面找是否有这个属性,如果有则更改其值,如果没有则新增这个属性。
+
+
+
+### 遍历对象
+
+- 对象没有像数组一样的length属性,所以无法确定长度。
+
+- 对象里面是无序的键值对,没有规律。不像数组里面有规律的下标
+
+- for in 循环,专门遍历对象的
+
+  ```javascript
+  //语法：
+  for (let 变量名 in 对象) {
+  	console.log(对象[变量名])
+  }
+  
+  //举例：
+  let obj = {
+  	uname:'小苏',
+  	age:18
+  }
+  for (let k in obj) {
+  	console.log(k)   //得到带字符串的属性名
+  	console.log(obj[k])  //得到属性值
+  }
+  
+  注意：
+  	获取属性值是不用 对象名.k,会报undefined,应使用 对象名[k]
+  	变量名一般用k表示,代表对象中的属性名,即k === 'uname' === 'age',所以当用obj[k]获取属性值时,k不能加''
+  ```
+
+- 将其他类型转为字符串类型
+
+  - null 和 undefined 不能够使用 .toString()
+  - 只有对象类型才能 .toString()
+  - 为什么数字类型和布尔类型可以使用
+    - 因为数字和布尔类型也是对象的一种
+
+
+
+### 内置对象
+
+- 内置对象是什么？
+
+  JavaScript内部提供的对象,包含各种属性和方法给开发者调用
+
+  ```javascript
+  document.write()
+  console.log()
+  ```
+
+- 内置对象Math
+
+  - Math对象时JavaScript提供的一个“数学高手”对象
+
+  - 提供一系列做数学运算的方法
+
+  - 方法有：
+
+    | 方法     | 含义                                      |
+    | -------- | ----------------------------------------- |
+    | random() | 生成0-1之间的随机数（包含0不包含1）       |
+    | ceil()   | 向上取整（对0不公平,概率低,不推荐使用） |
+    | floor()  | 向下取整                                  |
+    | round()  | 就近取整（.5往大取整）  四舍五入          |
+    | max()    | 找最大数                                  |
+    | min()    | 找最小数                                  |
+    | pow(x,y) | 幂运算： x的y次方                         |
+    | abs()    | 返回一个数的绝对值                        |
+
+- 生成任意范围随机数
+
+  - 生成0-10的随机数
+
+    ```javascript
+    Math.floor(Math.random() * (10+1))
+    ```
+
+  - 生成5-10的随机数
+
+    ```javascript
+    Math.floor(Math.random() * (5+1))+5
+    ```
+
+  - 生成N-M之间的随机数
+
+    ```javascript
+    Math.floor(Math.random() * (M-N+1))+N
+    ```
+
+
+
+### 扩展
+
+#### 1. 术语解释
+
+| 术语           | 解释                                                         | 举例                                              |
+| -------------- | ------------------------------------------------------------ | ------------------------------------------------- |
+| 关键字         | 在JavaScript中有特殊意义的词汇                               | let、var、function、if、else、switch、case、break |
+| 保留字         | 在目前的JavaScript中没意义,但未来可能会具有特殊意义的词汇   | int、short、long、char                            |
+| 标识（标识符） | 变量名,函数名的另一种叫法                                   | 无                                                |
+| 表达式         | 能产生值的代码,一般配合运算符出现                           | 10+3、age>=18                                     |
+| 语句           | 一句代码也称之为一条语句,一般按用途还会分类：输出语句、声明语句、分支语句 | 无                                                |
+
+​		
+
+#### 2. 基本数据类型和引用数据类型
+
+- 简单数据类型又叫基本数据类型或者值类型,复杂类型又叫做引用类型
+  - 值类型：简单数据类型/基本数据类型,在存储时变量中存储的是值本身,因此叫做值类型
+    - string、number、boolean、undefined、null
+  - 引用类型：复杂数据类型,在存储时变量中存储的仅仅是地址（引用）,因此叫做引用数据类型
+    - 通过new关键字创建的对象（系统对象、自定义对象）,如Object、Array、Date等
+
+- 堆栈空间分配区别：
+  - 栈（操作系统）：由操作系统自动分配释放存放函数的参数值、局部变量的值等。其操作方式类似于数据结构中的栈；
+    - 值类型（简单数据类型）的数据直接存放在变量（栈空间）中。
+  - 堆（操作系统）：存储复杂类型（对象）,一般由程序员分配释放,若程序员不释放,由垃圾回收机制回收。
+    - 引用类型变量（栈空间）例存放的是地址,真正的对象实例存放在堆空间中。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 内置类型
+
+JavaScript有七种内置类型,除了对象之外,其他统称为基本类型。
+
+- 空值（null）
+- 未定义（undefined）
+- 布尔值（boolean）
+- 数字（number）
+- 字符串（string）
+- 对象（object）
+- 符号（symbol,ES6新增）
+
+我们可以使用 `typeof` 运算符来查看值的类型,它返回的是类型的**字符串值**。
+
+```js
+typeof undefined === 'undefined'; // true
+typeof true === 'boolean'; // true
+typeof 42  === 'number'; // true
+typeof '42' === 'string'; // true
+typeof {} === 'object'; // true
+typeof Symbol() === 'symbol'; // true
+```
+
+以上六种类型均有同名的字符串值与之对应。你可能注意到 null 不在此列,因为 null 类型比较特殊,typeof 对它的处理有问题：
+
+```js
+typeof null === "object"; // true
+```
+
+这是 JavaScript 的历史遗留问题,所以我们需要使用复合类型来检测 null 值的类型
+
+```js
+let a = null;
+// 因为 null 是基本类型中唯一的一个“假值”类型,typeof对它的返回值为“object”
+console.log(!a && typeof a === 'object'); // true
+```
+
+还有两种情况：
+
+```js
+typeof function foo(){} === 'function'; // true
+
+typeof [1, 2, 3] === 'object'; // true
+```
+
+function 实际上是 object 的一个“子类型”。可以把函数理解为「可调用对象」,它有一个内部属性 `[[Call]]`,该属性使其可以被调用。函数不仅是对象,还可以拥有属性,其length属性是其声明的参数的个数。
+
+array 也是 object 的一个“子类型”,数组元素按数字顺序来进行索引（而非普通对象那样通过字符串键值）,其length属性是元素的个数。
+
+
+
+## 值和类型
+
+JavaScript中的**变量是没有类型**的,但是它们持有的值有类型。因此,变量可以随时持有任何类型的值。
+
+注意：在对变量执行 typeof 操作时,得到的结果并不是该变量的类型,而是该变量持有的值的类型,因为变量无类型。
+
+
+
+### undefined 和 undeclared
+
+很多开发人员将 undefined 和 undeclared 混为一谈,但在 JavaScript 中它们是两回事。undefined是值的一种,而 undeclared 则表示变量还没有被声明过。
+
+在作用域中**声明但是还没有赋值**的变量,是 undefined。相反,还没有在作用域中声明过的变量,是 undeclared。
+
+```js
+var a;
+
+console.log(a); // undefined
+console.log(b); // ReferenceError: b is not defined
+```
+
+在我们试图访问 undeclared 变量时这样报错 `ReferenceError: b is not defined`, 容易让人误以为 `b is undefined`。这里强调一下 `undefined` 和 `is not defined` 是两回事。并且 typeof 对 undefined 和 undeclared 变量都返回 `'undefined'`。通过 typeof 的安全防范机制（阻止报错）来检查 undeclared 变量,有时是个不错的办法。
+
+### typeof Undeclared
+
+对于 undeclared（或者 `not defined`）变量,typeof 照样返回 `'undefined'`,而并没有报错,这是因为 typeof 有一个特殊的安全防范机制,那就是当你尝试获取一个未声明的变量的类型时,`typeof` 不会抛出错误,而是会返回 `'undefined'`。
+
+```js
+var a;
+
+typeof a; // 'undefined'
+typeof b; // 'undefined'
+```
+
+与 undeclared 变量不同,访问不存在的对象属性（甚至是在全局对象window上）不会产生 ReferenceError 错误。
+
+
+
+
+

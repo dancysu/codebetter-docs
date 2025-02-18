@@ -1,0 +1,15 @@
+# 绑定HTML片段
+
+```tsx
+export default function App() {
+
+  const html = `<div>123</div>`
+
+  return (
+    <>
+      <div dangerouslySetInnerHTML={{ __html: html }}></div>
+    </>
+  );
+}
+```
+

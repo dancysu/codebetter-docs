@@ -1,0 +1,75 @@
+# 安装 Sass
+
+----
+
+**步骤 1：安装 Sass**
+
+为了在您的项目中使用 sass,首先需要安装 sass。请在终端运行以下命令来添加 sass 作为开发依赖：
+
+```bash
+pnpm add -D sass
+```
+
+-----
+
+**步骤 2：创建 sass 变量**
+
+在 `common/assets/styles` 目录下新建 `variable.scss` 文件,并定义您的 sass 变量：
+
+```scss
+$primary-color: green;
+```
+
+----
+
+**步骤 3：配置构建工具**
+
+接下来,配置你的 `vite.config.ts` 文件,以支持全局 sass 变量的使用：
+
+```ts
+import { fileURLToPath, URL } from "node:url"
+import vue from "@vitejs/plugin-vue"
+import AutoImport from "unplugin-auto-import/vite"
+import Components from "unplugin-vue-components/vite"
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
+import { defineConfig } from "vite"
+
+// https://vite.dev/config/
+export default defineConfig({
+	resolve: {
+		alias: {
+			"@": fileURLToPath(new URL("./src", import.meta.url)),
+		},
+	},
+	css: { // [!code focus]// [!code ++]
+		preprocessorOptions: { // [!code focus]// [!code ++]
+			scss: { // [!code focus]// [!code ++]
+				additionalData: `@use "@/common/assets/styles/variable.scss" as *;`, // [!code focus]// [!code ++]
+			}, // [!code focus]// [!code ++]
+		}, // [!code focus]// [!code ++]
+	}, // [!code focus]// [!code ++]
+	plugins: [
+		vue(),
+		AutoImport({
+			resolvers: [ElementPlusResolver()],
+		}),
+		Components({
+			resolvers: [ElementPlusResolver()],
+		}),
+	],
+})
+```
+
+----
+
+**步骤 4：使用 sass 变量**
+
+现在,你可以在项目中轻松使用全局 sass 变量了：
+
+```scss
+.button {
+  background-color: $primary-color;
+}
+```
+
+通过这些步骤,您可以在 Vue 项目中成功安装并使用 sass,同时利用全局变量来统一管理样式。

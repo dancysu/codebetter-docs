@@ -1,0 +1,155 @@
+# 安装
+
+## 安装
+
+#### 简易的命令行入门教程:
+
+Git 全局设置:
+
+```
+git config --global user.name "苏东旭"
+git config --global user.email "14642198+su_dongxu@user.noreply.gitee.com"
+```
+
+创建 git 仓库:
+
+```
+mkdir codebetter-doc
+cd codebetter-doc
+git init 
+touch README.md
+git add README.md
+git commit -m "first commit"
+git remote add origin git@gitee.com:su_dongxu/codebetter-doc.git
+git push -u origin "master"
+```
+
+已有仓库?
+
+```
+cd existing_git_repo
+git remote add origin git@gitee.com:su_dongxu/codebetter-doc.git
+git push -u origin "master"
+```
+
+
+
+## SSH公钥设置
+
+### 生成 SSH 公钥
+
+> 在使用 SSH 协议访问仓库仓库之前,需要先配置好账户 SSH 公钥
+>
+> - [gitee](https://help.gitee.com/base/account/SSH%E5%85%AC%E9%92%A5%E8%AE%BE%E7%BD%AE)
+> - [github](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+
+（1）通过命令 `ssh-keygen` 生成 SSH Key：
+
+```bash
+ssh-keygen -t ed25519 -C "codebetter@163.com"
+```
+
+- `-t` key 类型
+- `-C` 注释
+
+**中间通过三次回车键确定**,输出如：
+
+```
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/git/.ssh/id_ed25519):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/git/.ssh/id_ed25519
+Your public key has been saved in /home/git/.ssh/id_ed25519.pub
+The key fingerprint is:
+SHA256:ohDd0OK5WG2dx4gST/j35HjvlJlGHvihyY+Msl6IC8I Gitee SSH Key
+The key's randomart image is:
++--[ED25519 256]--+
+|    .o           |
+|   .+oo          |
+|  ...O.o +       |
+|   .= * = +.     |
+|  .o +..S*. +    |
+|. ...o o..+* *   |
+|.E. o . ..+.O    |
+| . . ... o =.    |
+|    ..oo. o.o    |
++----[SHA256]-----+
+```
+
+（2）查看生成的 SSH 公钥和私钥：
+
+```bash
+ls ~/.ssh/
+```
+
+输出：
+
+```
+id_ed25519  id_ed25519.pub
+```
+
+- 私钥文件 `id_ed25519`
+- 公钥文件 `id_ed25519.pub`
+
+（3）读取公钥文件 `~/.ssh/id_ed25519.pub`：
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+输出：
+
+```
+ssh-ed25519 AAAA***5B Gitee SSH Key
+```
+
+复制终端输出的公钥。
+
+
+
+### 设置账户SSH公钥
+
+Github：头像 → settings → SSH and GPG keys
+
+Gitee：头像 → 设置 → SSH公钥
+
+
+
+### 测试SSH连接
+
+#### Github
+
+```bash
+ssh -T git@github.com
+```
+
+输出如下：
+
+```
+Hi USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+#### Gitee
+
+```bash
+ssh -T git@gitee.com
+```
+
+输出如下：
+
+```
+Hi USERNAME! You've successfully authenticated, but GITEE.COM does not provide shell access.
+```
+
+
+
+## https和ssh的区别
+
+- https
+  - 这种方式在我们把本地代码push到远程仓库的时候,需要验证用户名和密码
+
+
+- ssh
+  - 这种方式在推送的时候不需要验证用户名和密码,但是需要在 GitHub 上添加 SSH 公钥的配置
+

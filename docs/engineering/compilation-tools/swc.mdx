@@ -1,0 +1,93 @@
+# swc
+
+![SWC](https://swc.rs/logo.png)
+
+[SWC](https://swc.nodejs.cn/)  是一个高性能的 JavaScript/TypeScript 编译器和压缩器。它是用 Rust 编写的,旨在提供比现有工具更高的性能。
+
+----
+
+**步骤 1：安装依赖**
+首先,安装 SWC 的命令行工具和核心库：
+
+- `@swc/cli`: SWC 的命令行工具,用于在命令行中运行 SWC。
+- `@swc/core`: SWC 的核心库,提供编译和压缩功能。
+```bash
+pnpm add -D @swc/cli @swc/core
+```
+---
+**步骤 2：配置 SWC**
+在项目的根目录下新建一个 `.swcrc` 文件,文件内容如下：
+```json
+// https://swc.rs/docs/configuration/compilation 
+{
+ // 汇编配置
+ "jsc": {
+  "parser": {
+   "syntax": "typescript", // 指定语法为 TypeScript
+   "tsx": true, // 启用 TSX 支持,用于 React 开发
+   "decorators": false // 禁用装饰器语法
+  },
+  "target": "es5", // 设置编译目标为 ECMAScript 5
+  "transform": {
+   "react": {
+    "pragma": "React.createElement", // 指定 React.createElement 作为 JSX 转换函数
+    "pragmaFrag": "React.Fragment", // 指定 React.Fragment 作为 JSX 片段
+    "throwIfNamespace": true, // 在命名空间中使用 JSX 时抛出错误
+    "development": false, // 禁用开发模式
+    "useBuiltins": false // 禁用内置函数优化
+   }
+  }
+ },
+ // 模块配置
+ "module": {
+  "type": "commonjs" // 指定模块类型为 CommonJS
+ },
+ // 压缩配置
+ "minify": false // 禁用代码压缩
+}
+```
+----
+**步骤 3：创建测试文件**
+在 `src` 目录下分别创建以下测试文件：`test.js`、`example.ts` 及 `App.tsx`,以测试 SWC 的编译功能。
+
+```js [test.js]
+// 这个文件包含一个简单的箭头函数用于测试。
+const fn = () => {
+ console.log("test")
+}
+```
+```ts [example.ts]
+const greet = (name: string): string => {
+ return `Hello, ${name}!`
+}
+console.log(greet("World"))
+```
+```tsx [App.tsx]
+import react from "react"
+import { createRoot } from "react-dom/client"
+const App = () => {
+ return <div>Code Better</div>
+}
+createRoot(document.getElementById("root")).render(<App />)
+```
+:::
+
+---
+
+**步骤 4：添加构建命令**
+在 `package.json` 文件中添加构建脚本,以便使用 SWC 编译代码：
+
+```json
+{
+  "scripts": {
+    "build": "swc src -d lib"
+  }
+}
+```
+----
+**步骤 5：执行构建**
+最后,运行以下命令进行构建：
+```bash
+pnpm run build
+```
+这将使用 SWC 编译 `src` 目录下的代码,并将结果输出到 `lib` 目录。

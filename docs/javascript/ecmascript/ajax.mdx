@@ -1,0 +1,493 @@
+# AJAX
+
+## AJAX简介
+
+AJAX全称为 Asynchronous JavaScript And XML,就是异步的JS和XML。
+
+通过AJAX可以在浏览器中向服务器发送异步请求,最大的优势：<font color="red">无刷新获取数据</font>。
+
+AJAX不是新的编程语言,而是一种将现有的标准组合在一起使用的新方式。
+
+> **Ajax可以在页面不刷新的情况下向服务器发送请求,从而实现数据的交换。**
+
+
+
+## XML
+
+最开始Ajax进行数据交换的时候所使用的格式就是XML,服务器端给客户浏览器返回XML格式的字符串,前端js对拿到结果进行解析并把数据提取出来然后进行处理。
+
+现在进行Ajax应用时使用的是JSON格式,JSON格式相对于XML格式更加简洁,而且数据转换也更加容易,可以借助一些JSON的API,快速将字符串转成js对象,灵活度要远胜于XML。
+
+### XML简介
+
+XML可扩展标记语言
+
+XML被设计用来传输和存储数据
+
+XML和HTML类似,不同的是HTML中都是预定义标签,而XML中没有预定义标签,全部都是自定义标签,用来表示一些数据。
+
+例如：用XML表示这个数据 `name="钢铁侠"; age=30; gender="男";`
+
+```xml
+<student>
+	<name>钢铁侠</name>
+  <age>30</age>
+  <gender>男</gender>
+</student>
+```
+
+现在已经被JSON取代了
+
+```json
+{
+  "name": "钢铁侠",
+  "age": 30,
+  "gender":"男"
+} 
+```
+
+## Ajax的特点
+
+优点：
+
+- 可以无需刷新页面而与服务器端进行通信
+
+- 允许根据用户的特定行为来更新部分页面内容
+
+缺点：
+
+- 没有浏览历史,不能回退
+- 存在跨域问题（同源策略）
+- SEO不友好
+
+
+
+## HTTP简介
+
+[HTTP](https://developer.mozilla.org/zh-CN/docs/Web/HTTP)（hypertext transport protocol）协议：超文本传输协议,协议详细规定了浏览器和万维网服务器之间互相通信的规则。
+
+协议：约定、规则。
+
+HTTP主要是规范约定了请求和响应
+
+请求：浏览器向服务器发送内容,其中发送的内容叫做请求报文。
+
+响应：服务器给浏览器返回结果,其中返回的结果叫做响应报文。
+
+分为四部分：行、头、空行、体
+
+### 请求报文
+
+Request Headers请求头
+
+```js
+1.请求行
+GET /posts HTTP/1.1
+- 请求类型	 			GET、POST、...
+- URL路径				 /posts
+- HTTP协议版本		HTTP/1.1
+
+2.请求头（格式为键值对）
+- Host
+- Cookie
+- Content-type
+- User-Agent
+
+3.空行（必须有）
+4.请求体
+- get请求,请求体是空的
+- post请求,请求体可以不为空
+```
+
+
+
+### 响应报文
+
+Response Headers响应头
+
+```
+1.响应行
+HTTP/1.1 200 OK
+- HTTP协议版本		HTTP/1.1
+- 响应状态码		 	 200
+- 响应状态字符串   ok
+
+2.响应头（格式为键值对）
+- 类型	      Content-type
+- 长度		    Content-length
+- 压缩方式     Content-encoding
+
+3.空行（必须有）
+4.响应体
+- 返回的结果
+```
+
+
+
+## Ajax的使用
+
+[AJAX](https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX)
+
+::: details AJAX API
+
+```javascript
+const xhr = new XMLHttpRequest();
+```
+
+| 属性                             | 描述                 |
+| -------------------------------- | -------------------- |
+| xhr.open(method, url)            | 设置请求类型和URL    |
+| xhr.setRequestHeader(key, value) | 设置请求头           |
+| xhr.send()                       | 发送                 |
+| xhr.onreadystatechange           | 处理服务端返回的结果 |
+| xhr.readyState                   | 服务端返回结果状态   |
+| xhr.status                       | 响应行-状态码        |
+| xhr.statusText                   | 响应行-状态字符串    |
+| xhr.getAllResponseHeaders()      | 所有响应头           |
+| xhr.response                     | 响应体               |
+|                                  |                      |
+
+:::
+
+### 基本使用
+
+#### GET请求
+
+::: details 步骤
+
+1. 创建 **xhr** 对象
+2. 设置请求方法、url、参数
+3. 发送
+4. 处理服务端返回结果
+   - **on**：当...时候
+   - **readystate**：是xhr对象中的属性,表示状态
+     - 0：未初始化
+     - 1：open方法调用完毕
+     - 2：send方法调用完毕 
+     - 3：服务端返回了部分结果
+     - 4：服务端返回了所有结果
+   - **change**：改变的时候触发,总共触发4次（0-1、1-2、2-3、3-4）
+
+::: 
+
+```js
+const btn = document.getElementsByTagName("button")[0];
+btn.onclick = function () {
+  // 1.创建 xhr 对象
+  const xhr = new XMLHttpRequest();
+  // 2.设置请求类型、URL、URL参数
+  xhr.open("GET", "http://127.0.0.1:8000/server?a=100");
+  // 3.发送
+  xhr.send();
+  // 4.事件绑定 处理服务端返回的结果
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        console.log(xhr.status); // 状态码
+        console.log(xhr.statusText); // 状态字符串
+        console.log(xhr.getAllResponseHeaders()); // 所有响应头
+        console.log(xhr.response); // 响应体
+      }
+    }
+  };
+};
+```
+
+
+
+#### POST请求
+
+::: details 步骤
+
+1. 创建 **xhr** 对象
+2. 设置请求方法、url、参数
+3. 发送
+   - send方法内设置请求体
+4. 处理服务端返回结果
+
+::: 
+
+```js
+const btn = document.getElementsByTagName("button")[0];
+btn.onclick = function () {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', 'http://127.0.0.1:8000/server');
+  // 发送（含请求体）
+  xhr.send('a=100');
+  xhr.onreadystatechange = function (){
+    if(xhr.readyState === 4){
+      if(xhr.status >= 200 && xhr.status < 300){
+        console.log(xhr.response);
+      }
+    }
+  }
+}
+```
+
+### 其他设置
+
+#### 设置请求头
+
+注意：必须在open方法后设置请求头
+
+```javascript
+const xhr = new XMLHttpRequest();
+xhr.open('POST', 'http://127.0.0.1:8000/server');
+// 设置请求头
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xhr.send('a=100');
+xhr.onreadystatechange = function (){
+  if(xhr.readyState === 4){
+    if(xhr.status >= 200 && xhr.status < 300){
+      console.log(xhr.response);
+    }
+  }
+}
+```
+
+
+
+#### 设置响应体数据类型
+
+responseType
+
+```javascript
+const xhr = new XMLHttpRequest();
+// 设置响应体数据类型
+xhr.responseType = 'json';
+xhr.open("GET", "http://127.0.0.1:3001/server");
+xhr.send();
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4) {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      console.log(xhr.response); // 响应体
+    }
+  }
+};
+```
+
+
+
+#### 请求超时处理
+
+```javascript
+const xhr = new XMLHttpRequest();
+// 请求超时设置2秒
+xhr.timeout = 2000;
+// 超时回调
+xhr.ontimeout = function (){
+  alert('请求超时啦,请稍后重试！')
+}
+xhr.open("GET", "http://127.0.0.1:3001/server");
+xhr.send();
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4) {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      console.log(xhr.response); // 响应体
+    }
+  }
+};
+```
+
+#### 网络异常处理
+
+```javascript
+const xhr = new XMLHttpRequest();
+// 网络异常处理
+xhr.onerror = function (){
+  alert('您的网络似乎出了一些问题！')
+}
+xhr.open("GET", "http://127.0.0.1:3001/server");
+xhr.send();
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4) {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      console.log(xhr.response); // 响应体
+    }
+  }
+};
+```
+
+#### 取消请求
+
+`abort()`
+
+```javascript
+let xhr = null;
+const btn = document.getElementsByTagName("button");
+// 发送请求
+btn[0].onclick = function () {
+  xhr = new XMLHttpRequest();
+  xhr.open("get", "http://127.0.0.1:3001/server");
+  xhr.send();
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        console.log(xhr.response); // 响应体
+      }
+    }
+  };
+};
+// 取消请求
+btn[1].onclick = function () {
+  xhr.abort();
+};
+```
+
+
+
+### 扩展
+
+#### 解决重复发送请求问题
+
+```js
+const xhr = null;
+// 是否正在发送ajax请求
+let isSending = false;
+btn.addEventListener("click",()=>{
+  if(isSending) xhr.abort();
+  xhr = new XMLHttpRequest();
+  isSending = true;
+  xhr.open('GET', 'http://127.0.0.1:8000/server')
+  xhr.send();
+  xhr.onreadystatechange = function (){
+    if(xhr.readyState === 4){
+      isSending = false;
+    }
+  }
+})
+```
+
+#### 解决IE缓存问题
+
+IE浏览器会对ajax的请求结果做缓存,这样就会导致一个问题,下一次再发送请求时,这时走的是本地缓存,而并不是服务器返回的最新数据,这样一来对于时效性很强的场景,ajax缓存会影响结果。
+
+```js
+xhr.open('POST', 'http://127.0.0.1:8000/server?t='+Date.now());
+```
+
+
+
+## jQuery中的AJAX
+
+### $.get
+
+```js
+$("button").eq(0).click(function () {
+  $.get(
+    "http://127.0.0.1:8000/server",
+    {},
+    function (data) {
+      console.log(data);
+    },
+    "json"
+  );
+});
+```
+
+
+
+### $.post
+
+```js
+$("button").eq(1).click(function () {
+  $.post(
+    "http://127.0.0.1:8000/server",
+    { a: 100 },
+    function (data) {
+      console.log(data);
+    },
+    "json"
+  );
+});
+```
+
+
+
+### $.ajax
+
+```js
+$("button").eq(2).click(function () {
+  $.ajax({
+    url: "http://127.0.0.1:3001/server",
+    type: "post",
+    data: {
+      a: 123,
+    },
+    dataType: "json",
+    timeout: 3000,
+    headers: {
+      name: "Dancy",
+    },
+    success: function (data) {
+      console.log(data);
+    },
+    error: function () {
+      console.log("err");
+    },
+  });
+});
+```
+
+## Axios中的AJAX
+
+### get
+
+```js
+axios.get("http://127.0.0.1:8000/server", {
+  params: {
+    a: 100,
+  },
+  Headers: {
+    name: "Dancy",
+  },
+}).then(function (response) {
+    console.log(response);
+});;
+```
+
+### post
+
+```js
+axios.post(
+    "http://127.0.0.1:8000/server",
+    {
+      username: "dancy",
+      password: 123,
+    },
+    {
+      params: {
+        a: 100,
+      },
+      Headers: {
+        name: "Dancy",
+      },
+    }
+).then(function (response) {
+    console.log(response);
+});
+```
+
+### axios
+
+```js
+axios({
+  url: "http://127.0.0.1:8000/server",
+  method: "POST",
+  data: {
+    username: "dancy",
+    password: 123,
+  },
+  params: {
+    a: 100,
+  },
+  Headers: {
+    name: "Dancy",
+  },
+}).then(function (response) {
+  console.log(response);
+});
+```
+
+
+

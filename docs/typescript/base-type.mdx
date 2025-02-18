@@ -1,0 +1,90 @@
+# 基本类型
+
+:::tip TypeScript 类型推断
+
+TypeScript 具有强大的类型推断能力,可以根据变量的初始值自动推断出变量的类型。如果推断的类型是正确的,通常不需要显式声明类型。但如果 TypeScript 无法正确推断类型,或者推断出的类型不是你期望的,就需要手动添加类型声明。
+
+:::
+
+:::details 基础类型和包装类型：
+
+在 JavaScript 中,基础类型（Primitive Types）和包装类型（Wrapper Types）是两种不同的数据类型。
+
+**基础类型（Primitive Types）**
+
+小写的类型一般用于描述基础类型,基础类型没有方法和属性。
+
+- `number`：数字类型,包括整数和浮点数。
+- `string`：字符串类型,用于表示文本数据。
+- `boolean`：布尔类型,只有两个值：`true` 和 `false`。
+- `null`：表示一个空值,即没有对象被赋值。
+- `undefined`：表示一个未定义的值,即变量声明后未被赋值。
+- `symbol`：ES6 新增的类型,用于创建唯一的、不可变的数据。
+- `bigint`：用于表示大于 `2^53 - 1` 的整数。
+
+-----
+
+**包装类型（Wrapper Types）**
+
+大写的类型用来描述的是包装（实例）类型,这些是对象类型,提供了方法和属性来操作基础类型的值。
+
+- `Number`：数字类型的包装对象。
+- `String`：字符串类型的包装对象。
+- `Boolean`：布尔类型的包装对象。
+- ...
+
+当你对基础类型的值调用方法或访问属性时,JavaScript 会自动将基础类型转换为对应的包装类型,以便你可以使用对象的方法和属性。
+
+:::
+
+```ts
+export {}; // 用于防止变量污染全局命名空间
+
+// number
+let num: number = 1;
+
+// string
+let str: string = "ts";
+let message: string = `hello, ${str}`;
+
+// boolean
+let bool: boolean = true;
+
+// null
+let nul: null = null;
+
+// undefined
+let undef: undefined = undefined;
+
+// symbol
+let sy: symbol = Symbol();
+
+// bigint
+let b: bigint = BigInt(Number.MAX_SAFE_INTEGER + 1);
+```
+
+
+
+## 注意
+
+（1）非严格模式下,`undefined` 和 `null` 是所有类型的子类型。因此,你可以将它们赋值给任何类型的变量。
+
+**undefined和null最大的价值主要体现在接口类型上,表示可缺省、未定义的属性；null表示对象或者属性是空值。**
+
+```ts
+let num: number = undefined;
+```
+
+
+
+（2）void只用在函数没有返回值的情形下。
+
+```ts
+let vd: void = undefined; // 可以把undefined类型赋值给void类型,但是反过来不行
+
+// 函数没有返回值,那么函数的返回值类型就是void
+function fn(): void {
+  return undefined;
+}
+```
+

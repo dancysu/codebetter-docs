@@ -1,0 +1,23 @@
+[
+  {
+    "type": "dir",
+    "name": "ecmascript",
+    "label": "ECMAScript",
+    "collapsible": true,
+    "collapsed": false
+  },
+  {
+    "type": "dir",
+    "name": "dom",
+    "label": "DOM",
+    "collapsible": true,
+    "collapsed": true
+  },
+  {
+    "type": "dir",
+    "name": "bom",
+    "label": "BOM",
+    "collapsible": true,
+    "collapsed": true
+  }
+]

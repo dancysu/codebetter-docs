@@ -1,0 +1,78 @@
+# tsup
+[tsup](https://tsup.egoist.dev/)  是一个基于 esbuild 的快速打包工具,专为 TypeScript 项目设计。它具有高性能和简单的配置,适合用于工具和脚手架的开发。
+Tsup的特点
+- **零配置**
+  - tsup 的配置相对简单,不需要复杂的配置文件,通常可以通过命令行参数来完成大部分配置。
+- **天然支持ts**
+  - tsup 原生支持 TypeScript,可以直接处理 .ts 文件并输出对应的 JavaScript 文件。
+- **多种格式输出**
+  - 支持输出多种模块格式,如 CommonJS、ESM 等,适合不同的项目需求。
+- **快速打包**：tsup 使用 esbuild 作为其底层构建工具,因而具有非常快的构建速度。
+- **热重载**：在开发模式下,tsup 支持热重载,帮助开发者更高效地进行开发。
+- **Tree Shaking**：支持 Tree Shaking,可以在打包时去除未使用的代码,减小打包后的文件体积。
+使用场景
+- 工具库
+- 脚手架
+缺点
+- 业务构建不推荐
+- 插件生态没有 rollup 繁荣
+# 使用
+**步骤 1：初始化项目**
+在项目目录中初始化一个新的 Node.js 项目：
+```bash
+pnpm init
+```
+**步骤 2：安装依赖**
+通过 pnpm 安装 Tsup 和 TypeScript：
+```bash
+pnpm add -D tsup typescript
+```
+**步骤 3：配置 Tsup**
+在项目根目录下创建 `tsup.config.ts` 文件,用于配置 Tsup：
+```ts
+import { defineConfig } from "tsup";
+export default defineConfig([
+ {
+  entry: ["src/index.ts"],
+  format: ["cjs"],  // 输出 CommonJS 格式
+  dts: true,        // 生成类型声明文件
+  minify: true,     // 启用代码压缩
+  outDir: "dist",   // 输出目录
+ },
+ {
+  entry: ["src/index.ts"],
+  format: ["esm"],  // 输出 ES Module 格式
+  dts: true,
+  minify: true,
+  outDir: "dist",
+ },
+ {
+  entry: ["src/index.ts"],
+  format: ["iife"], // 输出 IIFE 格式
+  dts: true,
+  minify: true,
+  outDir: "dist",
+ },
+]);
+```
+**步骤 4：创建 TypeScript 文件**
+在 `src` 目录下创建一个名为 `index.ts` 的 TypeScript 文件：
+```ts
+const nickname = "dongxu"
+console.log(`hello ${nickname}`)
+```
+**步骤 5：配置构建脚本**
+在 `package.json` 文件中添加构建和开发脚本：
+```json
+{
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  }
+}
+```
+**步骤 6：运行项目**
+使用以下命令启动开发模式,Tsup 将根据配置打包项目：
+```bash
+pnpm dev
+```

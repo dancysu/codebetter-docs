@@ -1,0 +1,72 @@
+# computed
+
+ `computed()` 函数用于根据一个或多个响应式数据源计算得到一个新的响应式数据，并具有缓存功能。
+
+计算属性应该是只读的，虽然它也可以修改，但是不建议。
+
+## 只读计算属性
+
+`computed()` 接受一个 `getter` 函数，并返回一个只读的响应式 `ref` 对象，通过 `.value` 属性暴露 `getter` 函数的结果。
+
+```vue
+<template>
+  <div>
+    姓：<input type="text" v-model="familyName" /> <br />
+    名：<input type="text" v-model="firstName" /> <br />
+    全名：<span>{{ fullName }}</span>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+
+const familyName = ref('');
+const firstName = ref('');
+
+// 创建一个只读的计算属性
+const fullName = computed(() => {
+  return `${familyName.value} - ${firstName.value}`;
+});
+</script>
+```
+
+## 可读可写计算属性
+
+虽然 `computed()` 可以创建可写的计算属性，但通常不推荐这样做，因为它可能会导致数据流难以跟踪和维护。如果确实需要可写的计算属性，可以通过提供一个包含 `get` 和 `set` 函数的对象来实现。
+
+```vue
+<template>
+  <div>
+    姓：<input type="text" v-model="familyName" /> <br />
+    名：<input type="text" v-model="firstName" /> <br />
+    全名：<span>{{ fullName }}</span> <br />
+    <button @click="update">修改</button>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+
+const familyName = ref('');
+const firstName = ref('');
+
+// 创建一个可读可写的计算属性
+const fullName = computed({
+  get: () => {
+    return `${familyName.value} - ${firstName.value}`;
+  },
+  set: (val) => {
+    const parts = val.split('-');
+    familyName.value = parts[0];
+    firstName.value = parts[1];
+  }
+});
+
+function update() {
+  fullName.value = 'su-xingxing';
+}
+</script>
+```
+
+
+

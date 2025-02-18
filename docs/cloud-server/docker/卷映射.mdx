@@ -1,0 +1,45 @@
+# 卷映射
+
+在 Docker 中,卷（Volume）是一种用于持久化数据的机制。与目录挂载不同,卷是由 Docker 管理的,存储在 `/var/lib/docker/volumes/` 目录下。通过卷映射,可以将容器内的目录与 Docker 卷关联起来,从而实现数据的持久化和共享。
+
+
+
+## 创建卷
+
+```bash
+docker volume create 卷名
+```
+
+
+
+
+
+## 挂载卷
+
+卷映射通过 `-v` 参数实现,语法如下：
+
+```bash
+-v 卷名:容器内部目录
+```
+
+
+
+例如：
+
+```bash
+docker run -d --name my-nginx -v my-nginx-volume:/etc/nginx nginx
+```
+
+- 这条命令会将名为 `my-nginx-volume` 的 Docker 卷挂载到容器的 `/etc/nginx` 目录。
+- 如果 `my-nginx-volume` 卷不存在,Docker 会自动创建它。
+
+
+
+## 查看卷信息
+
+可以使用以下命令查看 Docker 卷的详细信息：
+
+```bash
+docker volume inspect 卷名
+```
+

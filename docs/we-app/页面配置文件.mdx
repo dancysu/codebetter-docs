@@ -1,0 +1,18 @@
+# 页面配置文件
+
+每一个小程序页面也可以使用同名 `.json` 文件来对本页面的窗口表现进行配置,页面中配置项会覆盖 `app.json` 的 `window` 中相同的配置项。
+
+**页面配置文件的属性和 全局配置文件中的 window 属性几乎一致**
+
+只不过这里不需要额外指定 window 字段,因此如果出现相同的配置项,页面中配置项 **会覆盖全局配置文件中相同的配置项**。
+
+| 属性                         | 描述                                          | 类型     | 默认值   |
+| :--------------------------- | :-------------------------------------------- | :------- | :------- |
+| navigationBarBackgroundColor | 导航栏背景颜色                                | HexColor | \#000000 |
+| navigationBarTextStyle       | 导航栏标题颜色,仅支持 `black` / `white`      | string   | white    |
+| navigationBarTitleText       | 导航栏标题文字内容                            | string   |          |
+| backgroundColor              | 下拉 loading 的样式,仅支持 `dark` / `light`  | string   | dark     |
+| enablePullDownRefresh        | 是否开启全局的下拉刷新                        | boolean  | false    |
+| onReachBottomDistance        | 页面上拉触底事件触发时距页面底部距离单位为 px | number   | 50       |
+
+

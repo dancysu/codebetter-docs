@@ -1,0 +1,484 @@
+# layouts
+
+## index
+
+```vue
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { useAppStore } from '@/pinia/stores/app'
+import Sidebar from './components/Sidebar/index.vue'
+import NavigationBar from './components/NavigationBar/index.vue'
+import AppMain from './components/AppMain/index.vue'
+
+const appStore = useAppStore()
+
+const hideSidebar = computed(() => {
+  return {
+    hideSidebar: !appStore.sidebar.opened
+  }
+})
+</script>
+<template>
+  <div :class="hideSidebar" class="layout-wrapper">
+    <!-- 左侧边栏 -->
+    <Sidebar class="layout-sidebar" />
+    <!-- 主容器 -->
+    <div class="layout-main">
+      <!-- 头部导航栏和标签栏 -->
+      <div class="layout-main__header">
+        <NavigationBar />
+      </div>
+      <!-- 页面主体内容 -->
+      <AppMain class="layout-main__content" />
+    </div>
+  </div>
+</template>
+<style lang="scss" scoped>
+.layout-wrapper {
+  width: 100vw;
+  height: 100vh;
+  background-color: $app-background-color;
+
+  .layout-sidebar {
+    background-color: $sidebar-background-color;
+    z-index: 1001;
+    width: $sidebar-max-width;
+    transition: width 0.35s;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+  }
+
+  .layout-main {
+    position: relative;
+    min-height: 100vh;
+    margin-left: $sidebar-max-width;
+    transition: margin-left 0.35s;
+
+    &__header {
+      position: relative;
+      z-index: 9;
+      height: $header-height;
+      background-color: $header-background-color;
+      border-bottom: 1px solid red;
+    }
+    &__content {
+      position: relative;
+      min-height: calc(100% - $header-height);
+      overflow: hidden;
+    }
+  }
+}
+
+.hideSidebar {
+  .layout-sidebar {
+    width: $sidebar-min-width;
+  }
+  .layout-main {
+    margin-left: $sidebar-min-width;
+  }
+}
+</style>
+```
+
+
+
+## Sidebar
+
+
+
+```vue [index.vue]
+<script lang="ts" setup>
+import { computed } from 'vue'
+import { useAppStore } from '@/pinia/stores/app'
+import Logo from '../Logo/index.vue'
+import Item from './Item.vue'
+import noHiddenRoutes from '@/router/routes.ts'
+
+const appStore = useAppStore()
+const isCollapse = computed(() => !appStore.sidebar.opened)
+
+const activeMenu = '/login'
+</script>
+<template>
+  <div>
+    <Logo :collapse="isCollapse" />
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-menu
+        :default-active="activeMenu"
+        :collapse="isCollapse"
+        :collapse-transition="false"
+      >
+        <Item
+          v-for="noHiddenRoute in noHiddenRoutes"
+          :key="noHiddenRoute.path"
+          :item="noHiddenRoute"
+          :base-path="noHiddenRoute.path"
+        />
+      </el-menu>
+    </el-scrollbar>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.el-scrollbar {
+  height: 100%;
+
+  :deep(.scrollbar-wrapper) {
+    // 限制水平宽度
+    overflow-x: hidden;
+  }
+
+  // 滚动条
+  :deep(.el-scrollbar__bar) {
+    &.is-horizontal {
+      // 隐藏水平滚动条
+      display: none;
+    }
+  }
+}
+
+.el-menu {
+  user-select: none;
+  border: none;
+  width: 100%;
+}
+
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title),
+:deep(.el-sub-menu .el-menu-item),
+:deep(.el-menu--horizontal .el-menu-item) {
+  &.is-active,
+  &:hover {
+    background-color: $sidebar-menu-hover-Background-color;
+  }
+}
+</style>
+```
+
+```vue [item.vue]
+<script lang="ts" setup>
+import type { RouteRecordRaw } from 'vue-router'
+import { computed } from 'vue'
+interface Props {
+  item: RouteRecordRaw
+}
+
+const props = defineProps<Props>()
+
+/** 是否始终显示根菜单 */
+const isHiddenMenu = computed(() => props.item.meta?.hidden)
+const onlyOne = computed(
+  () => !props.item.children || props.item.children.length == 1
+)
+</script>
+<template>
+  <template v-if="!isHiddenMenu">
+    <template v-if="onlyOne">
+      <router-link :to="props.item.path">
+        <el-menu-item :index="props.item.path">
+          <component :is="props.item?.meta?.elIcon" class="el-icon" />
+          <template v-if="props.item.meta?.title" #title>
+            <span class="title">{{ props.item.meta.title }}</span>
+          </template>
+        </el-menu-item>
+      </router-link>
+    </template>
+    <el-sub-menu v-else :index="props.item.path" teleported>
+      <template #title>
+        <component :is="props.item?.meta?.elIcon" class="el-icon" />
+        <span v-if="props.item.meta?.title" class="title">{{
+          props.item.meta.title
+        }}</span>
+      </template>
+      <template v-if="props.item.children">
+        <Item
+          v-for="child in props.item.children"
+          :key="child.path"
+          :item="child"
+        />
+      </template>
+    </el-sub-menu>
+  </template>
+</template>
+```
+
+:::
+
+## NavigationBar
+
+```vue
+<script lang="ts" setup>
+import { useAppStore } from '@/pinia/stores/app'
+import Hamburger from '../Hamburger/index.vue'
+import Breadcrumb from '../Breadcrumb/index.vue'
+
+const appStore = useAppStore()
+
+function toggleSidebar() {
+  appStore.toggleSidebar(false)
+}
+</script>
+<template>
+  <div class="navigation-bar">
+    <div class="navigation-bar__left">
+      <Hamburger
+        :is-active="appStore.sidebar.opened"
+        class="hamburger"
+        @toggle-click="toggleSidebar"
+      />
+      <Breadcrumb class="breadcrumb" />
+    </div>
+    <div class="navigation-bar__right"></div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.navigation-bar {
+  width: 100%;
+  height: $header-height;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &__left {
+    display: flex;
+    .hamburger {
+      margin: 0 20px;
+    }
+    .breadcrumb {
+    }
+  }
+  &__right {
+    display: flex;
+  }
+}
+</style>
+```
+
+
+
+## Logo
+
+```vue
+<script lang="ts" setup>
+import logoText2 from '@/common/assets/images/layouts/logo-text-2.png'
+import logo from '@/common/assets/images/layouts/logo.png'
+import { computed } from 'vue'
+interface Props {
+  collapse?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  collapse: true
+})
+
+const logoUrl = computed(() => (props.collapse ? logo : logoText2))
+const logoClass = computed(() =>
+  props.collapse ? 'collapse-logo' : 'expand-logo'
+)
+</script>
+<template>
+  <div class="layout-logo" :class="{ collapse: props.collapse }">
+    <transition name="layout-logo-fade">
+      <router-link to="/">
+        <img :src="logoUrl" :class="logoClass" />
+      </router-link>
+    </transition>
+  </div>
+</template>
+<style lang="scss" scoped>
+.layout-logo {
+  position: relative;
+  width: 100%;
+  height: $header-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  .collapse-logo {
+    display: none;
+  }
+  .expand-logo {
+    height: 40px;
+    vertical-align: middle;
+  }
+}
+
+.collapse {
+  .collapse-logo {
+    height: 40px;
+    display: inline-block;
+  }
+  .expand-logo {
+    display: none;
+  }
+}
+.layout-logo-fade-enter-active,
+.layout-logo-fade-leave-active {
+  transition: opacity 1.5s;
+}
+.layout-logo-fade-enter-from,
+.layout-logo-fade-leave-to {
+  opacity: 0;
+}
+</style>
+```
+
+
+
+## Hamburger
+
+```vue
+<script lang="ts" setup>
+interface Props {
+  isActive?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isActive: false
+})
+
+const emit = defineEmits<{
+  toggleClick: []
+}>()
+
+function toggleClick() {
+  emit('toggleClick')
+}
+</script>
+
+<template>
+  <div @click="toggleClick">
+    <el-icon :size="20" class="icon">
+      <Fold v-if="props.isActive" />
+      <Expand v-else />
+    </el-icon>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.icon {
+  color: black;
+}
+</style>
+```
+
+## Footer
+
+```vue
+<script lang="ts" setup>
+const VITE_APP_TITLE = import.meta.env.VITE_APP_TITLE
+</script>
+<template>
+  <footer class="layout-footer">© 2024-PRESENT {{ VITE_APP_TITLE }}</footer>
+</template>
+<style lang="scss" scoped>
+.layout-footer {
+  width: 100%;
+  height: $footer-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $footer-color;
+  background-color: $footer-background-color;
+}
+</style>
+```
+
+## Breadcrumb
+
+```vue
+<script lang="ts" setup>
+import type { RouteLocationMatched } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+// const route = useRoute()
+
+const router = useRouter()
+
+const breadcrumbs = ref<RouteLocationMatched[]>([])
+
+// function getBreadcrumb() {
+//   breadcrumbs.value = route.matched.filter(item => item.meta?.title && item.meta?.breadcrumb !== false)
+// }
+
+function handleLink(item: RouteLocationMatched) {
+  const { redirect, path } = item
+  if (redirect) return router.push(redirect as string)
+  router.push(path)
+}
+</script>
+<template>
+  <el-breadcrumb>
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.path">
+      <span
+        v-if="
+          item.redirect === 'noRedirect' || index === breadcrumbs.length - 1
+        "
+        class="no-redirect"
+      >
+        {{ item.meta.title }}
+      </span>
+      <a v-else @click.prevent="handleLink(item)">
+        {{ item.meta.title }}
+      </a>
+    </el-breadcrumb-item>
+  </el-breadcrumb>
+</template>
+```
+
+## AppMain
+
+```vue
+<script lang="ts" setup>
+import Footer from '../Footer/index.vue'
+</script>
+<template>
+  <section class="app-main">
+    <div class="app-scrollbar">
+      <!-- key 采用 route.path 和 route.fullPath 有着不同的效果,大多数时候 path 更通用 -->
+      <router-view v-slot="{ Component, route }">
+        <transition name="el-fade-in" mode="out-in">
+          <keep-alive include="">
+            <component
+              :is="Component"
+              :key="route.path"
+              class="app-container-grow"
+            />
+          </keep-alive>
+        </transition>
+      </router-view>
+      <Footer />
+    </div>
+  </section>
+</template>
+```
+
+
+
+## 全局样式
+
+```scss
+$primary-color: red;
+
+$app-background-color: #fafafa;
+
+$sidebar-background-color: #f5f5f5;
+$sidebar-max-width: 256px;
+$sidebar-min-width: 64px;
+$sidebar-text-color: '#ffffff';
+$sidebar-active-text-color: '#1890ff';
+$sidebar-menu-hover-Background-color: #fff;
+
+$header-background-color: #3f51b5;
+$header-height: 64px;
+
+$footer-height: 80px;
+$footer-color: #fff;
+$footer-background-color: #3f51b5;
+```
+

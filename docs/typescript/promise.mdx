@@ -1,0 +1,22 @@
+# Promise
+
+在 TypeScript 中,Promise 是一种用于异步计算的对象。Promise 类型表示一个异步操作的最终完成（或失败）及其结果值。
+
+Promise对象指定类型特殊 `Promise<resolve返回的类型>`
+
+```ts
+// Promise 对象,注解 resolve 返回的类型为 string
+let p: Promise<string> = new Promise((resolve, reject) => {
+  resolve('66');
+});
+```
+
+在这个例子中,p 是一个 Promise 对象,它的 resolve 方法返回一个字符串。
+
+
+
+## 注意
+
+1. 类型安全：使用 `Promise<类型>` 可以确保你的 Promise 操作是类型安全的。
+2. 错误处理：总是记得使用 `.catch() ` 或 `try-catch` （在 async 函数中）来处理可能的异步错误。
+3. 异步函数：你可以在 async 函数中使用 await 关键字来等待 Promise 的解决,这使得异步代码的编写更像同步代码。

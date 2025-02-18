@@ -1,0 +1,48 @@
+# never类型
+
+ never 类型在 TypeScript 中代表那些永不存在的值的类型,通常用于那些总是抛出错误或根本就不会有返回值的函数表达式或类型表达式。
+
+:::details   never的特性
+
+- 子类型：never 是所有类型的子类型,意味着你可以将 never 类型的值赋给任何类型。
+- 不可赋值：没有任何类型是 never 的子类型,除了 never 本身之外,因此你不能将任何值赋给 never 类型的变量, 即使 `any`也不可以赋值给`never`。
+- 类型安全性：never 类型用于那些不可能执行到终点的函数,例如那些包含无限循环或总是抛出异常的函数。
+
+:::
+
+```ts
+function whileTrue(): never {
+  // 函数无法达到执行完毕的状态
+  while (true) {}
+}
+
+function throwError(): never {
+  // 抛出错误无法执行完毕
+  throw new Error("error");
+}
+
+function toArray(val: number | string | boolean): Array<number | string> {
+  if (typeof val === "number") {
+    return val.toString().split("").map(Number);
+  }
+  if (typeof val === "string") {
+    return val.split("");
+  }
+  if (typeof val === "boolean") {
+    return val.toString().split("");
+  }
+
+  // 代码的完整性保护（never 类型只能被 never 类型来赋予值）
+  const n: never = val;
+}
+```
+
+在这个例子中,whileTrue 和 throwError 函数都被标注为返回 never 类型,因为它们永远不会正常返回。在 toArray 函数中,如果所有条件都不满足,TypeScript 会推断出 val 的类型为 never。
+
+
+
+## 注意
+
+1. 类型守卫：在使用 never 类型时,确保你的代码逻辑是正确的,因为 never 类型意味着该路径不可能被执行。
+2. 类型推断：TypeScript 的类型系统会利用 never 来帮助你确保代码的完整性和类型安全性。
+3. 与 any 的对比：即使 any 类型也不能赋值给 never 类型,这强调了 never 类型的严格性。

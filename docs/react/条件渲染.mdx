@@ -1,0 +1,35 @@
+# 条件渲染
+
+在 React 中,你可以通过使用 JavaScript 的 `if` 语句、 **逻辑与运算符（&&**）和**三元运算符（?:）**运算符来选择性地渲染 JSX。
+
+如果当前只需要控制一个元素的显示与隐藏,则使用逻辑与。
+
+如果要控制两个,则使用三元运算符。
+
+```tsx
+function Item({ name, isPacked }) {
+  if (isPacked) {
+    return <div>{name} ✅</div>;
+  }
+  return <div>{name}</div>;
+}
+
+export default function App() {
+  let flag = true;
+  let loading = true;
+  return (
+    <>
+      {/* if 语句 */}
+      <Item
+        isPacked={true}
+        name="宇航服"
+      />
+      {/* 逻辑与&& */}
+      {flag && <span>this is span</span>}
+      {/* 三元运算符 */}
+      {loading ? <span>loading...</span> : <span>this is span</span>}
+    </>
+  );
+}
+```
+

@@ -1,0 +1,379 @@
+上节课我们成功搭建了公共函数库，这节课我们来搭建公共组件库。
+
+
+前期准备
+
+使用Vue CLI来搭建项目，并在搭建过程中勾选单元测试选项。因为我们要搭建的是公共组件库，这些组件将在多个项目中被广泛使用，所以进行单元测试是必不可少的。
+
+项目搭建完成后，我们发现`node_modules`里的依赖还是采用传统的 npm 平铺方式，将所有直接依赖和间接依赖都放在了`node_modules`中。为了使用 pnpm 的依赖管理方式，我们需要删除原有的`node_modules`和`package.lock.json`文件，然后通过`pnpm i`重新安装依赖。
+
+重新安装依赖后，`serve`运行项目、`build`和`lint`都能正常工作，但`test:unit`却无法运行。原因在于`jest-environment-jsdom`这个依赖的版本问题。工作空间中安装的版本是 29.5.0，而项目需要的是 27.5.1。解决方法很简单，只需在当前组件库项目中安装 27.5.1 版本的`jest-environment-jsdom`：
+
+
+```bash
+pnpm add jest-environment-jsdom@27.5.1 -D
+```
+
+
+
+封装组件
+
+以按钮组件为例，首先在`components`目录下新建一个`Button.vue`文件，组件代码如下：
+
+
+```vue
+<template>
+  <button>
+    <slot></slot>
+  </button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "duyi-button"
+});
+</script>
+
+<style scoped>
+/* 样式代码 */
+</style>
+```
+
+
+接下来在`main.ts`中全局注册该组件，以便项目中任何组件都可以直接使用：
+
+
+```typescript
+// main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+
+const app = createApp(App);
+
+// 引入组件
+import Button from "./components/Button.vue";
+
+// 注册组件
+app.component(Button.name, Button);
+
+app.mount('#app');
+```
+
+
+
+按钮组件参数与事件
+
+模拟 Element UI 的按钮组件进行封装，该按钮有以下参数和事件：
+
+
+参数支持
+
+
+ 参数名 	 参数描述 	 参数类型 	 默认值 	
+ type 	 按钮类型（primary/success/warning/danger/info） 	 string 	 default 	
+ plain 	 是否是朴素按钮 	 boolean 	 false 	
+ round 	 是否是圆角按钮 	 boolean 	 false 	
+ circle 	 是否是圆形按钮 	 boolean 	 false 	
+ disabled 	 是否禁用按钮 	 boolean 	 false 	
+ icon 	 图标类名 	 string 	 无 	
+
+
+
+
+事件支持
+
+
+ 事件名 	 事件描述 	
+ click 	 点击事件 	
+
+
+
+
+使用插槽自定义内容
+
+凡是希望组件中内容可以灵活设置的地方，都需要用到`slot`插槽来自定义内容。所以我们使用`slot`来定义按钮上的文本内容：
+
+
+```vue
+<template>
+  <button>
+    <slot></slot>
+  </button>
+</template>
+```
+
+
+
+添加样式
+
+为按钮添加一定的样式，使用 SCSS 书写样式代码，但项目中没有`sass`和`sass-loader`的依赖，因此需要安装这两个依赖：
+
+
+```bash
+pnpm i sass sass-loader -D -w
+```
+
+
+
+实现 type 属性
+
+主要是对应样式的书写，为不同类型的按钮添加不同的样式类：
+
+
+```css
+.duyi-button-primary {
+  /* 样式代码 */
+}
+
+.duyi-button-success {
+  /* 样式代码 */
+}
+
+/* 其他类型样式 */
+```
+
+
+在组件中接收`type`属性，并为当前的 button 动态拼接样式的类名：
+
+
+```vue
+<template>
+  <button class="duyi-button" :class="[
+      `duyi-button-${type}`
+  ]">
+    <slot></slot>
+  </button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "duyi-button",
+  props: {
+    type: {
+      type: String,
+      default: "default"
+    }
+  }
+});
+</script>
+```
+
+
+
+实现其他属性
+
+
+plain 属性
+
+在组件内部接收`plain`属性，并设置到 button 上：
+
+
+```vue
+<template>
+  <button class="duyi-button" :class="[
+      `duyi-button-${type}`,
+      {
+          'is-plain': plain
+      }
+  ]">
+    <slot></slot>
+  </button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "duyi-button",
+  props: {
+    type: {
+      type: String,
+      default: "default"
+    },
+    plain: {
+      type: Boolean,
+      default: false
+    }
+  }
+});
+</script>
+```
+
+
+
+round、circle、disabled 属性
+
+做法与`plain`属性类似，在组件中接收这些属性，并动态添加对应的样式类：
+
+
+```vue
+<template>
+  <button class="duyi-button" :class="[
+      `duyi-button-${type}`,
+      {
+          'is-plain': plain,
+          'is-round': round,
+          'is-circle': circle,
+          'is-disabled': disabled,
+      }
+  ]" :disabled="disabled">
+    <slot></slot>
+  </button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "duyi-button",
+  props: {
+    type: {
+      type: String,
+      default: "default"
+    },
+    plain: {
+      type: Boolean,
+      default: false
+    },
+    round: {
+      type: Boolean,
+      default: false,
+    },
+    circle: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  }
+});
+</script>
+```
+
+
+
+图标支持
+
+首先将`fonts`目录放入`assets`目录下，并在`main.ts`中引入图标相关的样式：
+
+
+```typescript
+import "./assets/fonts/font.scss";
+```
+
+
+在组件内部接收`icon`属性，并使用`i`标签来显示图标：
+
+
+```vue
+<template>
+  <button class="duyi-button" :class="[
+      `duyi-button-${type}`,
+      {
+          'is-plain': plain,
+          'is-round': round,
+          'is-circle': circle,
+          'is-disabled': disabled,
+      }
+  ]" :disabled="disabled">
+    <i v-if="icon" :class="`duyi-icon-${icon}`"></i>
+    <span v-if="$slots.default">
+      <slot></slot>
+    </span>
+  </button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "duyi-button",
+  props: {
+    type: {
+      type: String,
+      default: "default"
+    },
+    plain: {
+      type: Boolean,
+      default: false
+    },
+    round: {
+      type: Boolean,
+      default: false,
+    },
+    circle: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    icon: {
+      type: String,
+      default: ""
+    }
+  }
+});
+</script>
+```
+
+
+
+点击事件
+
+最后，为按钮添加点击事件，触发父组件传递过来的`click`事件：
+
+
+```javascript
+methods: {
+  btnClick() {
+    this.$emit("click");
+  }
+}
+```
+
+
+
+测试组件
+
+接下来对封装的按钮组件进行测试，测试代码如下：
+
+
+```javascript
+import { mount } from "@vue/test-utils";
+import Button from "@/components/Button.vue";
+
+describe("Button.vue", () => {
+  it("renders button with default type", () => {
+    const wrapper = mount(Button);
+    expect(wrapper.classes()).toContain("duyi-button");
+    expect(wrapper.classes()).toContain("duyi-button-default");
+  });
+
+  it("renders button with correct type", () => {
+    const wrapper = mount(Button, { props: { type: "primary" } });
+    expect(wrapper.classes()).toContain("duyi-button");
+    expect(wrapper.classes()).toContain("duyi-button-primary");
+  });
+
+  it("renders button with plain style", () => {
+    const wrapper = mount(Button, { props: { plain: true } });
+    expect(wrapper.classes()).toContain("is-plain");
+  });
+
+  it("renders button with round style", () => {
+    const wrapper = mount(Button, { props: { round: true } });
+    expect(wrapper.classes()).toContain("is-round");
+  });
+
+  it("renders button with circle style", () => {
+    const wrapper = mount(Button, { props: { circle: true } });
+    expect(wrapper.classes()).toContain("is-circle");
+  });
+
+  it("renders button with disabled state", () => {
+    const wrapper = mount(Button, { props: { disabled: true } });
+    expect(wrapper.classes()).toContain("is-disabled");
+    expect(wrapper.attributes()).toHaveProperty("

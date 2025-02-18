@@ -1,0 +1,214 @@
+# 常用的 npm 命令
+
+> npm install 安装模块的时候一般是扁平化安装的，但是有时候出现嵌套的情况是因为版本不同 A 依赖 C1.0, B 依赖 C1.0, D 依赖 C2.0, 此时C 1.0就会被放到A B的node_moduels, C2.0 会被放入D模块下面的node_moduels
+
+| 命令                                     | 描述                                                         |
+| ---------------------------------------- | ------------------------------------------------------------ |
+| `npm init`                               | 初始化一个新的 npm 项目，创建 package.json 文件              |
+| `npm install`                            | 安装一个包或一组包，并且会在当前目录存放一个node_modules     |
+| `npm install <package-name>`             | 安装指定的包，并将其添加到 package.json 文件中的 `dependencies` 依赖列表中 |
+| `npm install <package-name> --save`      | 安装指定的包，并将其添加到 package.json 文件中的 `dependencies` 依赖列表中，等同于 `npm i -S xxx` 或 `npm i xxx` |
+| `npm install <package-name> --save-dev`  | 安装指定的包，并将其添加到 package.json 文件中的 `devDependencies` 开发依赖列表中，等同于 `npm i -D xxx` |
+| `npm install -g <package-name>`          | 全局安装指定的包                                             |
+| `npm update <package-name>`              | 更新指定的包                                                 |
+| `npm uninstall <package-name>`           | 卸载指定的包                                                 |
+| `npm run <script-name>`                  | 执行 package.json 文件中定义的脚本命令                       |
+| `npm search <keyword>`                   | 搜索 npm 库中包含指定关键字的包                              |
+| `npm info <package-name>`                | 查看指定包的详细信息                                         |
+| `npm list`                               | 列出当前项目中安装的所有包                                   |
+| `npm outdated`                           | 列出当前项目中需要更新的包                                   |
+| `npm audit`                              | 检查当前项目中的依赖项是否存在安全漏洞                       |
+| `npm publish`                            | 发布自己开发的包到 npm 库中                                  |
+| `npm login`                              | 登录到 npm 账户                                              |
+| `npm logout`                             | 注销当前 npm 账户                                            |
+| `npm link`                               | 将本地模块链接到全局的 `node_modules` 目录下                 |
+| **`npm config list`**                    | 用于列出所有的 npm 配置信息。执行该命令可以查看当前系统和用户级别的所有 npm 配置信息，以及当前项目的配置信息（如果在项目目录下执行该命令） |
+| `npm get registry`                       | 用于获取当前 npm 配置中的 registry 配置项的值。registry 配置项用于指定 npm 包的下载地址，如果未指定，则默认使用 npm 官方的包注册表地址：https://registry.npmjs.org/ |
+| `npm config set registry <registry-url>` | 将 registry 配置项的值修改为指定的 `<registry-url>` 地址     |
+
+
+
+#### 查看当前的npm源
+
+```bash
+# 查看 npm 源
+npm get registry
+
+# 该命令会返回npm当前设置的源地址，例如：
+https://registry.npmjs.org/
+```
+
+#### 设置npm源
+
+https://npmmirror.com/
+
+
+
+https://blog.csdn.net/kaka_buka/article/details/142379293
+
+```bash
+npm set registry <registry-url>
+
+# 例如，如果你想使用淘宝的npm源，可以执行以下命令：
+npm config set registry https://registry.npmmirror.com
+```
+
+## 常用命令
+
+```bash
+# 快速初始化一个项目
+npm init -y
+
+# 安装指定的包
+npm install xxx
+npm i xxx
+
+# 卸载指定的包
+npm uninstall xxx
+npm rm xxx
+```
+
+所有指令可以在[npm官网](https://docs.npmjs.com/cli/v11/commands)查看
+
+
+
+## 查看相关信息的指令
+
+```bash
+# 查看当前 npm cli 的详细信息，相比 npm -v 显示的信息更加丰富。
+npm version
+
+
+# 用于查找本地或者全局安装的包的根目录。若要查看全局的包目录，需要添加 -g。
+npm root
+
+
+# 可以查看某一个包的详细信息，包括包版本、依赖项、作者、描述等，便于开发者选择合适的包。
+npm info
+
+
+# 对包进行搜索，提供一个关键字，就会搜索出所有和关键字相关的包。
+npm search
+
+
+# 检查当前项目中的依赖包是否过时，以及当前可用的最新版本。
+npm outdated
+
+
+# 罗列出当前项目安装的依赖包以及依赖包下层的依赖。
+npm ls
+# 通过 --depth 0/1/2 来进行层级的调整，例如 npm ls --depth 1 就能够罗列出当前依赖以及当前依赖下一层所需的依赖。
+npm ls --depth 1
+# 罗列出全局的包。
+npm ls -g
+```
+
+
+
+
+
+## 配置相关指令
+
+```bash
+
+npm config
+npm config edit
+```
+
+
+
+## 建立软链接
+
+npm link：该命令用于针对一个包（a）创建一个快捷方式。当其他项目要用到这个包（a）时，由于有快捷方式，其他项目可以通过快捷方式快速链接到这个包，无需每次在包（a）重新发布时重新安装。
+例如，假设我们有 a 和 b 两个独立发布的包，现在 b 包中要用到 a 包里面的东西。首先针对 a 包做 link：
+
+```bash
+npm link
+```
+
+
+运行上面的命令之后，就会在全局的 node_modules 下面创建一个软链接，指向 a。回头在 b 包里面要用到 a 包的时候，直接通过 link 去进行链接：
+
+```bash
+npm link a
+```
+
+npm unlink：断开链接：当开发完成后，我们需要断开链接，可以通过 npm unlink 来断开。
+
+例如：
+
+```bash
+cd /path/to/b
+npm unlink a
+```
+
+假设现在 a 项目已经没有被任何项目所链接，那么我们就可以将其从全局 node_modules 里面删除：
+
+```bash
+cd /path/to/a
+npm unlink -g a
+```
+
+
+
+## 缓存相关的指令
+
+
+
+npm cache：当我们安装、更新或者卸载包的时候，npm 会将这些包的 tarball 文件缓存到本地磁盘上，有助于加速将来的安装过程。之后再次安装的时候，可以直接从缓存文件中获取，无需再次从远程仓库下载。
+
+- tarball 文件是一种压缩文件格式，通常用于在 Unix 和 Linux 系统中打包和分发源代码、二进制文件或其他文件。在 npm 中，tarball 文件通常用于将包的所有文件（源代码、二进制文件、文档等）打包成一个单独的文件，以便在安装或更新包时从 npm 仓库（如 registry.npmjs.org）下载。当你运行 `npm install <package>` 时，npm 会从远程仓库下载包的 tarball 文件，然后在本地解压缩和安装该包。
+
+清理缓存：在较新的版本中，不推荐直接使用 npm cache clean 清理缓存，而是推荐 npm cache verify 去验证缓存。
+
+验证缓存：npm cache verify，验证缓存的完整性，检查缓存是否已经过期、无效、损坏，即验证缓存是否有用，如果没用再进行删除。
+
+添加缓存：一般不需要手动添加缓存，因为在安装包的时候就会自动添加缓存，即 npm cache add &lt;package&gt;。
+
+查看缓存：npm cache ls 可以查看 npm 缓存的所有包。
+
+查看缓存目录：npm config get cache。
+
+## 包的更新相关的指令
+
+npm update：该指令用于更新当前项目中的依赖包。npm 会检查是否有新的版本，如果有就会进行更新。但需要注意，在更新的时候会去满足 package.json 里面的版本范围规定（^ ~）。也可以指定要更新某一个包，例如：
+
+```bash
+npm update package_name
+```
+
+
+npm audit：用于检查当前项目中的依赖，哪些依赖有漏洞。在审计的同时，可以直接进行修复，通过命令 npm audit fix。
+
+npm dedupe：该命令能够优化项目里面的依赖树的结构。例如：
+
+```bash
+a
++-- b <-- depends on c@1.0.x
+|   `-- c@1.0.3
+`-- d <-- depends on c@~1.0.9
+    `-- c@1.0.10
+```
+
+
+
+在上面的依赖树中，a 依赖 b 和 d，然而 b 和 d 都同时依赖 c，这种情况下，依赖是能够进行优化的。优化后的结构如下：
+
+```bash
+a
++-- b
++-- d
+`-- c@1.0.10
+```
+
+
+
+注意，npm dedupe 无法将所有重复的包进行消除，因为在有些时候，不同的依赖项就是需要不同版本的相同依赖，不过 npm dedupe 会尽量去消除重复的包。
+
+npm prune：用于删除没有在 package.json 文件中列出的依赖包。该命令可以帮助我们清理 node_modules，删除不再需要的依赖。
+
+## 提供帮助
+
+npm help：这是帮助指令，可以查看 npm 中提供的所有指令。
+
+npm help xxx：可以查看某个指令具体的一些信息。

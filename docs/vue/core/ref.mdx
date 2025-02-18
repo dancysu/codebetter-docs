@@ -1,0 +1,281 @@
+# ref
+
+## ref
+
+在 Vue 的组合式 API 中，`ref()` 函数是声明响应式状态的首选方法。它接受一个参数，并返回一个包含 `.value` 属性的响应式引用对象。
+
+:::details 特点
+
+- 类型兼容性：`ref()` 可以包裹任何类型的值，包括原始类型和对象。
+- 响应式转换：非原始值将通过 `reactive()`  函数转为具有深层次响应式的对象。
+- 模版使用：在模板中，`ref` 对象会自动解包，无需使用 `.value` 属性。
+- JavaScript访问：在 JavaScript 代码中，访问或修改 `ref` 包裹的值时，需要通过 `.value` 属性。
+
+:::
+
+### 创建响应式数据
+
+
+
+```vue [基本类型]
+<script lang="ts" setup>
+import { ref } from 'vue'
+
+// 声明一个响应式的基本类型状态
+const num = ref(0)
+
+/**
+ * 在 JavaScript 中，通过 .value 属性访问和修改响应式状态
+ */
+const increment = () => {
+  num.value++
+}
+</script>
+
+<template>
+  <button @click="increment">{{ num }}</button>
+</template>
+```
+
+```vue [引用类型]
+<script lang="ts" setup>
+import { ref } from 'vue'
+
+// 声明一个响应式的引用类型状态
+const obj = ref({
+  num: 0,
+})
+
+const increment = () => {
+  obj.value.num++
+}
+</script>
+
+<template>
+  <button @click="increment">{{ obj.num }}</button>
+</template>
+```
+
+:::
+
+### 获取 DOM 元素和组件实例
+
+在 Vue 中，`ref` 属性用于在模板中注册 DOM 元素或子组件的引用，以便在 JavaScript 代码中访问它们。
+
+- DOM元素：当 `ref` 用于普通DOM标签时，它将引用 DOM 节点本身。
+
+- 组件实例：当 `ref` 用于组件标签时，它将引用组件的实例对象。
+
+#### DOM元素
+
+```vue
+<script lang="ts" setup>
+import { ref, nextTick, onMounted } from 'vue'
+
+// 当变量名和标签中ref的属性值一一对应时，就可以获取该DOM元素
+const box = ref()
+
+// 使用 nextTick 确保 DOM 更新完成后执行
+nextTick(() => {
+  console.log('nextTick', box.value) // 输出: <div>我是DOM元素</div>
+  console.log('nextTick', box.value.textContent) // 输出: 我是DOM元素
+})
+
+// 使用 onMounted 确保 DOM 完全挂载后执行
+onMounted(() => console.log('onMounted', box.value))
+</script>
+
+<template>
+  <div ref="box">我是DOM元素</div>
+</template>
+```
+
+#### 组件实例
+
+在 Vue 3 中，若需要在父组件中访问子组件的属性和方法，子组件必须使用 `defineExpose` 编译器宏来显式指定哪些属性和方法需要对外公开。注意 `defineExpose` 只在 `<script setup>` 标签中有效。这样才能确保父组件通过模板引用的方式能够访问并调用子组件的这些成员。
+
+
+
+```vue [父组件]
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import ChildComponent from './ChildComponent.vue'
+
+// 定义一个响应式引用变量
+const childComponent = ref<InstanceType<typeof ChildComponent> | null>(null)
+
+// 使用 onMounted 确保组件完全挂载后执行
+onMounted(() => {
+  console.log('childComponent', childComponent.value)
+})
+
+// 定义一个 increment 方法来修改 childComponent 的 count
+const increment = () => {
+  if (childComponent.value) childComponent.value.increment()
+}
+</script>
+
+<template>
+  <ChildComponent ref="childComponent" />
+  <button @click="increment">Increment</button>
+</template>
+```
+
+```vue [自组件]
+<script lang="ts" setup>
+import { ref, defineExpose } from 'vue'
+
+const num = ref(0)
+
+const increment = () => {
+  num.value++
+}
+
+defineExpose({
+  num,
+  increment,
+})
+</script>
+
+<template>
+  <div>
+    <p>我是子组件</p>
+    <button @click="increment">{{ num }}</button>
+  </div>
+</template>
+
+<style scoped>
+div {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+</style>
+```
+
+:::
+
+
+
+## shallowRef
+
+## triggerRef
+
+## customRef
+
+## isRef
+
+`isRef` 是 Vue 3 的 Composition API 中的一个辅助函数，用于**检查给定的值是否是一个 `ref` 对象**。这对于在运行时确定一个变量是否被包装成响应式引用非常有用。
+
+```ts
+import { ref, isRef } from 'vue'
+
+// 普通变量
+const age = 28
+
+// 使用 ref 创建的响应式变量
+const num = ref(0)
+
+// 检查 age 是否为 ref 对象
+console.log(isRef(age)) // 输出：false
+
+// 检查 num 是否为 ref 对象
+console.log(isRef(num)) // 输出：true
+```
+
+
+
+## unref
+
+`unref` 是 Vue3 的 Composition API 中的一个辅助函数，如果参数是 ref，则返回内部值，否则返回参数本身。这是 `val = isRef(val) ? val.value : val` 计算的一个语法糖。
+
+对于非响应式对象，`unref` 直接返回对象本身，不会进行任何包装或解包操作。
+
+```ts
+import { ref, unref } from 'vue'
+
+// 普通变量
+const age = 28
+// 响应式变量
+const num = ref(0)
+
+console.log(unref(age)) // 输出：28
+console.log(unref(num)) // 输出：0
+```
+
+
+
+## toRef、toRefs
+
+`toRef` 和 `toRefs` 是 Vue3 的 Composition API 中的两个个辅助函数，它们用于将 `reactive` 对象的属性转换为 `ref` 对象，以保持响应性。
+
+- `toRef` 用于将单个属性转换为 `ref`。
+
+- `toRefs` 用于将整个 `reactive` 对象的所有属性转换为 `ref` 对象。
+
+
+
+```vue {8-9} [响应式丢系]
+<script lang="ts" setup>
+import { reactive } from 'vue'
+
+const state = reactive({
+  count: 0,
+})
+
+// 解构会导致响应式丢失
+let { count } = state
+
+const increment = () => {
+  count++
+  console.log(count)
+}
+</script>
+
+<template>
+  <button @click="increment">{{ count }}</button>
+</template>
+```
+
+```vue {8,9} [toRef]
+<script lang="ts" setup>
+import { reactive, toRef } from 'vue'
+
+const state = reactive({
+  count: 0,
+})
+
+// 使用 toRef 保持响应性
+const count = toRef(state, 'count')
+
+const increment = () => {
+  count.value++
+}
+</script>
+
+<template>
+  <button @click="increment">{{ count }}</button>
+</template>
+```
+
+```vue {8,9} [toRefs]
+<script lang="ts" setup>
+import { reactive, toRefs } from 'vue'
+
+const state = reactive({
+  count: 0,
+})
+
+// 使用 toRefs 转换所有属性为 ref 对象
+const { count } = toRefs(state)
+
+const increment = () => {
+  count.value++
+}
+</script>
+
+<template>
+  <button @click="increment">{{ count }}</button>
+</template>
+```
+
+:::

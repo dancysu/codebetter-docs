@@ -1,0 +1,105 @@
+# 组件
+
+## view 组件
+
+**view 是小程序提供的组件,是容器组件,类似于 div,也是一个块级元素,占据一行**
+
+```html
+<view class="container">我是容器组件</view>
+```
+
+
+
+## swiper 组件
+
+在进行网页开发的时候,实现轮播图的时候,我们通常先使用 HTML 、CSS 实现轮播图的样式结构,然后使用 JS 控制轮播图的效果,或者直接使用插件实现轮播图的功能,而在小程序中实现小程序功能则相对简单很多。
+
+在小程序中,提供了 `swiper` 和 `swiper-item` 组件实现轮播图：
+
+- `swiper`：滑块视图容器,常用来实现轮播图,其中只可放置 `swiper-item` 组件,否则会导致未定义的行为
+
+- `swiper-item`：仅可放置在 `swiper` 组件中,宽高自动设置为100%,代表 `swiper` 中的每一项
+
+
+
+我们可以使用 `swiper` 组件提供的属性,实现轮播图的订制,常见属性如下：
+
+| 属性                                                         | 说明                 | 类型                            |
+| :----------------------------------------------------------- | :------------------- | :------------------------------ |
+| indicator-dots                                               | 是否显示面板指示点   | boolean (默认 false)            |
+| indicator-color                                              | 指示点颜色           | color (默认：rgba(0, 0, 0, .3)) |
+| indicator-active-color                                       | 当前选中的指示点颜色 | color (默认：#000000)           |
+| autoplay                                                     | 是否自动切换         | boolean (默认 false)            |
+| interval                                                     | 自动切换时间间隔     | number (默认 5000)              |
+| circular                                                     | 是否采用衔接滑动     | boolean (默认 false)            |
+| [其他属性...](https://developers.weixin.qq.com/miniprogram/dev/component/swiper.html) |                      |                                 |
+
+
+
+## image 组件
+
+在这一节中,我们开始来学习小程序中的`image`组件,通过学习该组件掌握组件的学习方法和使用技巧
+
+在小程序中没有 img 标签,添加图片需要使用小程序提供的`image`组件,`image`组件的语法如下：
+
+
+
+```html
+<!-- src：图片资源地址 -->
+<!-- mode：图片裁剪、缩放的模式 -->
+<!-- lazy-load：图片懒加载,在即将进入一定范围（上下三屏）时才开始加载 -->
+<image src="/assets/tom.png" mode="heightFix" lazy-load=”{{ true }}“ />
+```
+
+
+
+## text 组件
+
+```html
+<view>
+  <text>codebetter</text>
+</view>
+```
+
+
+
+## navigator
+
+**知识点：**
+
+点击商品导航区域,需要跳转到商品列表界面,在网页开发中,如果想实现页面的跳转需要使用 a 标签,在小程序中如果想实现页面的跳转则需要使用 navigator 组件,语法如下：
+
+
+
+```html
+<!-- url：当前小程序内的跳转链接 --> 
+<navigator url="/pages/list/list">
+```
+
+
+
+在小程序中,如果需要进行跳转,需要使用 navigation 组件,常用的属性有 2 个：
+
+1. url ：当前小程序内的跳转链接
+
+2. open-type ：跳转方式
+   - navigate：保留当前页面,跳转到应用内的某个页面。但是不能跳到 tabbar 页面
+   - redirect： 关闭当前页面,跳转到应用内的某个页面。但不能跳转到 tabbar 页面
+   - switchTab：跳转到 tabBar 页面,并关闭其他所有非 tabBar 页面
+   - reLaunch：关闭所有页面,打开到应用内的某个页面
+   - navigateBack：关闭当前页面,返回上一页面或多级页面
+
+
+
+> 📌 **注意事项：**
+>
+> 1. 路径后可以带参数。参数与路径之间使用 ? 分隔,参数键与参数值用 = 相连,不同参数用 & 分隔
+>    例如：`/list?id=10&name=hua`,在 `onLoad(options)` 生命周期函数 中获取传递的参数 
+>
+> 2. 属性 `open-type="switchTab"` 时不支持传参
+
+
+
+## scroll-view
+
+可滚动视图区域,适用于需要滚动展示内的场景,它可以在小程序中实现类似于网页中的滚动条效果,用户可以通过手指滑动或者点击滚动条来滚动内容,scroll-view 组件可以设置滚动方向、滚动条样式、滚动到顶部或底部时的回调函数等属性,可以根据实际需求进行灵活配置。

@@ -1,0 +1,103 @@
+# theme主题包
+
+在构建组件库时,创建一个统一的主题包可以帮助我们管理不同的样式变量和主题配置。
+
+**步骤 1：在 `packages` 目录下新建 `theme` 目录**
+
+首先,进入 `packages` 目录,并创建一个新的 `theme` 目录
+
+```bash
+cd packages && mkdir theme
+```
+
+**步骤 2：初始化新目录**
+
+在新创建的 `theme` 目录中,初始化一个新的npm包：
+
+```bash
+pnpm init
+```
+
+**步骤 3：配置 `package.json`**
+
+在生成的 `package.json` 文件中,修改 `name` 属性,将其值设置为 `@better-ui/theme`。
+
+```json
+{
+  "name": "theme", // [!code --]
+  "name": "@better-ui/theme", // [!code ++]
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+**步骤 4：安装**
+
+在根目录下,将新创建的 `@better-ui/theme` 包添加到 `dependencies` 中：
+
+```bash
+pnpm add @better-ui/theme -w
+```
+
+
+
+## 全量引入
+
+
+
+
+
+```scss [theme/src/index.scss]
+@use "./button.scss";
+```
+
+```ts {6-7} [play/src/main.ts]
+import { createApp } from "vue";
+import App from "./App.vue";
+
+import BetterUI from "../../packages";
+
+// 全量引入
+import "@better-ui/theme/src/index.scss"
+
+const app = createApp(App);
+app.use(BetterUI);
+app.mount("#app");
+```
+
+:::
+
+
+
+## 按需引入
+
+例如在按需引入 button 组件时,会自动按需引入 button 组件所需的css样式,而不会引入其他组件的css样式。
+
+
+
+```scss [components/button/style/index.ts]
+import "@better-ui/theme/src/button.scss";
+```
+
+```ts {6-7} [play/src/main.ts]
+import { createApp } from "vue";
+import App from "./App.vue";
+
+import BetterUI from "../../packages";
+
+// 按需引入
+import "@better-ui/components/button/style/index.ts";
+
+const app = createApp(App);
+app.use(BetterUI);
+app.mount("#app");
+```
+
+:::

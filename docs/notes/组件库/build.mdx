@@ -1,0 +1,567 @@
+# 打包
+
+UI组件库的打包是指将开发完成的业务代码处理成可在生产环境中运行,并供用户在浏览器上使用的过程。
+
+在UI组件库打包的过程中,需要完成的工作如下：
+
+（1）提供浏览器端的代码包,可以是UMD或IIFE
+
+（2）提供Node.js环境的CommonJS模块和ESM模块代码包
+
+（3）提供全局引入的CSS样式,并按需加载CSS样式
+
+（4）提供source map文件
+
+（5）对UI组件库打包的代码进行压缩
+
+
+
+步骤 1：初始化 `build` 打包目录
+
+```bash
+pnpm init
+```
+
+步骤 2：rollup的基础配置
+
+安装
+
+```bash
+pnpm install -D @vitejs/plugin-vue rollup @rollup/plugin-node-resolve rollup-plugin-esbuild
+```
+
+
+
+
+
+## 配置打包路径
+
+`build/src/common.ts`
+
+```ts
+import { fileURLToPath } from "node:url";
+import { resolve, dirname } from "node:path";
+
+export const outputPkgDir = "better-ui";
+export const filePath = fileURLToPath(import.meta.url);
+console.log('filePath', filePath);
+export const dirName = dirname(filePath);
+console.log('dirName', dirName);
+export const rootDir = resolve(dirName, "..", "..");
+console.log('rootDir', rootDir);
+export const pkgRoot = resolve(rootDir, "packages");
+console.log('pkgRoot', pkgRoot);
+export const outputDir = resolve(rootDir, outputPkgDir);
+console.log('outputDir', outputDir);
+export const outputEsm = resolve(rootDir, outputPkgDir, "es");
+console.log('outputEsm', outputEsm);
+export const outputCjs = resolve(rootDir, outputPkgDir, "lib");
+console.log('outputCjs', outputCjs);
+export const outputUmd = resolve(rootDir, outputPkgDir, "dist");
+console.log('outputUmd', outputUmd);
+```
+
+
+
+## UMD
+
+UMD（Universal Module Definition）打包是一种将 JavaScript 库或模块打包成可以在不同环境中使用的通用格式的方法。
+
+UMD打包同时兼容 CommonJS、AMD和全局变量的使用方式,因此可以在项目的 `<script>` 中引入通过UMD打包后的产物,直接在浏览器中以访问全局变量的方式使用。
+
+### 输出UMD组件包
+
+
+
+```js [build/src/umdBuild.js]
+import { rollup } from "rollup";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import vue from "@vitejs/plugin-vue";
+import esbuild from "rollup-plugin-esbuild";
+import { resolve } from "node:path";
+import { pkgRoot, outputUmd } from "./common.js";
+
+// umd打包
+const export umdBuildEntry = async () => {
+  const writeBundles = await rollup({
+    // 配置打包入口文件（better-ui/packages/index.ts）
+    input: resolve(pkgRoot, "index.ts"), 
+
+    // 配置插件
+    plugins: [
+      vue(),
+      nodeResolve({
+        extensions: [".ts"],
+      }),
+      esbuild(),
+    ],
+
+    // 排除不进行打包的npm包
+    external: ["vue"],
+  });
+  writeBundles.write({
+    // 指定生成的包的格式
+    format: "umd",
+    // 生成的文件
+    file: resolve(outputUmd, "index.full.js"),
+    // 自定义包的全局变量名称,也就是打包后的产物可访问的变量名称
+    name: "BetterUI",
+    // 定义UI组件库打包后所要依赖的变量
+    globals: {
+      vue: "Vue",
+    },
+  });
+};
+
+// 执行打包
+umdBuildEntry();
+```
+
+```bash
+node ./build/src/umdBuild.js
+```
+
+:::
+
+
+
+### 测试UMD打包文件
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.15/vue.global.js"></script>
+    <script src="./better-ui/dist/index.full.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <b-button type="primary">{{message}}</b-button>
+    </div>
+    <script>
+      const { createApp, ref } = Vue;
+      const App = {
+        setup() {
+          const message = ref("浏览器引用组件库包");
+          return {
+            message,
+          };
+        },
+      };
+      const app = createApp(App);
+      app.use(BetterUI);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
+```
+
+
+
+## ESM、CJS模块化打包
+
+ESM（ECMAScript Modules）和CJS（CommonJS）是 JavaScript 中使用的不同模块。
+
+- ESM是现代浏览器和Node.js支持的标准模块
+- CJS是传统意义上在 Node.js 中使用的模块系统。
+
+```bash
+pnpm install -D fast-glob rollup-plugin-postcss
+
+node ./build/src/moduleBuild.js
+```
+
+### ESM、CJS打包输出
+
+```js
+import glob from "fast-glob";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import postcss from "rollup-plugin-postcss"
+import { rollup } from "rollup";
+import vue from "@vitejs/plugin-vue";
+import esbuild from "rollup-plugin-esbuild";
+
+import { outputPkgDir, pkgRoot, outputEsm, outputCjs } from "./common.js";
+
+const compileStyleEntry = () => {
+  const themeEntryPrefix = `@suit-ui/theme/src/`;
+  return {
+    name: "compile-style-entry",
+    resolveId(id) {
+      if (!id.startsWith(themeEntryPrefix)) return;
+      return {
+        id: id.replaceAll(themeEntryPrefix, `${outputPkgDir}/theme/src/`),
+        external: "absolute",
+      };
+    },
+  };
+};
+
+export const moduleBuildEntry = async () => {
+  const input = await glob("**/*.{js,ts,vue}", {
+    cwd: pkgRoot,
+    absolute: true,
+    onlyFiles: true,
+  });
+  const writeBundles = await rollup({
+    input,
+    plugins: [
+      compileStyleEntry(),
+      vue(),
+      nodeResolve({
+        extensions: [".ts"],
+      }),
+      esbuild(),
+      postcss({
+        pextract: true,
+      }),
+    ],
+    external: ["vue", "@vue/shared", "async-validator"],
+  });
+
+  writeBundles.write({
+    format: "esm",
+    dir: outputEsm,
+    preserveModules: true,
+    entryFileNames: "[name].mjs",
+    sourcemap: true
+  })
+  writeBundles.write({
+    format: "cjs",
+    dir: outputCjs,
+    preserveModules: true,
+    entryFileNames: "[name].cjs",
+    sourcemap: true
+  })
+};
+moduleBuildEntry()
+```
+
+
+
+### 测试模块化组件包
+
+在打包产物根目录
+
+```json
+{
+  "name": "better-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/index.cjs",
+  "module": "./es/index.mjs",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+建立全局链接
+
+```bash
+npm link
+```
+
+
+
+#### 本地测试
+
+play目录
+
+```bash
+npm link better-ui
+```
+
+全局引入
+```ts
+import { createApp } from "vue";
+import App from "./App.vue";
+
+// 全局引入
+import BetterUI from "better-ui";
+
+const app = createApp(App);
+app.use(BetterUI);
+app.mount("#app");
+```
+
+```vue
+<script setup lang="ts"></script>
+
+<template>
+  <div>
+    <b-button>默认</b-button>
+    <b-button type="primary">主要</b-button>
+    <b-button type="success">成功</b-button>
+    <b-button type="warning">警告</b-button>
+    <b-button type="error">错误</b-button>
+  </div>
+</template>
+
+<style scoped></style>
+```
+
+按需引入
+
+```vue
+<script setup lang="ts">
+import { BButton } from "better-ui";
+</script>
+
+<template>
+  <div>
+    <b-button>默认</b-button>
+    <b-button type="primary">主要</b-button>
+    <b-button type="success">成功</b-button>
+    <b-button type="warning">警告</b-button>
+    <b-button type="error">错误</b-button>
+  </div>
+</template>
+
+<style scoped></style>
+```
+
+
+
+
+
+## Gulp打包scss文件
+
+build目录
+
+```bash
+pnpm add -D gulp gulp-sass sass gulp-autoprefixer gulp-clean-css gulp-concat del @esbuild-kit/cjs-loader @esbuild-kit/cjs-loader
+```
+
+`styleBuild.js`
+
+```js
+import gulp from "gulp";
+import dartSass from "sass";
+import gulpSass from "gulp-sass";
+import autoprefixer from "gulp-autoprefixer";
+import cleanCSS from "gulp-clean-css";
+import gulpConcat from "gulp-concat";
+//删除文件或者文件夹
+import { deleteAsync } from "del";
+import { rootDir, pkgRoot, outputDir, outputUmd } from "./common.js";
+
+/**
+ * 全量打包CSS
+ */
+const buildScssFull = async () => {
+  const sass = gulpSass(dartSass);
+  await new Promise((resolve) => {
+    gulp
+      .src(`${pkgRoot}/theme/src/index.scss`) // 指定打包入口
+      .pipe(sass.sync()) // 编译
+      .pipe(autoprefixer({ cascade: false })) // 浏览器兼容
+      .pipe(cleanCSS()) // 压缩
+      .pipe(gulpConcat("index.min.css")) // 合并到指定文件
+      .pipe(gulp.dest(outputUmd)) // 输出到指定目录dist
+      .on("end", resolve); // 监听流完成
+  });
+};
+
+/**
+ * 按需加载打包CSS
+ */
+const buildScssModules = async () => {
+  const sass = gulpSass(dartSass);
+  await new Promise((resolve) => {
+    gulp
+      .src(`${rootDir}/packages/theme/src/**/*.scss`)
+      .pipe(sass.sync()) // 编译
+      .pipe(autoprefixer({ cascade: false })) // 兼容
+      .pipe(cleanCSS()) // 压缩
+      .pipe(gulp.dest(`${outputDir}/theme`))
+      .on("end", resolve); // 监听流完成
+  });
+  // 删除指定文件
+  deleteFiles();
+};
+
+/**
+ * 拷贝scss
+ */
+const cloneScss = async () => {
+  await new Promise((resolve) => {
+    gulp
+      .src(`${pkgRoot}/theme/src/**/*`)
+      .pipe(gulp.dest(`${outputDir}/theme/src`))
+      .on("end", resolve); // 监听流完成
+  });
+};
+
+/**
+ * 删除指定文件或文件夹
+ */
+const deleteFiles = async () => {
+  await deleteAsync(
+    [`${outputDir}/theme/index.css`, `${outputDir}/theme/common`],
+    { force: true }
+  );
+};
+
+export const buildStyle = async () => {
+  await Promise.all([cloneScss(), buildScssFull(), buildScssModules()]);
+};
+
+// 执行打包
+buildStyle();
+```
+
+
+
+## Gulp多任务
+
+build/src/index.js
+
+```js
+export * from "./umdBuild.js";
+export * from "./moduleBuild.js";
+export * from "./styleBuild.js";
+```
+
+build/gulpfile.js
+
+```js
+import gulp from "gulp";
+import {
+  umdBuildEntry,
+  moduleBuildEntry,
+  buildStyle,
+} from "./src/index.js";
+
+// 执行串行任务
+export default gulp.series(
+  gulp.series(
+    umdBuildEntry,
+    moduleBuildEntry,
+    buildStyle,
+  )
+);
+```
+
+build/package.json
+
+gulp装4版本,装5版本执行esbuild-kit/cjs-loader会报错
+
+```json
+{
+  "scripts": {
+    "start": "gulp --require @esbuild-kit/cjs-loader  -f gulpfile.js"
+  },
+}
+```
+
+package.json
+
+```json
+{
+  "name": "better-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm -C build start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "sass": "^1.83.0",
+    "sass-loader": "^16.0.4",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@better-ui/components": "workspace:^",
+    "@better-ui/hooks": "workspace:^",
+    "@better-ui/theme": "workspace:^",
+    "@better-ui/utils": "workspace:^"
+  }
+}
+```
+
+
+
+### 删除组件包
+
+确保打包的组件包都是最新的
+
+build/src/files.js
+
+```js
+```
+
+Build/index.js
+
+```js
+export * from "./files.js";
+export * from "./umdBuild.js";
+export * from "./moduleBuild.js";
+export * from "./styleBuild.js";
+```
+
+Build/gulpfile.js
+
+```js
+import gulp from "gulp";
+import {
+  deletePkg,
+  umdBuildEntry,
+  moduleBuildEntry,
+  buildStyle,
+} from "./src/index.js";
+
+// 执行串行任务
+export default gulp.series(
+  gulp.series(deletePkg, umdBuildEntry, moduleBuildEntry, buildStyle)
+);
+```
+
+
+
+### 生成package.json
+
+packages/packages.json
+
+```json
+{
+  "name": "better-ui",
+  "version": "1.0.0",
+  "description": "A Vue3 UI library",
+  "main": "./lib/index.cjs",
+  "module": "./es/index.mjs",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "UI 组件库",
+    "Vue3"
+  ],
+  "peerDependencies": {
+    "vue": "^3.4.0"
+  },
+  "author": {
+    "name": "dancy",
+    "email": "codebetter@163.com",
+    "url": "https://www.codebetter.cn"
+  },
+  "license": "ISC"
+}
+```
+

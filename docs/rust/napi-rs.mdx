@@ -1,0 +1,28 @@
+# napi-rs
+[napi-rs](https://napi.rs/)  这个库可以说是 Rust 前端工具链的基石,搭建了 Node.js 和 Rust 之间语言通信的桥梁。
+https://juejin.cn/post/7243413934765408315 
+步骤 1：安装 `napi-rs` 官方脚手架
+```bash
+pnpm add -g @napi-rs/cli
+```
+步骤 2：创建项目
+```bash
+napi new
+```
+```bash
+# 1 先输出项目的名字
+? Package name: (The name filed in your package.json)
+# 2 选择目录名
+? Dir name: 
+# 3 选择你想支持哪个平台,可以按 A 全选,然后按 enter
+? Choose targets you want to support
+# 4 是否启用 Github Actions
+? Enable github actions? (Y/n)
+```
+接下来 `napi-rs` 会自动帮助我们安装好项目的依赖,这样我们就完成了项目的初始化。
+步骤 3：编译项目
+在完成项目的初始化之后,我们通过以下命令来编译项目：
+```bash
+yarn build
+```
+这个命令会自动调用 `build.rs` 脚本,生成一系列编译时需要的代码,然后调用 `cargo build` 来编译 Rust 代码,最终将编译产物（`.node` 文件）放在项目根目录下。

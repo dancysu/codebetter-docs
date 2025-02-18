@@ -1,0 +1,45 @@
+# unknown
+
+unknown 是 TypeScript 3.0 引入的一种类型,它用于表示任何类型,但与 any 类型不同, unknown 类型的变量在没有进行类型检查或类型断言之前不能被直接使用。这使得 unknown 成为一种更安全的方式来处理不确定的类型,因为它强制进行类型检查。
+
+:::details unknown的特性
+
+- 类型安全：unknown 类型的变量在使用之前必须进行类型检查,这避免了类型相关的运行时错误。
+- 类型检查：与 any 类型不同,unknown 类型的变量不能直接用于操作,必须先进行类型守卫或类型断言。
+- 类型守卫：通过类型守卫（如 `typeof`、`instanceof` 或自定义类型守卫函数）,可以将 unknown 类型的变量缩小到更具体的类型。
+
+:::
+
+```ts
+let unk: unknown;
+let x = 1;
+let y = "2";
+
+if (x) {
+  unk = x;
+} else {
+  unk = y;
+}
+
+// 使用 unknown 后,TypeScript 会进行类型检测
+unk.toFixed(2); // 报错,因为 unk 可能是任何类型
+
+// any 会绕过类型检测,所以下面不会有问题提示
+let an1: any;
+an1.toFixed(2); // 没有类型检查
+
+// 通过缩小类型可以通过类型检测
+if (typeof unk === 'number') {
+  unk.toFixed(2); // 现在 TypeScript 知道 unk 是 number 类型
+}
+```
+
+
+
+## 注意
+
+1. 赋值规则：可以把任何类型的值赋给 unknown 类型的变量,但是 unknown 类型的值只能赋值给 any 或 unknown 类型的变量。
+2. 类型缩小：unknown 类型的变量可以通过类型守卫来缩小类型,从而确定具体的类型。
+
+
+

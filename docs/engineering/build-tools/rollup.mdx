@@ -1,0 +1,105 @@
+# rollup
+[Rollup](https://cn.rollupjs.org/)  是一个 JavaScript 模块打包器,可以将多个模块打包成一个文件,并支持多种输出格式。
+特点：
+- tree shaking,移出未使用代码
+- 简化配置
+- 丰富的插件生态,将功能的生态构建交给全世界的开发者,框架插件规则制定者
+使用场景
+- UI库
+- 工具库
+- 按需导入的场景
+缺点
+- 大型业务项目不适合（vite,webpack才适合）
+- 热更新方面
+- 性能方面
+## 使用
+**步骤 1：初始化项目**
+在项目目录中初始化一个新的 Node.js 项目,这将创建一个 `package.json` 文件：
+```
+pnpm init
+```
+**步骤 2：安装依赖**
+通过 pnpm 安装 TypeScript、tslib、Rollup 及其相关插件：
+- `typescript`：TypeScript 编译器。
+- `tslib`：TypeScript 的运行时库。
+- `rollup`：Rollup 核心库。
+- `@rollup/plugin-typescript`：Rollup 的 TypeScript 插件。
+- `@rollup/plugin-terser`：Rollup 的 Terser 插件,用于代码压缩。
+```bash
+pnpm install -D typescript tslib rollup @rollup/plugin-typescript @rollup/plugin-terser
+```
+**步骤 3：配置 Rollup**
+在项目根目录下创建 `rollup.config.js` 文件,用于配置 Rollup：
+```js
+// 导入 Rollup 插件
+import typescript from "@rollup/plugin-typescript"
+import terser from "@rollup/plugin-terser"
+// 导出默认配置对象
+export default {
+ // 指定入口文件
+ input: "src/index.ts",
+ // 定义输出配置
+ output: [
+  {
+   // 输出 CommonJS 格式的文件
+   file: "dist/bundle.cjs",
+   format: "cjs",
+  },
+  {
+   // 输出 ES Module 格式的文件
+   file: "dist/bundle.js",
+   format: "esm",
+  },
+ ],
+ // 配置使用的插件
+ plugins: [
+  // 使用 TypeScript 插件进行编译
+  typescript(),
+  // 使用 Terser 插件进行代码压缩
+  terser(),
+ ],
+}
+```
+**步骤 4：配置 TypeScript**
+在项目根目录下创建 `tsconfig.json` 文件,用于配置 TypeScript 编译选项：
+```json
+{
+    // 编译器选项配置
+    "compilerOptions": {
+      // 指定ECMAScript目标版本为最新版本
+      "target": "ESNext",    
+      // 指定编译后文件的输出目录
+      "outDir": "dist",
+      // 指定模块解析策略为Node.js策略
+      "moduleResolution": "node",
+      // 生成声明文件
+      "declaration": true
+    },
+    // 指定需要编译的文件
+    "include": ["src/**/*"],
+    // 指定需要排除的文件
+    "exclude": ["node_modules"]
+  }
+```
+**步骤 5：创建 TypeScript 文件**
+在 `src` 目录下创建一个名为 `index.ts` 的 TypeScript 文件,作为测试文件：
+```ts
+const name = "dongxu"
+console.log(`hello ${name}`)
+```
+**步骤 6：配置构建脚本**
+在 `package.json` 文件中添加构建和开发脚本,以便使用 Rollup 进行打包：
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "rollup -c",
+    "build": "rollup"
+  }
+}
+```
+**步骤 7：运行项目**
+使用以下命令启动开发模式,Rollup 将根据配置打包项目：
+```bash
+pnpm dev
+```

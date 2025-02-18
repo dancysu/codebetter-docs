@@ -1,0 +1,43 @@
+# 目录挂载
+
+在 Docker 中,目录挂载（Volume Mount）是一种将主机上的目录或文件与容器内部目录关联起来的方式。通过目录挂载,可以实现数据的持久化存储,或者将主机上的配置文件直接提供给容器使用。
+
+
+
+## 目录挂载
+
+目录挂载通过 `-v` 参数实现,语法如下
+
+```bash
+-v 主机目录:容器内部目录
+```
+
+
+
+例如：
+
+```bash
+docker run -d --name my-nginx -v /home/user/nginx-config:/etc/nginx nginx
+```
+
+- 这条命令会将主机上的 `/home/user/nginx-config` 目录挂载到容器的 `/etc/nginx` 目录。
+- 容器内的 `/etc/nginx` 目录会直接映射到主机的 `/home/user/nginx-config` 目录。
+
+
+
+## 查看挂载信息
+
+可以使用以下命令查看容器的挂载信息：
+
+```bash
+docker inspect 容器名/唯一ID
+```
+
+在输出结果中,找到 `Mounts` 字段,即可查看挂载的详细信息。
+
+例如：
+
+```bash
+docker inspect my-nginx
+```
+

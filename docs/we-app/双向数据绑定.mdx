@@ -1,0 +1,75 @@
+# 双向数据绑定
+
+在 WXML 中,普通属性的绑定是单向的,例如：
+
+```html
+<input value="{{ num }}" />
+```
+
+如果使用 `this.setData ` 来更新 `num` ,`num` 和输入框的中显示的值都会被更新为值。但如果用户修改了输入框里的值,却不会同时改变 `data` 中的 `num` 。
+
+
+
+## 基本类型的数据绑定
+
+如果需要在用户输入的同时也将 `data` 中的数据修改 ,需要借助简易双向绑定机制。此时可以在对应项目之前加入 `model:` 前缀即可,例如：
+
+```html
+<view>
+  <input type="text" model:value="{{val}}" />
+  <text>{{val}}</text>
+</view>
+
+Page({
+  data: {
+    val:'init data'
+  }
+})
+```
+
+
+
+## 引用类型的数据绑定
+
+通过value配合事件实现
+
+```html
+<view>
+  <input type="text" value="{{val}}" bindinput="inp" />
+  <text>{{val}}</text>
+</view>
+
+Page({
+  data: {
+    val:'init data'
+  },
+  inp(e){
+    this.setData({
+      val:e.detail.value
+    })
+  }
+})
+```
+
+- form表单提交
+
+  - 给表单组件加 `name`
+  - 给button按钮加 `form-type`
+  - 给form组件加 `bindsubmit`
+
+  ```html
+  <form bindsubmit="login" bindreset="reset">
+      <view>
+          账号：
+          <input type="text" name="username" placeholder="账号" />
+      </view>
+      <view>
+          密码：
+          <input name="pwd" type="text" password placeholder="密码" />
+      </view>
+      <button type="primary" form-type="submit">登录</button>
+      <button type="warn" form-type="reset">重置</button>
+  </form>
+  ```
+
+  

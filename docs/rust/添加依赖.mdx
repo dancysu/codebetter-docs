@@ -1,0 +1,42 @@
+# 添加依赖
+在 Rust 中,我们通常把包称作 `crates`
+**步骤 1：获取包信息**
+访问[Rust包仓库crates.io](https://crates.io/) ,在crates.io主页的搜索栏中输入您想查找的包名,例如`ferris-says`,然后按Enter键进行搜索,在搜索结果中找到 `ferris-says` 包,然后复制版本信息。
+```bash
+ferris-says = "0.3.2"
+```
+---
+**步骤 2：编辑Cargo.toml文件**
+每个Rust项目的根目录下都有一个`Cargo.toml`文件,用于管理项目的依赖项。
+打开`Cargo.toml`文件,您会看到类似于以下的内容：
+```toml
+[package]
+name = "hello-rust"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+```
+在`[dependencies]`部分,您可以添加项目所需的依赖项。例如,如果您想添加 `ferris-says` 库,可以这样写：
+```toml
+[dependencies]
+ferris-says = "0.3.2"
+```
+---
+**步骤 3：安装依赖项**
+添加依赖项后,运行以下命令来安装这些依赖项：
+```bash
+cargo build
+```
+这将下载并编译`Cargo.toml`中指定的所有依赖项。
+----
+**步骤 4：使用依赖项**
+一旦依赖项安装完成,您可以在项目的Rust代码中使用它们。例如,在 `src/main.rs` 中：
+```rust
+use ferris_says::say; // 引入了 ferris_says 库中的 say 函数
+```
+---
+**步骤 5：更新依赖项**
+您可以使用以下命令来更新项目中的所有依赖项：
+```bash
+cargo update
+```

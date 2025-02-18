@@ -1,0 +1,81 @@
+# TSC
+TSC（TypeScript Compiler） 是 TypeScript 的官方编译器,用于将 TypeScript 代码编译成 JavaScript。它通过配置文件 `tsconfig.json` 来管理编译选项和项目结构。
+TSC 的特点
+- 专注于 ts 编译
+  - TSC 专注于将 TypeScript 编译为 JavaScript,并生成类型定义文件（`.d.ts`）。
+- 强类型检查
+  - 提供静态类型检查,帮助开发者在编译时发现潜在的类型错误,提高代码的可靠性和可维护性。
+- 单文件编译
+  - 支持将单个 TypeScript 文件编译为 JavaScript 文件,适用于简单的项目和快速测试。
+  TSC 的缺点
+- 仅支持ts编译
+  - TSC 只负责将 TypeScript 编译为 JavaScript,不支持其他语言或格式的编译。
+- 无法代码拆分和模块打包
+  - TSC 不支持代码拆分和模块打包,需要结合其他工具（如 Webpack）来实现这些功能。
+- 性能问题
+  - 在大型项目中,TSC 的编译速度可能较慢,影响开发效率。
+- 配置复杂
+  - tsconfig 配置繁琐,有时需要借助 babel、postcss
+## 使用
+**步骤 1：初始化项目**
+首先,在项目目录中初始化一个新的 Node.js 项目。这将创建一个 `package.json` 文件：
+```bash
+npm init -y
+```
+**步骤 2：安装 TypeScript**
+通过 pnpm 安装 TypeScript 包,其中包含 TypeScript 编译器（TSC）：
+```bash
+pnpm install -D typescript
+```
+步骤 3：生成配置文件
+使用 `tsc --init` 命令在项目根目录下生成默认的 `tsconfig.json` 文件：
+```bash
+tsc --init
+```
+**步骤 4：配置 `tsconfig.json`**
+编辑生成的 `tsconfig.json` 文件,根据项目需求配置编译选项：
+```json
+{
+  // 编译器选项配置
+  "compilerOptions": {
+    // 指定ECMAScript目标版本为最新版本
+    "target": "ESNext",    
+    // 指定编译后文件的输出目录
+    "outDir": "dist",
+    // 生成声明文件
+    "declaration": true
+  },
+  // 指定需要编译的文件
+  "include": ["src/**/*"],
+  // 指定需要排除的文件
+  "exclude": ["node_modules"]
+}
+```
+**步骤 5：创建 TypeScript 文件**
+在 `src` 目录下创建一个名为 `index.ts` 的 TypeScript 文件,作为测试文件：
+```ts
+interface Person {
+    name: string;
+    age: number;
+}
+const person: Person = {
+    name: 'Tom',
+    age: 20
+}
+console.log(person.name);
+```
+**步骤 6：配置构建脚本**
+在 `package.json` 文件中添加构建和开发脚本,以便使用 TSC 进行编译：
+```json
+{
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc"
+  }
+}
+```
+**步骤 7：运行项目**
+使用以下命令启动开发模式,TSC 将监听 `src` 目录下的文件变化并自动编译：
+```bash
+pnpm dev
+```

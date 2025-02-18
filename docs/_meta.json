@@ -1,0 +1,156 @@
+[
+    {
+        "text": "前端",
+        "items": [
+            {
+                "text": "基础",
+                "items": [
+                    {
+                        "text": "HTML",
+                        "link": "/html/",
+                        "activeMatch": "/html/"
+                    },
+                    {
+                        "text": "CSS",
+                        "link": "/css/base/introduction",
+                        "activeMatch": "/css/"
+                    },
+                    {
+                        "text": "JavaScript",
+                        "link": "/javascript/ecmascript/",
+                        "activeMatch": "/javascript/"
+                    },
+                    {
+                        "text": "TypeScript",
+                        "link": "/typescript/",
+                        "activeMatch": "/typescript/"
+                    }
+                ]
+            },
+            {
+                "text": "web端",
+                "items": [
+                    {
+                        "text": "Vue",
+                        "link": "/vue/",
+                        "activeMatch": "/vue/"
+                    },
+                    {
+                        "text": "React",
+                        "link": "/react/",
+                        "activeMatch": "/react/"
+                    },
+                    {
+                        "text": "Nuxt",
+                        "link": "/nuxt/",
+                        "activeMatch": "/nuxt/"
+                    },
+                    {
+                        "text": "Next",
+                        "link": "/next/",
+                        "activeMatch": "/next/"
+                    }
+                ]
+            },
+            {
+                "text": "移动端",
+                "items": [
+                    {
+                        "text": "Flutter",
+                        "link": "/flutter/",
+                        "activeMatch": "/flutter/"
+                    },
+                    {
+                        "text": "React Native",
+                        "link": "/react-native/",
+                        "activeMatch": "/react-native/"
+                    }
+                ]
+            },
+            {
+                "text": "桌面端",
+                "items": [
+                    {
+                        "text": "Electron",
+                        "link": "/electron/",
+                        "activeMatch": "/electron/"
+                    }
+                ]
+            },
+            {
+                "text": "小程序",
+                "items": [
+                    {
+                        "text": "微信小程序",
+                        "link": "/we-app/",
+                        "activeMatch": "/we-app/"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "text": "服务端",
+        "items": [
+            {
+                "text": "基础",
+                "items": [
+                    {
+                        "text": "Node",
+                        "link": "/nodejs/"
+                    }
+                ]
+            },
+            {
+                "text": "框架",
+                "items": [
+                    {
+                        "text": "Express",
+                        "link": "/express/"
+                    },
+                    {
+                        "text": "Koa",
+                        "link": "/koa/"
+                    },
+                    {
+                        "text": "Nest",
+                        "link": "/nest/"
+                    }
+                ]
+            },
+            {
+                "text": "数据库",
+                "items": [
+                    {
+                        "text": "MongoDB",
+                        "link": "/mongodb/"
+                    },
+                    {
+                        "text": "MySQL",
+                        "link": "/mysql/"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "text": "工程化",
+        "link": "/engineering/git/"
+    },
+    {
+        "text": "云服务器",
+        "link": "/cloud-server/"
+    },
+    {
+        "text": "项目笔记",
+        "link": "/notes/"
+    },
+    {
+        "text": "三方库",
+        "link": "/tripartite-library/"
+    },
+    {
+        "text": "其它",
+        "link": "/others/"
+    }
+]

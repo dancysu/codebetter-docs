@@ -1,0 +1,25 @@
+# 命名空间
+
+UI组件库命名空间的作用是确保在大型应用程序中,不同部分的UI组件可以被正确识别和引用。
+
+
+
+```ts [hooks/use-namespace/index.ts]
+// 默认命名前缀
+export const defaultNamespace = "b";
+
+// 命名空间
+export const useNamespace = () => {
+  // 命名前缀就是命名空间
+  const namespace = defaultNamespace;
+  return {
+    namespace,
+  };
+};
+```
+
+```ts [hooks/index.ts]
+export * from "./use-namespace"
+```
+
+:::

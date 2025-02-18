@@ -1,0 +1,30 @@
+[
+    {
+        "type": "dir",
+        "name": "git",
+        "label": "版本管理",
+        "collapsible": true,
+        "collapsed": false
+    },
+    {
+        "type": "dir",
+        "name": "code-standards",
+        "label": "代码规范",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "compilation-tools",
+        "label": "编译工具",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "build-tools",
+        "label": "构建工具",
+        "collapsible": true,
+        "collapsed": true
+    }
+]

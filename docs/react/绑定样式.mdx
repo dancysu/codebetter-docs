@@ -1,0 +1,168 @@
+# 绑定样式
+
+在 React 中,绑定样式主要有两种方式：通过 `style` 属性绑定内联样式,以及通过 `className` 属性绑定类名。此外,还可以通过引入样式文件来应用全局或局部样式。
+
+## 绑定内联样式
+
+内联样式通过 style 属性绑定,其值必须是一个对象。对象的键是 CSS 属性名（驼峰命名法）,值是对应的 CSS 属性值。
+
+
+
+```tsx [写法1]
+// 单位可以省略
+export default function App() {
+  return (
+    <>
+      {/* 这里第一个{}代表js环境,第二个 {} 代表对象格式 */}
+      <div style={{ width: 200, height: "100px", backgroundColor: "orange" }}></div>
+    </>
+  );
+};
+```
+
+```tsx [写法2]
+const myStyle = { width: "200px", height: "100px", backgroundColor: "orange" }
+
+export default function App() {
+  return (
+    <>
+      <div style={myStyle}></div>
+    </>
+  );
+};
+```
+
+:::
+
+
+
+## 绑定类名
+
+类名通过 `className` 属性绑定,其值可以是字符串、条件表达式或数组。
+
+
+
+```tsx [使用条件表达式]
+export default function App() {
+  const isActive = true;
+
+  return (
+    <>
+      <div className={isActive ? 'active' : 'inactive'}>内容</div>
+    </>
+  );
+}
+```
+
+```tsx [使用数组]
+export default function App() {
+  const isActive = true;
+  const hasError = false;
+
+  return (
+    <>
+      <div className={['base', isActive ? 'active' : '', hasError ? 'error' : ''].join(' ')}>
+        内容
+      </div>
+    </>
+  );
+}
+```
+
+:::
+
+
+
+## 引入样式文件
+
+### 全局样式
+
+定义一个单独的 CSS 文件,文件名为 `xx.css`,然后在组件中引入该文件。
+
+
+```css [App.css]
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: orange;
+}
+```
+
+```tsx [App.tsx]
+import "./App.css";
+
+export default function App() {
+  return (
+    <>
+      <div className="box"></div>
+    </>
+  );
+};
+```
+
+:::
+
+
+### 局部样式
+
+局部样式通过模块化的方式引入,文件名为 `xx.module.css`。引入后,样式名会被自动转换为唯一的类名,避免全局样式冲突。
+
+
+
+```css {6} [App.module.css]
+.container {
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+}
+.container-title {
+  color: pink;
+}
+```
+
+```tsx {2,8-9} [App.tsx]
+import "./App.css";
+import style from "./App.module.css";
+
+export default function App() {
+  return (
+    <>
+      <div className="box"></div>
+      <div className={style.container}></div>
+      <div className={style["container-title"]}>title</div>
+    </>
+  );å
+};
+```
+
+:::
+通过脚手架最终它会编译成特殊的样式名
+
+```html
+<div class="_container_1siw5_1"></div>
+```
+
+::: tip style["container-title"] 这种能不能用驼峰写法呢？
+
+其实vite脚手架是提供了这个能力的,但需要手动配置
+
+```js {7-11} [vite.config.js]
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  css: {
+    modules: {
+      localsConvention: 'camelCase'
+    }
+  }
+})
+```
+
+:::
+
+
+
+

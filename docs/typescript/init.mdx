@@ -1,0 +1,60 @@
+# 搭建ts开发环境
+
+----
+
+**步骤 1：安装 TypeScript**
+
+你可以选择全局安装 TypeScript,这样可以在命令行中直接使用 tsc 命令。或者,你可以选择本地安装,这样 tsc 命令将作为项目的开发依赖被使用。
+
+- 全局安装
+
+```bash
+# 全局安装,安装的包可以在命令行中作为全局命令使用。
+pnpm install typescript -g
+
+# 查看版本确认安装成功
+tsc --version
+```
+
+- 本地安装
+
+```bash
+pnpm add -D typescript
+
+# 查看版本确认安装成功
+npx tsc --version
+```
+
+----
+
+**步骤 2：初始化 TypeScript 项目**
+
+使用以下命令初始化 TypeScript 配置文件 tsconfig.json：
+
+```bash
+tsc -init
+```
+
+这将创建一个默认的   tsconfig.json   文件,你可以根据项目需求进行配置。
+
+----
+
+**步骤 3：编译 TypeScript 文件**
+
+你可以使用以下命令编译当前项目文件夹中的 .ts 文件到指定目录下：
+
+```shell
+tsc -p tsconfig.json
+```
+
+-----
+
+**步骤 4：开启监听服务**
+
+如果你希望 TypeScript 编译器在文件变更时自动重新编译,可以使用 `--watch`选项：
+
+```shell
+tsc -p tsconfig.json --watch
+```
+
+通过这些步骤,你可以成功搭建一个 TypeScript 开发环境,并开始编译 TypeScript 代码。

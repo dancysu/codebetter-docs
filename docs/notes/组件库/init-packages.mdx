@@ -1,0 +1,124 @@
+# 组件库初始化
+
+我们将UI组件库的所有组件和相关业务逻辑放在 `packages` 目录下,包括 `components`、`utils` 和 `hooks` 等子包,每个子包都是一个独立的 `npm` 包。以下是创建及安装 `components` 子包的步骤,同样的方法也适用于 `utils` 和 `hooks`。
+
+## （1）创建 components 子包
+
+**步骤 1：导航到 `packages` 目录**
+
+```bash
+cd packages
+```
+
+**步骤 2：创建 `components` 目录**
+
+```bash
+mkdir components
+
+```
+
+**步骤 3：进入 `components` 目录**
+
+```bash
+cd components
+```
+
+**步骤 4：初始化 `npm` 包**
+
+```bash
+pnpm init
+```
+
+**步骤 5：配置 `package.json` 文件**
+
+在 `package.json` 中,将包名从 `components` 更改为 `@better-ui/components`。
+
+```json
+{
+  "name": "components", // [!code --]
+  "name": "@better-ui/components", // [!code ++]
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+
+
+## （2）在根目录安装 components 子包
+
+为了确保项目中的子包可以相互引用和使用,我们需要在根目录下安装 `components` 子包。以下是安装步骤和可能遇到的问题及其解决方案：
+
+**步骤 1：安装 `components` 子包**
+
+使用 `-w` 参数确保 `pnpm` 在工作区模式下安装,允许子包之间的本地引用。
+
+```
+pnpm install @better-ui/components -w
+```
+
+
+
+:::details 可能遇到的错误
+
+如果在安装子包时遇到以下错误：
+
+```
+ERR_PNPM_FETCH_404  GET https://registry.npmmirror.com/@better-ui/components: Not Found - 404
+
+This error happened while installing a direct dependency of /xx/better-ui
+
+@better-ui/components is not in the npm registry, or you have no permission to fetch it.
+```
+
+这表明 `@better-ui/components` 包在 `npm` 注册表中未找到,或者您没有权限获取它。这通常是因为包尚未发布到 `npm` 注册表,或者配置有误。
+
+**解决方案**
+
+如果您使用的是 `pnpm` 版本 9 或以上,在处理项目依赖时,为了确保能够优先在本地工作区链接包,您需要在项目的根目录下的 `.npmrc` 文件中添加以下配置：
+
+```
+link-workspace-packages = true
+```
+
+此设置指示 `pnpm` 在工作区中查找并链接包,而不是默认地从远程 `npm` 注册表获取。
+
+:::
+
+**步骤 2：查看安装结果**
+
+安装完成后,检查根目录下的 `package.json` 文件,确保 `@better-ui/components` 已正确添加到 `dependencies` 中。
+
+```json {15-17}
+{
+  "name": "better-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@better-ui/components": "workspace:^"
+  }
+}
+```
+
+`"@better-ui/components": "workspace:^"` 这一行,它表明 `@better-ui/components` 包已被设置为工作区依赖,这意味着它将从本地工作区中链接,而不是从远程npm仓库下载。
+
+
+
+
+

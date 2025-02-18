@@ -1,0 +1,99 @@
+# 边框按钮
+
+这里以 `primary` 按钮为例
+
+
+
+```scss {2-9,14-16} [theme/src/button.scss]
+.suit-button {
+    &.is-border {
+        &, &hover {
+            background-color: transparent;
+        }
+    }
+    &.is-dashed {
+        border-style: dashed;
+    }
+}
+
+// 主要按钮
+.suit-button--primary {
+    &.is-border {
+        color: #3069ff
+    }
+}
+```
+
+```vue {29-36,49-50} [components/button/src/index.vue]
+<script lang="ts" setup>
+import { useNamespace } from "@suit-ui/hooks";
+defineOptions({
+  name: "SuitButton",
+});
+const ns = useNamespace("button");
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default", // 默认值
+  },
+  round: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  text: {
+    type: Boolean,
+    default: false,
+  },
+  link: {
+    type: Boolean,
+    default: false,
+  },
+  border: {
+    type: Boolean,
+    default: false,
+  },
+  dashed: {
+    type: Boolean,
+    default: false,
+  },
+});
+</script>
+
+<template>
+  <button
+    :class="[
+      ns.b(),
+      ns.m(type),
+      ns.is('round', round),
+      ns.is('disabled', disabled),
+      ns.is('text', text),
+      ns.is('link', link),
+      ns.is('border', border),
+      ns.is('dashed', dashed),
+    ]"
+  >
+    <span>
+      <slot v-if="$slots.default"></slot>
+    </span>
+  </button>
+</template>
+```
+
+```vue {4} [play/src/App.vue]
+<template>
+  <div>
+    <suit-button>默认</suit-button>
+    <suit-button type="primary" border dashed>主要</suit-button>
+    <suit-button type="success" disabled>成功</suit-button>
+    <suit-button type="warning" link>警告</suit-button>
+    <suit-button type="error" text>错误</suit-button>
+  </div>
+</template>
+```
+
+:::

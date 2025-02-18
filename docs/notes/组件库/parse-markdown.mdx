@@ -1,0 +1,140 @@
+# 解析 Markdown
+
+Vitepress自定义主题的入口是 `.vitepress/theme` 目录的 `index` 文件。
+
+## 主题入口
+
+`docs/.vitepress/theme/index.ts`
+
+```ts
+import type { Theme } from "vitepress";
+import DefaultTheme from "vitepress/theme";
+import "./style.css";
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app, router, siteData }) {
+    // ...
+  },
+} satisfies Theme;
+```
+
+
+
+## 注册全局组件
+
+
+
+`docs/.vitepress/components/demo/index.vue`
+
+```vue
+<template>
+    注册全局组件
+</template>
+```
+
+`docs/.vitepress/themt/index.ts`
+
+```ts
+import type { Theme } from "vitepress";
+import DefaultTheme from "vitepress/theme";
+import Demo from "../components/demo/index.vue";
+import UI from "../../../packages";
+import "../../../packages/theme/src/index.scss";
+import "./style.css";
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app, router, siteData }) {
+    app.component("Demo", Demo);
+    app.use(UI);
+  },
+} satisfies Theme;
+```
+
+
+
+## markdown-it-container
+
+`markdown-it-container` 是 markdown-it 的一个插件,支持用户在 Markdown 中创建自定义容器,这些容器用于封装具有特定类的内容块。
+
+**步骤 1：安装插件**
+
+```bash
+pnpm add markdown-it-container
+```
+
+**步骤 2：配置 VitePress**
+
+在 `docs/.vitepress/config.mts` 文件中,您配置了 VitePress 使用 `markdown-it-container` 插件,并定义了一个名为 `demo` 的容器。
+
+```ts
+import { defineConfig } from "vitepress";
+import MdContainer from "markdown-it-container"; // [!code ++]
+export default defineConfig({
+  markdown: { // [!code ++]
+    config: (md) => { // [!code ++]
+      md.use(MdContainer, "demo", { // [!code ++]
+        render(tokens: string, idx: string) { // [!code ++]
+          if (tokens[idx].nesting === 1) { // [!code ++]
+            return `<Demo>`; // [!code ++]
+          } else { // [!code ++]
+            return `</Demo>`; // [!code ++]
+          } // [!code ++]
+        }, // [!code ++]
+      }); // [!code ++]
+    }, // [!code ++]
+  }, // [!code ++]
+});
+```
+
+步骤 3：使用自定义容器
+
+`docs/components/button.md`
+
+```md
+# Button按钮
+## 基础按钮
+::: demo
+```
+
+在 Markdown 文件中,您可以使用 `::: demo` 语法来创建一个自定义容器,其中的内容将被包裹在 `Demo` 组件中。
+
+## tokens容器
+
+`docs/components/button.md`
+
+````md
+# Button按钮
+## 基础按钮
+::: demo 按钮的 `type` 分别为 `default`、`primary`、`success`、`warning` 和 `error`
+```html
+button/basis
+```
+:::
+````
+
+
+
+```ts
+import { defineConfig } from "vitepress";
+import MdContainer from "markdown-it-container";
+export default defineConfig({
+  markdown: {
+    config: (md) => {
+      md.use(MdContainer, "demo", {
+        render(tokens: string, idx: string) {
+          console.log('终端输出-tokens', tokens);
+          console.log('终端输出-自定义容器的索引', idx);
+          if (tokens[idx].nesting === 1) {
+            return `<Demo>`;
+          } else {
+            return `</Demo>`;
+          }
+        },
+      });
+    },
+  },
+});
+```
+

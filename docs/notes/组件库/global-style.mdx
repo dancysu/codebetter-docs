@@ -1,0 +1,521 @@
+# Sass制定组件库全局变量
+
+## deep-merge定义主题色
+
+`packages/theme/src/common/var.scss`
+
+```scss
+/** map是sass内置的方法,使用前需要先引入 */
+@use "sass:map";
+
+/** 定义colors变量存储主题色,初始化默认值为空,并设置属性 !default */
+$colors: () !default;
+
+// 使用sass合并对象方法 map.deep-merge,将两个值合并再重新赋值给$colors
+$colors: map.deep-merge(
+    (
+        'white': #ffffff,                // 白色
+        'black': #000000,                // 黑色
+        'primary': ( 'base': #3069ff ),  // 主要
+        'success': ( 'base': #14cd70 ),  // 成功
+        'warning': ( 'base': #ffa81a ),  // 警告
+        'error': ( 'base': #ff4a5b ),   // 错误
+    ),
+    $colors
+);
+
+// 色调
+// 使用sass的map.get对象设置主题色
+$color-white: map.get($colors, 'white') !default;
+$color-black: map.get($colors, 'black') !default;
+$color-primary: map.get($colors, 'primary', 'base') !default;
+$color-success: map.get($colors, 'success', 'base') !default;
+$color-warning: map.get($colors, 'warning', 'base') !default;
+$color-error: map.get($colors, 'error', 'base') !default;
+```
+
+
+
+## mix生成主题色层次
+
+### 1 定义@mixin方法
+
+`packages/theme/src/common/var.scss`
+
+```scss
+// type
+$types: primary, success, warning, error;
+
+/** 
+*   mixin 设置颜色层次 
+*   $type 类型：primary, success, warning, error
+*   $number 百分比计算值
+*   $mode 标识
+*   $mix-color 混合种颜色
+*/
+@mixin set-color-level($type, $number, $mode: 'light', $mix-color) {
+    $colors: map.deep-merge(
+        (
+            $type: (
+                '#{$mode}-#{$number}': mix(
+                    $mix-color, 
+                    map.get($colors, $type, 'base'), 
+                    $number * 10
+                ),
+            ),
+        ),
+        $colors
+    ) !global;
+}
+```
+
+### 2 each、for：循环生成层次色调
+
+`packages/theme/src/common/var.scss`
+
+```scss
+// 生成层次颜色
+// 使用 @each 方法循环 types
+@each $type in $types {
+    // 在@each每一次循环中再使用@for循环9次
+    @for $i from 1 through 9 {
+      	// 自动生成不同主题色调的层次颜色
+        @include set-color-level($type, $i, 'light', $color-white);
+    }
+}
+```
+
+
+
+## 定义中性色及其它元素
+
+`packages/theme/src/common/var.scss`
+
+```scss
+/** 中性色 */
+$neutral-color: () !default;
+$neutral-color: map.deep-merge(
+    (
+        'light-1': #212226,
+        'light-2': #4d5059,
+        'light-3': #7c808c,
+        'light-4': #abb1bf,
+        'light-5': #c9cdd9,
+        'light-6': #e2e6f1,
+        'light-7': #ebeef5,
+        'light-8': #f5f6fa,
+        'light-9': #fafbff,
+    ),
+    $neutral-color
+);
+
+/** 文字颜色 */
+$text-color: () !default;
+$text-color: map.deep-merge(
+    (
+        'primary': #4d5059,      // 文字主色
+        'secondary': #7c808c,    // 文字辅色
+        'disabled': #abb1bf,     // 文字禁用
+        'placeholder': #c9cdd9,  // 文字占位
+        'light-8': #f5f6fa,      // 文字占位
+        'light-9': #fafbff,      // 文字占位
+    ),
+    $text-color
+);
+
+
+/** 文字尺寸 */
+$font-size: () !default;
+$font-size: map.deep-merge(
+    (
+        'small': 12px,      // 小的
+        'default': 14px,    // 默认的
+        'large': 16px,      // 大的
+    ),
+    $font-size
+);
+
+/** 边框颜色 */
+$border-color: () !default;
+$border-color: map.deep-merge(
+    (
+        'default': #e2e6f1,      // 边框主色
+        'disabled': #ebeef5,     // 边框禁用
+        'hover': #C9CDD9,        // 鼠标悬停
+        'light-8': #f5f6fa,      // 边框
+    ),
+    $border-color
+);
+
+/** 组件尺寸 */
+$component-size: () !default;
+$component-size: map.deep-merge(
+    (
+        'small': 24px,      // 小的
+        'default': 32px,    // 默认的
+        'large': 40px,      // 大的
+    ),
+    $component-size
+);
+```
+
+
+
+## :root伪类选择器
+
+`packages/theme/src/index.scss`
+
+```scss
+@use "./initRoot.scss";
+```
+
+
+
+`packages/theme/src/initRoot.scss`
+
+```scss
+@use "./common/var.scss" as *;
+@use "./common/mixins.scss" as *;
+:root {
+    --a-transition: .3s;
+    // 初始化
+    @include set-global-var();
+    // 主色、辅助色
+    @include set-color();
+    // 层次色
+    @include set-color-light();
+}
+@font-face {
+    font-family: 'Aileron';
+    src: url("./Aileron.otf");
+}
+body { font-family: 'Aileron'; }
+```
+
+
+
+`packages/theme/src/button.scss`
+
+```scss
+```
+
+
+
+## 生成:root变量
+
+
+
+### 定义前缀、块、修改器变量
+
+`packages/theme/src/common/config.scss`
+
+```scss
+$namespace: 'a' !default;               // 前缀
+$connect: '-' !default;                 // 块、子级
+$element-connect: '__' !default;        // 元素
+$modifier-connect: '--' !default;       // 修改器
+$modifier-value-connect: '_' !default;  // 修改器的值
+$state-prefix: 'is-' !default;          // 状态前缀,如禁用、圆角、加载等
+```
+
+### :root变量名称的生成规则
+
+`packages/theme/src/common/function.scss`
+
+```scss
+@use "config.scss" as *;
+
+/** 组合变量名称 */
+@function createVarName($list) {
+    $name: '--' + $namespace;       // --拼接前缀
+    @each $item in $list {          // each循环
+      @if $item != '' {             // 判断不为空时执行
+        $name: $name + '-' + $item; // 开始拼接
+      }
+    }
+    @return $name;                  // 返回结果
+}
+```
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+@use "sass:map";
+@forward "function";
+@forward "var";
+@use "function" as *;
+@use "var.scss" as *;
+@use "config.scss" as *;
+
+/** 主色、辅助色 **/
+@mixin set-color() {
+  @each $type in $types {
+    $color: map.get($colors, $type, "base"); // 获取颜色值
+    #{createVarName(('color', $type))}: #{$color}; // 产生新的变量名称
+  }
+}
+```
+
+
+
+### 生成层次色
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+@mixin set-color-light() {
+  @each $type in $types {
+    @for $i from 1 through 9 {
+        $color: map.get($colors, $type, "light-" + $i);
+        #{createVarName(('color', $type, 'light', $i))}: #{$color};
+    }
+  }
+}
+```
+
+
+
+### 获取:root变量名称
+
+`packages/theme/src/common/function.scss`
+
+```scss
+/** 获取变量名称 */
+@function getVarName($args...) {
+  @return createVarName(($args));
+}
+```
+
+
+
+## UI组件库全局规范
+
+`packages/theme/src/common/var.scss`
+
+```scss
+/** 全局配置 */
+$global: (
+    'neutral-color': $neutral-color,           // 文字颜色
+    'text-color': $text-color,           // 文字颜色
+    'font-size': $font-size,             // 文字尺寸
+    'border-color': $border-color,       // 边框颜色
+    'component-size': $component-size,   // 组件尺寸
+    'color': $color,                     // 颜色
+    'component-round': $component-round, // 圆角
+    'padding': $padding,
+    'checkbox-size': $checkbox-size,
+    'checkbox-round': $checkbox-round,
+    'checkbox-icon-size': $checkbox-icon-size,
+    'checkbox-indeterminate-size': $checkbox-indeterminate-size,
+    'checkbox-indeterminate-round': $checkbox-indeterminate-round,
+    'radio-size': $radio-size,
+    'radio-icon-size': $radio-icon-size,
+    'gap': $gap
+);
+```
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+@mixin set-global-var(){
+  @debug 11;
+  @each $key, $data in $global {
+    @if $data { // 判断是否存在数据
+      @each $type, $value in $data {
+        #{createVarName(($key, $type))}: #{$value};
+      }
+    }
+  }
+}
+```
+
+
+
+## UI组件库应用规范
+
+### 私有变量
+
+`packages/theme/src/common/componentVar.scss`
+
+```scss
+@use "function" as *;
+// 按钮组件配置
+@function buttonVar($type: ''){
+  $button: (
+    // 默认
+    'border-color': (
+      'default': getVarName('border-color', 'default'),
+      'type': getVarName('color', $type),
+    ),
+    'text-color': (
+      'default': getVarName('text-color', 'primary'),
+      'type': getVarName('color', 'white'),
+    ),
+    'bg-color': (
+      'default': getVarName('color', 'white'),
+      'type': getVarName('color', $type)
+    ),
+    'is-link-color': (
+      'default': getVarName('text-color', 'primary'),
+      'type': getVarName('color', $type),
+    ),
+    'is-text-color': (
+      'default': getVarName('text-color', 'primary'),
+      'type': getVarName('color', $type),
+    ),
+    'is-text-bg-color': (
+      'default': getVarName('color', 'white'),
+      'type': getVarName('color', 'white'),
+    ),
+    // 鼠标悬停
+    'hover-text-color': (
+      'default': getVarName('color', 'primary'),
+      'type': getVarName('color', 'white'),
+    ),
+    'hover-bg-color': (
+      'default': getVarName('color', 'primary', 'light-9'),
+      'type': getVarName('color', $type, 'light-3')
+    ),
+    'hover-border-color': (
+      'default': getVarName('color', 'primary', 'light-7'),
+      'type': getVarName('color', $type, 'light-3')
+    ),
+    'hover-is-link-color': (
+      'default': getVarName('text-color', 'secondary'),
+      'type': getVarName('color', $type, 'light-4')
+    ),
+    'hover-is-text-color': (
+      'default': getVarName('text-color', 'primary'),
+      'type': getVarName('color', $type),
+    ),
+    'hover-is-text-bg-color': (
+      'default': getVarName('text-color', 'light-8'),
+      'type': getVarName('color', $type, 'light-9')
+    ),
+    // 禁用
+    'disabled-text-color': (
+      'default': getVarName('text-color', 'disabled'),
+      'type': getVarName('color', 'white')
+    ),
+    'disabled-bg-color': (
+      'default': getVarName('color', 'disabled-bg'),
+      'type': getVarName('color', $type, 'light-5')
+    ),
+    'disabled-border-color': (
+      'default': getVarName('border-color', 'disabled'),
+      'type': getVarName('color', $type, 'light-5')
+    ),
+    'disabled-is-link-color': (
+      'default': getVarName('text-color', 'disabled'),
+      'type': getVarName('color', $type, 'light-5')
+    ),
+    'disabled-is-text-color': (
+      'default': getVarName('text-color', 'disabled'),
+      'type': getVarName('color', $type, 'light-5'),
+    ),
+    'disabled-is-text-bg-color': (
+      'default': getVarName('color', 'white'),
+      'type': getVarName('color', 'white')
+    ),
+    'size': (
+      'default': getVarName('component-size', 'default')
+    ),
+    'font-size': (
+      'default': getVarName('font-size', 'default')
+    ),
+    'radius': (
+      'default': getVarName('component-round', 'default')
+    ),
+    'padding': (
+      'default': getVarName('button-padding', 'default')
+    ),
+    'space': (
+      'default': getVarName('button-space', 'default')
+    )
+  );
+  @return $button;
+}
+```
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+// 设置组件的变量
+@mixin set-component-var($name, $var, $varKey: 'default') {
+  @each $key, $value in $var {
+    $varName: getVarName($name, $key);
+    $val: map.get($var, $key, $varKey);
+    @if($val) { #{$varName}: var(#{$val}); }
+  }
+}
+```
+
+
+
+## 遵循BEM命名规则生成组件类名
+
+### 生成块的类名
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+// 生成block
+@mixin b($block) {
+  $b: '.' + $namespace + $connect + $block !global;
+  #{$b} {
+    @content;
+  }
+}
+```
+
+## 生成元素的类名
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+// 生成elem
+@mixin e($elem, $root: true) {
+  $name: $b + $element-connect + $elem;
+  @if $root {
+    @at-root {
+      #{$name} { @content; }
+    }
+  } @else {
+    #{$name} { @content; }
+  }
+}
+```
+
+## 生成修改器的类名
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+// 生成修改器
+@mixin m($attr, $value: '') {
+  $modifier: $b + $modifier-connect + $attr + $modifier-value-connect + $value;
+  @at-root {
+    #{$modifier} {
+      @content;
+    }
+  }
+}
+```
+
+## 生成状态的类名
+
+`packages/theme/src/common/mixins.scss`
+
+```scss
+// 状态
+@mixin s($attrs, $and: true) {
+  $state: '';
+  @each $attr in $attrs {
+    $state: if($and, '&', '') + '.' + $state-prefix + $attr + ',' + $state;
+  }
+  #{$state} {
+    @content;
+  }
+}
+```
+

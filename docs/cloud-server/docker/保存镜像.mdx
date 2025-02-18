@@ -1,0 +1,68 @@
+# 保存镜像
+
+在 Docker 中,镜像和容器是核心概念。有时我们需要将容器保存为镜像,或者将镜像导出为文件以便在其他机器上使用。
+
+
+
+## 提交容器为镜像
+
+如果你对某个容器进行了修改（例如安装了新软件或修改了配置文件）,并希望将这些更改保存为一个新的镜像,可以使用 `docker commit` 命令。
+
+```bash
+docker commit -m '这是提交信息' 容器名 镜像名
+```
+
+- `-m '提交信息'`：为本次提交添加描述信息（类似于 Git 的提交信息）。
+- `容器名`：需要提交的容器名称或 ID。
+- `镜像名`：新镜像的名称（可以带上标签,如 `my-image:1.0`）。
+
+
+
+例如：
+
+```bash
+docker commit -m '安装了vim' my-nginx my-nginx-with-vim:1.0
+```
+
+- 这条命令会将 `my-nginx` 容器的当前状态保存为一个新的镜像,镜像名为 `my-nginx-with-vim`,标签为 `1.0`。
+
+
+
+## 保存镜像为文件
+
+如果你想将镜像保存为一个文件（例如用于备份或迁移）,可以使用 `docker save` 命令。
+
+```bash
+docker save -o 名称.tar 容器名
+```
+
+- `-o 文件名.tar`：指定输出的文件名（通常是 `.tar` 格式）。
+- `镜像名`：需要保存的镜像名称（可以带上标签）。
+
+例如：
+
+```bash
+docker save -o my-nginx-with-vim.tar my-nginx-with-vim:1.0
+```
+
+- 这条命令会将 `my-nginx-with-vim:1.0` 镜像保存为 `my-nginx-with-vim.tar` 文件。
+
+
+
+## 加载镜像文件
+
+如果你有一个镜像文件（例如从其他机器导出的 `.tar` 文件）,可以使用 `docker load` 命令将其加载到本地 Docker 环境中。
+
+```bash
+docker load -i 名称.tar
+```
+
+- `-i 文件名.tar`：指定需要加载的镜像文件。
+
+例如：
+
+```bash
+docker load -i my-nginx-with-vim.tar
+```
+
+- 这条命令会将 `my-nginx-with-vim.tar` 文件加载到本地 Docker 环境中。

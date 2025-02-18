@@ -1,0 +1,64 @@
+# 类型别名
+
+在 TypeScript 中,类型别名（Type Alias）是一种用于为类型创建新名称的方式。它可以帮助我们抽离内联类型,从而实现类型的复用。
+
+## 基础使用
+
+类型别名可以用于定义对象类型、基本类型、联合类型、交叉类型等。
+
+```tsx
+type PersonInfo = { name: string; age: number };
+
+// 类型别名的基本语法是：type 别名名称 = 类型定义
+let zs: PersonInfo = {
+  name: "张三",
+  age: 20,
+};
+```
+
+在这个例子中,  PersonInfo   是一个类型别名,用于描述一个包含   name   和   age   属性的对象。
+
+## 特定使用场景
+
+虽然类型别名和接口在许多情况下是等价的,但类型别名在某些特定场景下更为灵活。
+
+```tsx
+// 1. 联合类型
+type NumAndString = number | string;
+
+const num: NumAndString = 1
+const str: NumAndString = 'hello'
+
+// 2. 交叉类型
+type SectionType = { name: string; age: number } & {
+  height: number;
+  name: string;
+};
+
+let zs: SectionType = {
+  name: "张三",
+  age: 20,
+  height: 180,
+};
+
+// 3. 提取接口属性类型
+interface PersonInfo {
+  name: string;
+  height: number;
+}
+type PersonHeight = PersonInfo["height"];
+
+
+// 黑魔法
+type BorderColor = 'black' | 'red' | 'green' | 'yellow' | 'blue' | string & {}; // vscode提示字面类型都被保留
+```
+
+
+
+## interface 与 Type 的区别
+
+虽然接口和类型别名在大多数情况下可以互换使用,但它们之间存在一些重要的区别：
+
+1. **重复定义的接口类型,它的属性会叠加,这个特性使得我们可以极其方便地对全局变量、第三方库的类型做扩展**
+2. **如果我们重复定义类型别名,那么就会报错,类型别名 直接支持交叉类型和联合类型 ,接口不支持**
+

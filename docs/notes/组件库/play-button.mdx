@@ -1,0 +1,53 @@
+# 测试button组件
+
+演示库是UI组件库开发中不可或缺的工具,它用于调试和展示组件的UI效果。在此之前需要测试导出的组件库是否可以在演示库中使用。
+
+
+
+## （1）全局注册
+
+全局注册是一种便捷的开发方式,它允许我们在任何位置使用已注册的组件,但可能会增加项目的整体体积。
+
+
+
+```ts {3,6} [play/src/main.ts]
+import { createApp } from "vue";
+import App from "./App.vue";
+import BetterUI from "../../packages";
+
+const app = createApp(App);
+app.use(BetterUI);
+app.mount("#app");
+```
+
+```vue [play/src/App.vue]
+<template>
+  <div>
+    <b-button></b-button>
+  </div>
+</template>
+```
+
+:::
+
+## （2）按需加载
+
+按需加载允许我们仅导入所需的组件,无需在  main.ts  中进行全局注册,这有助于减少项目体积并提升性能。
+
+
+
+```vue {2} [play/src/App.vue]
+<script setup lang="ts">
+import { BButton } from "../../packages";
+</script>
+
+<template>
+  <div>
+    <b-button></b-button>
+  </div>
+</template>
+```
+
+:::
+
+通过这两种方法,您可以在演示库中测试 `button` 组件的功能和外观。全局注册方法适用于需要在多个地方使用同一组件的场景,而按需加载则适合于只在一个或少数几个地方使用组件的情况,有助于优化资源加载。

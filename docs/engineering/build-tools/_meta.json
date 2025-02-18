@@ -1,0 +1,8 @@
+[
+    "webpack",
+    "vite",
+    "rollup",
+    "esbuild",
+    "tsup",
+    "rsbuild"
+]

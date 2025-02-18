@@ -1,0 +1,24 @@
+# css功能
+
+## v-bind为css绑定变量
+
+```vue
+<template>
+  <div class="box"></div>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+
+const ys = ref('#ffd100')
+</script>
+
+<style scoped>
+.box {
+  width: 500px;
+  height: 500px;
+  background-color: v-bind(ys);
+}
+</style>
+```
+

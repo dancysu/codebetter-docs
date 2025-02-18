@@ -1,0 +1,32 @@
+# Rust
+[Rust](https://www.rust-lang.org/zh-CN/) 
+> rust是 ahead-of-time编译的语言,可以先编译程序,然后把可执行文件交给别人运行（无需安装rust）
+> rust程序文件后缀名：`.rs`
+> 文件命名规范：`hello_world.rs`
+> 在 rust 里面,代码的包称作 `crate`
+## 编译与运行 rust 程序
+编译和运行是单独的两步,运行rust程序之前必须先编译,命令为 `rustc 源文件名`,如：
+```bash
+rustc main.rs
+```
+编译成功之后,会生成一个二进制文件,在终端执行以下命名运行
+```bash
+./main
+```
+注意：
+- `rustc`是Rust编译器,用于将Rust源代码编译成可执行文件。适合用于编译简单的、单个文件的Rust程序。使用`rustc`编译程序时,您需要手动管理依赖项和构建过程。
+- `cargo`是Rust的包管理和构建工具,提供了更高级的功能,适用于复杂的项目。自动管理项目的依赖项、构建、测试、运行和发布。使用`cargo`可以轻松创建新项目、添加依赖项、运行测试等。
+小案例
+```rust
+fn main() {
+    println!("Hello, world!");
+}
+```
+- 定义函数：`fn main() {}`
+  - 没有参数,没有返回
+- main函数很特别,它是每个rust可执行程序最先运行的代码
+- 打印文本：`println!("Hello, world!");`
+  - rust的缩进是4个空格
+  - `println!` 是一个 rust macro（宏）,如果是函数就没有 `!`
+  - `"Hello, world!"` 是字符串,它是 `println!` 的参数
+  - 这行代码以 `;` 结尾

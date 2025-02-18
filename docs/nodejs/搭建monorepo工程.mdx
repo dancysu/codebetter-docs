@@ -1,0 +1,378 @@
+在企业中搭建 monorepo 工程，我们有多种方案可供选择，其中常见的有三种：
+
+
+• Lerna：[Lerna 官网]()。
+
+• Yarn+Workspace
+
+• Pnpm+Workspace
+
+综合考虑，我们选择了Pnpm方案来搭建工程。Pnpm 内置了对 monorepo 的支持，搭建过程简单快捷，门槛低，非常适合我们的需求。
+
+## 工作区（Workspace）
+
+在软件开发中，“工作区”是一个用于组织和管理项目文件、资源以及工具的逻辑容器。它就像一个工作空间，里面包含了工作所需的一切。
+
+工作区的主要功能包括：
+
+
+• 组织和管理项目文件：提供存储和组织项目文件的结构，如源代码、配置文件、测试文件等。
+
+• 跨项目共享设置和工具：允许在多个项目间共享设置、依赖和工具，保持项目一致性，减少切换开销。
+
+• 支持协同开发：团队成员可在同一工作区访问和修改项目文件，提高协同效率。
+
+在许多编程语言、框架和开发工具中，都能看到工作区的概念。Pnpm 也提供了工作区功能，用于管理 monorepo 风格的多个项目。创建 Pnpm 工作区非常简单，只需创建一个名为`pnpm-workspace.yaml`的文件，并在其中定义包含的目录。例如：
+
+
+```yaml
+packages:
+  # packages/ 下所有子包，但是不包括子包下面的包
+  - 'packages/*'
+  # components/ 下所有的包，包含子包下面的子包
+  - 'components/**'
+  # 排除 test 目录
+  - '!**/test/**'
+```
+
+
+
+## 搭建 Monorepo 工程
+
+
+• 创建新目录：
+
+```bash
+mkdir frontend-projects2
+```
+
+
+
+• 初始化目录：
+
+```bash
+pnpm init
+```
+
+
+
+• 创建工作空间文件：
+
+```bash
+touch pnpm-workspace.yaml
+```
+
+
+
+• 配置工作空间：
+
+```yaml
+packages:
+  - 'components/*'
+  - 'utils/*'
+  - 'projects/*'
+```
+
+
+上述配置将`components`、`utils`和`projects`目录下的所有子包纳入工作空间，使项目间能相互引用。其中：
+
+
+• `components`：存放公共组件。
+
+• `utils`：存放工具库。
+
+• `projects`：存放各个项目。
+
+### 封装公共函数库
+
+以`utils`下的`tools`目录为例，这是一个公共函数库，可正常打包、发布，并被工程中其他项目引用。首先，使用`pnpm init`初始化该目录。
+
+接下来，考虑 TypeScript 的安装位置。由于 TypeScript 不仅`tools`会用到，其他项目大概率也会用到，因此选择将其安装到工作空间中：
+
+
+```bash
+pnpm add typescript -D -w
+```
+
+
+`-w`表示安装到工作空间。
+
+### 源码开发
+
+源码开发如下：
+
+
+```typescript
+// src/index.ts
+export * from "./sum.js";
+export * from "./sub.js";
+
+// src/sum.ts
+export function sum(a: number, b: number) {
+  return a + b;
+}
+
+// src/sub.ts
+export function sub(a: number, b: number) {
+  return a - b;
+}
+```
+
+
+
+### 测试
+
+为确保公共函数库的每个方法都可靠，需进行测试。选择 Jest 进行测试，同样将其安装到工作空间：
+
+
+```bash
+pnpm add jest jest-environment-jsdom @types/jest -D -w
+```
+
+
+测试代码如下：
+
+
+```typescript
+// tests/sum.test.ts
+import { sum } from "../src/sum";
+
+test("测试 sum 方法", () => {
+  const result = sum(1, 2);
+  expect(result).toBe(3);
+});
+
+// tests/sub.test.ts
+import { sub } from "../src/sub";
+
+test("测试 sub 方法", () => {
+  const result = sub(10, 3);
+  expect(result).toBe(7);
+});
+```
+
+
+
+### Jest 配置
+
+创建 Jest 配置文件：
+
+
+```bash
+npx jest --init
+```
+
+
+为使 Jest 识别 TS 文件，安装以下依赖：
+
+
+```bash
+pnpm add ts-jest ts-node -D -w
+```
+
+
+并确保 Jest 配置文件中的`preset`设置为`ts-jest`。
+
+
+TypeScript 配置
+
+创建 TS 配置文件：
+
+
+```bash
+npx tsc --init
+```
+
+
+修改配置如下：
+
+
+```json
+{
+  "target": "ES6",
+  "module": "ES6",
+  "include": ["./src"],
+  "declaration": true,
+  "declarationDir": "./dist/types"
+}
+```
+
+
+
+### 打包与发布
+
+选择 Rollup 进行打包，支持 CommonJS、Browser 和 ES Module 三种格式。安装以下依赖：
+
+
+```bash
+pnpm add rollup rollup-plugin-typescript2 @rollup/plugin-commonjs @rollup/plugin-node-resolve @rollup/plugin-json @rollup/plugin-babel @babel/preset-env -D -w
+```
+
+
+创建`rollup.config.js`配置文件：
+
+
+```javascript
+import typescript from "rollup-plugin-typescript2";
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import json from "@rollup/plugin-json";
+import babel from "@rollup/plugin-babel";
+
+const extensions = [".js", ".ts"];
+
+export default [
+  // CommonJS
+  {
+    input: "src/index.ts",
+    output: {
+      file: "dist/index.cjs",
+      format: "cjs",
+    },
+    plugins: [
+      typescript({
+        useTsconfigDeclarationDir: true,
+      }),
+      resolve({ extensions }),
+      commonjs(),
+      json(),
+    ],
+  },
+  // ESM
+  {
+    input: "src/index.ts",
+    output: {
+      file: "dist/index.js",
+      format: "es",
+    },
+    plugins: [
+      typescript({
+        useTsconfigDeclarationDir: true,
+      }),
+      resolve({ extensions }),
+      commonjs(),
+      json(),
+    ],
+  },
+  // Browser-compatible
+  {
+    input: "src/index.ts",
+    output: {
+      file: "dist/index.browser.js",
+      format: "iife",
+      name: "jsTools",
+    },
+    plugins: [
+      typescript({
+        useTsconfigDeclarationDir: true,
+      }),
+      resolve({ extensions }),
+      commonjs(),
+      json(),
+      babel({
+        exclude: "node_modules/**",
+        extensions,
+        babelHelpers: "bundled",
+        presets: [
+          [
+            "@babel/preset-env",
+            {
+              targets: "> 0.25%, not dead",
+            },
+          ],
+        ],
+      }),
+    ],
+  },
+];
+```
+
+
+
+修改`package.json`
+
+重点配置如下：
+
+
+```json
+{
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "type": "module",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  }
+}
+```
+
+
+运行`pnpm build`进行打包，完成后会在`tools`根目录下生成`dist`目录，包含打包后的文件。之后可将`dist`上传到 npm 或私服。
+
+
+测试项目引用
+
+在`projects`下创建新项目`tools-test-proj`，使用`pnpm init`初始化。由于`tools-test-proj`需要使用`tools`中的工具方法，可直接从工作空间安装：
+
+
+```bash
+pnpm add tools -w --filter tools-test-proj
+```
+
+
+安装完成后，`package.json`中会显示该依赖，且来自工作空间：
+
+
+```json
+"dependencies": {
+  "tools": "workspace:^"
+}
+```
+
+
+在`tools-test-proj`目录下创建`src`源码目录，写入以下代码：
+
+
+```typescript
+import { sum, sub } from "tools";
+
+console.log(sum(1, 2));
+console.log(sub(10, 3));
+```
+
+
+调整`package.json`：
+
+
+```json
+"type": "module"
+```
+
+
+调整 TS 配置文件：
+
+
+```json
+"target": "ESNext",
+"module": "ESNext",
+"moduleResolution": "node",
+"outDir": "./dist",
+"include": ["./src"]
+```
+
+
+配置脚本：
+
+
+```json
+"scripts": {
+  "start": "tsc && node ./dist/index.js"
+}
+```
+
+
+执行`pnpm start`，项目成功引入`tools`依赖

@@ -1,0 +1,157 @@
+# 构建button组件
+
+> 在后续组件开发过程中,新增组件的目录结构与 button 组件一致,并将新增的组件导入 `packages/components/index.ts` 和 `packages/components.ts` 两个文件,便可自动完成组件的按需加载和全局注册。
+
+## （1）创建按钮组件
+
+在 `components` 目录下创建 `button` 组件
+
+:::details 推荐的目录结构
+
+```bash
+.
+├─ packages
+│  ├─ components
+│  │  ├─ button             # 组件根目录
+│  │  │  ├─ style           # button 组件的样式目录 
+│  │  │  ├─ src
+│  │  │  │  └─ button.vue   # button 组件的UI渲染文件
+│  │  │  └─ index.ts        # 访问 button 组件的入口文件
+│  │  ├─ index.ts           # 导出 components 下的所有组件
+│  │  └─ package.json
+│  ├─ utils
+│  │  ├─ install.ts
+│  │  └─ package.json
+│  ├─ component.ts
+│  └─ index.ts
+└─ package.json
+```
+
+:::
+
+
+
+
+
+```vue {2-5} [button/src/button.vue]
+<script setup lang="ts">
+defineOptions({
+  // 组件名称
+  name: "BButton",
+});
+</script>
+
+<template>
+  <button>这是一个测试的按钮</button>
+</template>
+
+<style lang="scss" scoped></style>
+```
+
+:::
+
+## （2）按需加载并导出组件
+
+在 `utils` 工具类中建立 `install.ts` 文件,定义 `registerComponent` 方法用于注册组件。
+
+
+
+```ts [utils/install.ts]
+import type { App, Component } from "vue";
+
+/**
+ * 可安装组件类型
+ * 继承自Vue的Component类型,并添加了name属性和install方法
+ */
+export type InstallableComponent = Component & {
+  name: string;
+  install: (app: App) => void;
+};
+
+/**
+ * 将普通组件转换为可安装组件
+ * @param component 要注册的 Vue 组件
+ * @returns 返回一个可安装的组件
+ */
+export const registerComponent = (
+  component: Component
+): InstallableComponent => {
+  // 将传入组件转换为 InstallableComponent 类型
+  const installable = component as InstallableComponent;
+
+  // 为组件添加 install 方法
+  installable.install = (app) => {
+    // 在 Vue引用中注册该组件
+    app.component(installable.name, installable);
+  };
+  return installable;
+};
+```
+
+```ts [utils/index.ts]
+export * from "./install";
+```
+
+:::
+
+在 `components/button/index.ts` 中引入 `registerComponent` 方法,并导出 `BButton` 组件
+
+```ts
+// 引入工具类的 registerComponent 方法
+import { registerComponent } from "@better-ui/utils";
+
+import Button from "./src/button.vue";
+
+// 提供按需加载的方式
+export const BButton = registerComponent(Button);
+
+// 导出组件
+export default BButton;
+```
+在 `components/index.ts` 中,汇总并导出所有 `按需加载` 的组件：
+```ts
+export * from "./button";
+```
+
+
+
+## （3）全局注册导出组件
+
+> 全局注册组件是将所有组件汇聚到一个文件中,使用循环的方式批量注册组件。
+
+在 `packages` 目录下新建 `components.ts` 文件和 `index.ts` 文件。
+
+
+
+```ts [packages/components.ts]
+import { BButton } from "@better-ui/components";
+
+// 使用数组的方式导出,便于循环批量注册
+export default [BButton];
+```
+
+```ts [packages/index.ts]
+import type { App } from "vue";
+
+// 按需加载
+export * from "./components/index";
+
+// 全局注册
+import components from "./components";
+
+// 全局安装
+export const install = (app: App) => {
+  // 判断是否安装
+  if (install.installed) return;
+  // 安装组件
+  components.forEach((com) => {
+    app.use(com);
+  });
+};
+
+export default install;
+```
+
+:::
+
+这样,您就可以通过 `packages/index.ts` 作为入口,全局注册或按需加载组件了。注意,按需加载组件时,样式的处理可能需要额外的配置以确保样式的正确加载。

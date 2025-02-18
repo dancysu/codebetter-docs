@@ -1,0 +1,278 @@
+# SCSS
+SCSS（Sassy CSS）是 Sass 的一种语法,是一种扩展的 CSS 预处理器语言。SCSS 提供了许多强大的功能,使得编写 CSS 更加高效、可维护和模块化。
+## 注释
+```scss
+// 单行注释
+/*
+多行注释
+*/
+```
+## `$` 变量
+在 scss 中,变量使用 `$` 作为前缀来定义,用于存储可重用的值,例如颜色、字体大小、间距等。例如：
+```scss
+$color: #007bff; // 定义变量
+.bg {
+  background-color: $color; // 使用变量
+}
+```
+私有变量
+开发者会在变量名前加下划线（`_` 或 `-`）来表示该变量是内部使用的,建议不在其他模块中使用。
+```scss
+$-radius: 3px;
+// 或
+$_radius: 3px;
+```
+## `--` 自定义属性
+自定义属性通常在选择器中使用 `--` 前缀进行定义,并且可以在任何选择器中定义
+`var()` 是用于引用 CSS 自定义属性
+```scss
+$primary-color: #3498db;
+$font-size: 16px;
+:root {
+  --primary-color: #{$primary-color};
+  --font-size: #{$font-size};
+}
+body {
+  color: var(--primary-color);
+  font-size: var(--font-size);
+}
+```
+## `#{}` 字符串插值
+在 SCSS 中,`#{}` 是一种字符串插值语法,用于将 SCSS 变量的值插入到一个字符串中
+```scss
+@mixin define-emoji($name, $glyph) {
+  span.emoji-#{$name} {
+    font-family: IconFont;
+    font-variant: normal;
+    font-weight: normal;
+    content: $glyph;
+  }
+}
+```
+```scss
+@include define-emoji("test")
+```
+## `@mixin` 混合宏
+在 scss 中,`mixin` 用于定义可重用的样式块,在定义时不会生成任何 CSS,只有在被调用时才会插入到调用的位置。
+1. **定义**：使用 `@mixin` 指令来定义一个mixin,可以包含任何css规则,并且可以接受参数。
+2. **使用**：通过 `@include` 指令来调用 mixin,并传递必要的参数。
+
+```scss
+@mixin theme($theme: DarkGray) {
+  background: $theme;
+  box-shadow: 0 0 1px rgba($theme, .25);
+  color: #fff;
+}
+```
+```scss
+.info {
+  @include theme;
+}
+.alert {
+  @include theme($theme: DarkRed);
+}
+```
+:::
+## `&` 父选择器
+在 SCSS 中,父选择器（`&`）是一个非常有用的特性,它允许你在嵌套规则中引用父选择器。
+```scss
+.alert {
+  &:hover {
+    font-weight: bold;
+  }
+}
+```
+## `%` 占位符选择器
+占位符选择器（%）是一种特殊的选择器,它不会单独出现在编译后的 CSS 中,只有在被 `@extend` 时才会插入样式。使用占位符选择器可以避免生成冗余的选择器。
+```scss
+%hidden {
+  visibility: hidden;
+  display: none;
+}
+.element {
+  @extend %hidden;
+}
+```
+## `@extend` 继承
+在 SCSS 中,扩展和继承是通过 `@extend` 指令实现的。`@extend` 允许一个选择器继承另一个选择器的样式规则,从而减少重复代码,提高样式的可维护性和一致性。
+`@extend` 指令用于让一个选择器继承另一个选择器的样式。
+```scss
+%message-shared {
+  border: 1px solid #ccc;
+  padding: 10px;
+  color: #333;
+}
+.error {
+  @extend %message-shared;
+  border-color: red;
+}
+```
+## `@use` 模块
+在 scss 中,`@use` 指令用于引入一个 SCSS 文件,并将其内容放置在一个命名空间下。默认情况下,文件名会作为命名空间。
+引入的 SCSS文件一般是以 `_` 开头命名的文件,例如 `_var.scss`。下划线让 Sass 知道该文件只是部分文件,不应将其生成为 CSS 文件。
+
+```scss [_base.scss]
+// _base.scss
+$font-stack: Helvetica, sans-serif;
+$primary-color: #333;
+body {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+```
+```scss
+@use 'base'; // base是 _base.scss 文件的命名空间
+.inverse {
+  background-color: base.$primary-color;
+  color: white;
+}
+```
+```scss
+@use '/styles/base' as b; // 你也可以使用 as 关键字来自定义命名空间
+.inverse {
+  background-color: b.$primary-color;
+  color: white;
+}
+```
+:::
+配置共享样式
+1. 在模块中,使用 `!default` 标记变量,表示这些变量可以被外部配置覆盖。
+2. 在需要使用这些变量的文件中,通过 `@use` 指令引入模块,并使用 `with` 语法传递新的值。
+```scss
+// _config.scss
+$primary-color: #3498db !default;
+$font-size: 16px !default;
+// _styles.scss
+@use 'config' with (
+  $primary-color: #e74c3c,
+  $font-size: 18px
+);
+body {
+  color: config.$primary-color;
+  font-size: config.$font-size;
+}
+```
+## `@function` 函数
+SCSS 允许你定义自己的函数,用于生成动态样式值。
+```scss
+@function calculate-rem($size) {
+  @return $size / 16px * 1rem;
+}
+body {
+  font-size: calculate-rem(18px);
+}
+```
+## 嵌套
+SCSS 允许你嵌套 CSS 选择器,使得样式结构更加清晰和层次化。
+```scss
+ul {
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
+```
+## 运算
+SCSS 提供了一系列运算符,用于在样式中进行数学运算和字符串操作。
+- 数学运算符：`+`、`-`、`*`、`/`、`%`
+- 逻辑运算符：`and`、`or`、`not`
+- 比较运算符：`==`、`!=`、`<`、`>`、`<=`、`>=`
+
+```scss [数学运算符]
+$base-margin: 10px;
+$extra-margin: 5px;
+.margin {
+  margin: $base-margin + $extra-margin; // 结果为 15px
+}
+```
+```scss [逻辑运算符]
+$condition-1: true;
+$condition-2: false;
+@if $condition-1 and not $condition-2 {
+  .box {
+    display: block;
+  }
+}
+```
+```scss [比较运算符]
+$width: 100px;
+@if $width > 50px {
+  .wide {
+    width: $width;
+  }
+}
+```
+:::
+## 条件
+SCSS 中的 `@if` 指令是一种控制结构,用于根据条件执行不同的样式规则。`@if` 指令允许你在样式表中使用条件逻辑,从而创建更灵活和动态的样式。
+```scss
+$theme: dark;
+body {
+  @if $theme == dark {
+    background-color: #333;
+    color: #fff;
+  } @else {
+    background-color: #fff;
+    color: #000;
+  }
+}
+```
+## 循环
+- `@each`：用于遍历列表或映射。适合处理一组已知的离散值。
+- `@for`：用于在固定范围内循环。适合处理连续的数值范围。
+- `@while`：用于在条件为真时循环。适合处理动态或不确定的循环条件。
+### `@for` 循环
+`@for` 指令用于在给定范围内循环遍历,并生成样式。它有两种形式：`from ... through` 和 `from ... to`。
+- `from ... through` 包括结束值。
+- `from ... to` 不包括结束值。
+
+```scss [from...through]
+@for $i from 1 through 3 {
+  .col-#{$i} {
+    width: 100% / 3 * $i;
+  }
+}
+```
+```scss [from...to]
+@for $i from 1 to 4 {
+  .item-#{$i} {
+    margin-left: 10px * $i;
+  }
+}
+```
+:::
+### `@while` 循环
+`@while` 指令用于在条件为真时重复执行代码块。它可以用于需要动态条件的循环。
+```scss
+$i: 1;
+@while $i < 4 {
+  .box-#{$i} {
+    padding: 5px * $i;
+  }
+  $i: $i + 1;
+}
+```
+### @each 遍循环
+在 SCSS 中,`@each` 指令用于遍历列表或映射,并为每个元素生成样式规则。`@each` 指令使得处理重复样式和动态生成样式变得更加简单和高效。
+
+```scss [遍历列表]
+$colors: red, green, blue;
+@each $color in $colors {
+  .text-#{$color} {
+    color: $color;
+  }
+}
+```
+```scss [遍历映射]
+$theme-colors: (
+  primary: #3498db,
+  secondary: #2ecc71,
+  danger: #e74c3c
+);
+@each $name, $color in $theme-colors {
+  .bg-#{$name} {
+    background-color: $color;
+  }
+}
+```
+:::

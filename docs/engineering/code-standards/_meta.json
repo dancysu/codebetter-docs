@@ -1,0 +1,8 @@
+[
+    "eslint",
+    "prettier",
+    "stylelint",
+    "cspell",
+    "husky",
+    "commitlint"
+]

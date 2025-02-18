@@ -1,0 +1,79 @@
+# 事件绑定
+
+
+
+```tsx [事件绑定]
+export default function App() {
+  const handler = () => {
+    console.log("按钮点击了");
+  };
+  return (
+    <div>
+      <button onClick={handler}>按钮</button>
+    </div>
+  );
+}
+```
+
+```tsx [使用事件对象参数]
+export default function App() {
+  const handler = (e) => {
+    console.log("事件对象", e);
+  };
+  return (
+    <div>
+      <button onClick={handler}>按钮</button>
+    </div>
+  );
+}
+```
+
+```tsx [传递自定义参数]
+// 注意：不能直接写函数调用,事件绑定位置改造成箭头函数的写法
+export default function App() {
+  const handler = (param) => {
+    console.log(param);
+  };
+  return (
+    <div>
+      <button onClick={() => handler("dancy")}>按钮</button>
+    </div>
+  );
+}
+```
+
+```tsx [同时传递事件对象和自定义参数]
+// 注意：不能直接写函数调用,事件绑定位置改造成箭头函数的写法
+export default function App() {
+  const handler = (param, e) => {
+    console.log(param, e);
+  };
+  return (
+    <div>
+      <button onClick={(e) => handler("dancy", e)}>按钮</button>
+    </div>
+  );
+}
+```
+
+```tsx [范型函数]
+export default function App() {
+  const handler = <T,>(param: T) => {
+    console.log(param);
+  };
+  return (
+    <div>
+      { }
+      <button onClick={() => handler("dancy")}>按钮</button>
+    </div>
+  );
+}
+```
+
+:::
+
+`onClick={() => handler("dancy")}` 为什么用箭头函数？
+
+- 传递参数：当你需要在事件处理函数中传递额外的参数时,直接将 `handler` 绑定到 `onClick` 是不行的,因为 `onClick` 会自动传递事件对象e作为第一个参数。通过使用箭头函数,你可以控制传递给 `handler` 的参数。
+
+- 延迟执行：箭头函数确保 `handler("dancy")` 不会在组件渲染时立即执行,而是等到按钮被点击时才执行。如果直接写 `handler("dancy")`,它会在组件渲染时立即执行,这通常不是我们想要的行为。

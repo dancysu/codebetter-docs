@@ -1,0 +1,179 @@
+# 容器命令
+
+
+
+## 运行一个新容器
+
+使用 `docker run` 命令可以基于镜像创建并启动一个新容器。
+
+```bash
+docker run -d --name 自定义容器名 -p 端口映射 镜像名 
+```
+
+- `-d`：后台运行容器（detached 模式）。
+
+- `--name`：为容器指定一个自定义名称（如果不指定,Docker 会随机生成一个名称）。
+
+- `-p 端口映射`：将主机的端口映射到容器的端口,格式为 `主机端口:容器端口`。
+- `镜像名`：基于哪个镜像创建容器。
+
+例如：
+
+```bash
+docker run -d --name my-nginx -p 8080:80 nginx
+```
+
+- 这条命令会基于 `nginx` 镜像创建一个名为 `my-nginx` 的容器。
+- 主机的 `8080` 端口会映射到容器的 `80` 端口,访问 `http://localhost:8080` 即可看到 Nginx 的欢迎页面。
+
+
+
+
+
+## 查看容器
+
+查看正在运行的容器
+
+```bash
+docker ps
+```
+
+- 这条命令会列出所有正在运行的容器,显示容器的 ID、名称、状态、端口映射等信息。
+
+
+
+查看所有容器（包括已停止的）
+
+```bash
+docker ps -a
+```
+
+- 这条命令会列出所有容器,包括正在运行的和已停止的。
+
+
+
+## 停止容器
+
+如果容器正在运行,可以使用以下命令停止它：
+
+```bash
+docker stop <容器名/唯一id>
+```
+
+例如：
+
+```bash
+docker stop my-nginx
+```
+
+- 这条命令会停止名为 `my-nginx` 的容器。
+
+
+
+## 启动容器
+
+如果容器已停止,可以使用以下命令重新启动它：
+
+```bash
+docker start <容器名/唯一id>
+```
+
+例如：
+
+```bash
+docker start my-nginx
+```
+
+- 这条命令会重新启动名为 `my-nginx` 的容器。
+
+
+
+## 重启容器
+
+如果容器正在运行,可以使用以下命令重启它：
+
+```bash
+docker restart <容器名/唯一id>
+```
+
+例如：
+
+```bash
+docker restart my-nginx
+```
+
+- 这条命令会重启名为 `my-nginx` 的容器。
+
+
+
+## 查看容器状态
+
+查看容器的资源占用情况（如 CPU、内存、网络等）：
+
+```bash
+docker status <容器名/唯一id>
+```
+
+例如：
+
+```bash
+docker stats my-nginx
+```
+
+- 这条命令会实时显示 `my-nginx` 容器的资源使用情况。
+
+
+
+## 查看容器日志
+
+查看容器的日志输出：
+
+```bash
+docker logs <容器名/唯一id>
+```
+
+例如：
+
+```bash
+docker logs my-nginx
+```
+
+- 这条命令会显示 `my-nginx` 容器的日志。
+
+
+
+## 进入容器
+
+如果需要在容器内执行命令,可以使用以下命令进入容器的交互式终端：
+
+```bash
+docker exec -it 容器名 方式
+```
+
+- `-it`：以交互模式进入容器。
+- `方式`：通常是 `/bin/bash` 或 `/bin/sh`,表示使用 Bash 或 Shell。
+
+例如：
+
+```bash
+docker exec -it my-nginx /bin/bash
+```
+
+- 这条命令会进入 `my-nginx` 容器的 Bash 终端。
+
+
+
+## 删除容器
+
+删除已停止的容器
+
+```bash
+docker rm <容器名/唯一id>
+```
+
+强制删除运行中的容器
+
+```bash
+docker rm -f <容器名/唯一id>
+```
+

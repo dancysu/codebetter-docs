@@ -1,0 +1,137 @@
+# Vitepress
+
+## 初始化文档
+
+**步骤 1：进入文档目录**
+
+```bash
+cd docs
+```
+
+**步骤 2：初始化项目**
+
+这条命令初始化一个新的 npm 项目,并创建一个 package.json 文件。
+
+```bash
+pnpm init
+```
+
+**步骤 3：安装 vitepress**
+
+这条命令将 [vitepress](https://vitepress.dev/zh/) 作为开发依赖安装到您的项目中。
+
+```bash
+pnpm add -D vitepress
+```
+
+**步骤 4：启用设置向导**
+
+这条命令启动 VitePress 的设置向导,帮助您配置 VitePress。
+
+```bash
+pnpm vitepress init
+```
+
+**步骤 5：具体配置步骤**
+
+```
+┌  Welcome to VitePress!
+│
+◇  Where should VitePress initialize the config?
+│  ./
+│
+◇  Site title:
+│  Suit组件库
+│
+◇  Site description:
+│  A Vue3 UI library
+│
+◇  Theme:
+│  ○ Default Theme (Out of the box, good-looking docs)
+│  ● Default Theme + Customization
+│  ○ Custom Theme
+│
+◇  Use TypeScript for config and theme files?
+│  Yes
+│
+◇  Add VitePress npm scripts to package.json?
+│  Yes
+│
+└  Done! Now run pnpm run docs:dev and start writing.
+```
+
+
+
+## 配置导航栏
+
+```js
+import { defineConfig } from "vitepress";
+
+export default defineConfig({
+  title: "Suit组件库",
+  description: "A Vue3 UI library",
+  themeConfig: {
+    nav: [
+      { text: "指南", link: "/guide/" }, // [!code ++]
+      { text: "组件", link: "/components/" }, // [!code ++]
+    ],
+
+    sidebar: {},
+
+    socialLinks: [
+      { icon: "github", link: "https://github.com/vuejs/vitepress" },
+    ],
+  },
+});
+```
+
+## 配置侧边栏
+
+```js
+import { defineConfig } from "vitepress";
+
+export default defineConfig({
+  title: "Suit组件库",
+  description: "A Vue3 UI library",
+  themeConfig: {
+    nav: [
+      { text: "指南", link: "/guide/" },
+      { text: "组件", link: "/components/" },
+    ],
+
+    sidebar: {
+      "/guide/": [ // [!code ++]
+        { // [!code ++]
+          text: "基础", // [!code ++]
+          items: [ // [!code ++]
+            { text: "设计", link: "/guide/design" }, // [!code ++]
+            { text: "安装", link: "/guide/install" }, // [!code ++]
+            { text: "快速开始", link: "/guide/start" }, // [!code ++]
+          ], // [!code ++]
+        }, // [!code ++]
+        { // [!code ++]
+          text: "进阶", // [!code ++]
+          items: [ // [!code ++]
+            { text: "国际化", link: "/guide/lang" }, // [!code ++]
+            { text: "主题", link: "/guide/theme" }, // [!code ++]
+            { text: "暗黑模式", link: "/guide/diablo" }, // [!code ++]
+          ], // [!code ++]
+        }, // [!code ++]
+      ], // [!code ++]
+      "/components/": [ // [!code ++]
+        { // [!code ++]
+          text: "基础组件", // [!code ++]
+          items: [ // [!code ++]
+            { text: "Button 按钮", link: "/components/button" }, // [!code ++]
+          ], // [!code ++]
+        }, // [!code ++]
+      ], // [!code ++]
+    }, 
+
+    socialLinks: [
+      { icon: "github", link: "https://github.com/vuejs/vitepress" },
+    ],
+  },
+});
+```
+

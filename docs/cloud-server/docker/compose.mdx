@@ -1,0 +1,216 @@
+# compose
+
+Docker Compose 是一个用于定义和运行多容器 Docker 应用的工具。通过一个 YAML 文件（通常命名为 `docker-compose.yaml` 或 `compose.yaml`）,你可以配置所有服务、网络和卷,然后使用一条命令启动整个应用。
+
+## 特性
+
+### 增量更新
+
+- 当你修改 `docker-compose.yaml` 文件并重新启动应用时,Docker Compose 只会重新启动被修改的服务,其他服务不受影响。
+
+### 数据持久化
+
+- 默认情况下,即使使用 `docker-compose down` 停止应用,挂载的卷也不会被删除,确保数据安全。
+
+
+
+## 文件结构
+
+Docker Compose 文件是一个 YAML 文件,通常包含以下部分：
+
+### version
+
+指定 Docker Compose 文件的版本（可选）。
+
+```yaml
+version: '3.8'
+```
+
+
+
+### services
+
+定义所有需要运行的服务（容器）。每个服务可以配置镜像、端口、环境变量、卷等。
+
+#### image
+
+指定服务使用的镜像。
+
+```yaml
+services:
+  web:
+    image: nginx:latest
+```
+
+
+
+#### ports
+
+映射主机端口到容器端口。
+
+```yaml
+services:
+  web:
+    ports:
+      - "8080:80"
+```
+
+#### environment
+
+设置环境变量。
+
+```yaml
+services:
+  db:
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+```
+
+#### volumes
+
+挂载主机目录或 Docker 卷到容器内部。
+
+```yaml
+services:
+  web:
+    volumes:
+      - ./html:/usr/share/nginx/html
+```
+
+#### restart
+
+设置容器的重启策略。
+
+```yaml
+services:
+  web:
+    restart: always
+```
+
+#### networks
+
+指定服务加入的网络。
+
+```yaml
+services:
+  web:
+    networks:
+      - my-network
+```
+
+#### depends_on
+
+指定服务之间的依赖关系。
+
+```yaml
+services:
+  web:
+    depends_on:
+      - db
+```
+
+
+
+
+
+### volumes
+
+定义数据卷,用于持久化数据。
+
+```yaml
+volumes:
+  my-data:
+```
+
+### networks
+
+定义自定义网络,用于容器之间的通信。
+
+```yaml
+networks:
+  my-network:
+    driver: bridge
+```
+
+
+
+
+
+## 使用
+
+### 启动应用
+
+使用以下命令启动应用：
+
+```bash
+docker compose -f compose.yaml up -d
+```
+
+先创建网络
+
+再创建卷
+
+然后容器
+
+
+
+```bash
+docker ps
+```
+
+
+
+### 停止应用
+
+使用以下命令停止应用：
+
+会移除所有容器和网络,但不会删除卷
+
+```bash
+docker compose -f compose.yaml down
+```
+
+### 强制删除所有资源
+
+如果需要删除卷和镜像,可以使用以下命令：
+
+```bash
+docker compose -f compose.yaml down --rmi all -v
+```
+
+
+
+## 示例
+
+```yaml
+version: '3.8'
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    networks:
+      - my-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    volumes:
+      - my-data:/var/lib/mysql
+    networks:
+      - my-network
+
+volumes:
+  my-data:
+
+networks:
+  my-network:
+    driver: bridge
+```
+

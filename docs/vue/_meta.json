@@ -1,0 +1,39 @@
+[
+    "index",
+    "服务端渲染",
+    {
+        "type": "dir",
+        "name": "core",
+        "label": "vue3",
+        "collapsible": true,
+        "collapsed": false
+    },
+    {
+        "type": "dir",
+        "name": "vue2",
+        "label": "vue2",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "vuex",
+        "label": "vuex",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "pinia",
+        "label": "pinia",
+        "collapsible": true,
+        "collapsed": true
+    },
+    {
+        "type": "dir",
+        "name": "router",
+        "label": "router",
+        "collapsible": true,
+        "collapsed": true
+    }
+]

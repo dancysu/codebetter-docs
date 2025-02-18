@@ -1,0 +1,392 @@
+# 创建一个nest应用
+## 创建项目
+
+```bash
+nest new interview-server-app
+```
+
+
+
+## prisma
+
+### 安装与初始化
+
+Prisma 是一个现代的 ORM（对象关系映射）工具，用于 Node.js 和 TypeScript。它可以帮助你更方便地操作数据库，同时提供类型安全的查询功能。
+
+将 Prisma 与 Nest.js 结合使用，可以让你更轻松地开发数据库驱动的应用程序。
+
+**步骤 1：安装 Prisma 相关依赖**
+
+在你的 Nest.js 项目中，运行以下命令来安装 Prisma 的相关依赖：
+
+- `prisma`：是 Prisma 的 CLI 工具，用于初始化和管理 Prisma。
+- `@prisma/client`：是 Prisma 的客户端库，用于在代码中与数据库交互。
+
+```bash
+pnpm add @prisma/client
+pnpm add -D prisma
+```
+
+**步骤 2：初始化 Prisma**
+
+运行以下命令初始化 Prisma：
+
+```bash
+npx prisma init
+```
+
+该命令会在项目根目录下生成以下文件：
+
+- `.env`：用于存储数据库连接信息。
+- `prisma/schema.prisma`：用于定义数据库模型和配置。
+
+**步骤 3：配置数据库连接**
+
+**修改 `.env` 文件：**
+
+```
+DATABASE_URL="postgresql://dancy:rootroot@localhost:5432/interview_question_app?schema=public"
+```
+
+**配置 `prisma/schema.prisma`：**
+
+```
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+
+
+### 定义数据模型
+
+根据你的数据库表设计，转换为 Prisma 模型：
+
+```
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id          Int            @id @default(autoincrement())
+  email       String         @unique
+  password    String
+  name        String?
+  avatar      String?
+  phone       String?        @unique
+  role        UserRole       @default(USER)
+  status      Boolean        @default(true)
+  lastLoginAt BigInt?
+  createdAt   BigInt         @default(dbgenerated("EXTRACT(EPOCH FROM NOW())::BIGINT"))
+  updatedAt   BigInt         @default(dbgenerated("EXTRACT(EPOCH FROM NOW())::BIGINT"))
+  favorites   UserFavorite[]
+  marks       UserMark[]
+  comments    Comment[]
+}
+```
+
+
+
+### 生成迁移文件与同步数据库
+
+**步骤 1：生成迁移文件**
+
+运行以下命令，将定义的模型同步到数据库中：
+
+```bash
+# 生成迁移文件
+npx prisma migrate dev --name init
+
+# 如果不需要迁移历史，也可以直接同步数据库结构
+npx prisma db push
+```
+
+这会：
+
+- 在 `prisma/migrations` 下生成 SQL 迁移文件
+- 自动执行迁移，同步到数据库
+- 生成 Prisma Client 代码
+
+每次修改  `schema.prisma` 文件后，都需要运行此命令来更新数据库。
+
+**步骤 2：查看数据库结构**
+
+```bash
+npx prisma studio
+```
+
+访问 `http://localhost:5555` 可直观管理数据。
+
+**步骤 3：生成 Prisma Client**
+
+```bash
+npx prisma generate
+```
+
+
+
+### Nest 集成 Prisma
+
+**步骤 1：创建 Prisma 服务**
+
+在 Nest.js 中创建一个 Prisma 服务，用于与数据库交互：
+
+```bash
+nest generate service prisma
+```
+
+在 `src/prisma/prisma.service.ts` 中初始化 Prisma 客户端：
+
+```ts
+// src/prisma/prisma.service.ts
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+  }
+}
+```
+
+**步骤 2：全局导入 Prisma 模块**
+
+```ts
+// src/app.module.ts
+import { PrismaService } from './prisma/prisma.service';
+
+@Module({
+  providers: [PrismaService],
+})
+```
+
+
+
+
+
+
+
+
+
+## Docker
+
+配置 Dockerfile
+
+```dockerfile
+# 构建阶段
+# 使用 node:18-alpine 作为基础镜像，并给这个阶段命名为 builder，用于后续多阶段构建引用
+FROM node:18-alpine AS builder
+
+# 设置工作目录为 /app ，后续的命令都会在这个目录下执行
+WORKDIR /app
+
+# 只复制 package.json 和 package-lock.json（如果存在）
+# 这样做是为了利用 Docker 的缓存机制，如果依赖没有变化，就可以使用缓存
+COPY package*.json ./
+
+# 安装所有依赖（包括开发依赖）
+# 这些依赖在构建阶段是必需的
+RUN npm install
+
+# 复制所有源代码到容器中
+# 这一步放在依赖安装后面，是因为源代码更容易变化，这样可以最大化利用缓存
+COPY . .
+
+# 生成 Prisma Client
+# 必须在构建前生成，因为应用依赖这些生成的代码
+RUN npx prisma generate
+
+# 构建 Nest.js 应用
+# 生成的文件会在 dist 目录下
+RUN npm run build
+
+# 生产阶段
+# 开始新的构建阶段，使用相同的基础镜像，这个阶段的镜像将是最终的生产镜像
+FROM node:18-alpine
+
+# 在新阶段同样设置工作目录
+WORKDIR /app
+
+# 同样复制 package 文件，为生产依赖安装做准备
+COPY package*.json ./
+
+# 只安装生产环境需要的依赖
+# --only=production 确保不安装开发依赖，减小最终镜像大小
+RUN npm install --only=production
+
+# 复制 Prisma schema 并重新生成 client
+# 生产环境也需要 Prisma Client
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+# 从构建阶段复制编译好的代码到生产阶段
+# 只复制需要的 dist 目录，而不是所有源代码
+COPY --from=builder /app/dist ./dist
+
+# 声明容器将使用 3000 端口
+EXPOSE 3000
+
+# 容器启动时执行的命令
+CMD ["npm", "run", "start:prod"]
+
+# 为什么要使用多阶段构建？
+# 1. 减小镜像大小 ：最终镜像只包含运行时必需的文件
+# 2. 提高安全性 ：不包含源代码和开发工具
+# 3. 优化构建缓存 ：合理的层次结构可以最大化利用 Docker 缓存
+# 4. 分离构建环境和运行环境 ：构建工具和依赖只存在于构建阶段
+
+# 以下命令构建和运行容器：
+# docker build -t interview-server-app .
+# docker run -p 3000:3000 interview-server-app
+```
+
+
+
+配置 `docker-compose.yml`
+
+```yaml
+# 指定 Docker Compose 文件格式版本
+version: '3.8'
+
+# 应用服务配置
+services:
+  app:
+    # 定义应用服务的构建配置
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # 端口映射配置
+    ports:
+      - "3000:3000"
+    # 环境变量配置
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://dancy:rootroot@postgres:5432/interview_question_app?schema=public
+    # 定义服务依赖关系
+    depends_on:
+      - postgres
+    # 容器重启策略
+    restart: unless-stopped
+    # 网络配置
+    networks:
+      - app-network
+
+  postgres:
+    # 指定官方镜像
+    image: postgres:latest
+    # 数据库初始化配置
+    environment:
+      - POSTGRES_USER=dancy
+      - POSTGRES_PASSWORD=rootroot
+      - POSTGRES_DB=interview_question_app
+    # 端口映射配置
+    ports:
+      - "5432:5432"
+    # 数据持久化配置
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # 容器重启策略
+    restart: unless-stopped
+    # 网络配置
+    networks:
+      - app-network
+
+# 卷
+volumes:
+  postgres_data:
+
+# 网络
+networks:
+  app-network:
+    driver: bridge
+```
+
+
+
+`.dockerignore`
+
+```
+node_modules
+npm-debug.log
+dist
+.git
+.env
+.env.*
+*.md
+.gitignore
+.dockerignore
+.vscode
+coverage
+test
+```
+
+
+
+命令
+
+```json
+{
+  "scripts": {
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "docker:rebuild": "docker-compose up -d --build"
+  }
+}
+```
+
+
+
+
+
+
+
+## Swagger
+
+**步骤 1：安装 Swagger 模块**
+
+```bash
+pnpm add @nestjs/swagger swagger-ui-express
+```
+
+**步骤 2：配置 Swagger**
+在 `src/main.ts` 中配置 Swagger：
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  const config = new DocumentBuilder()
+    .setTitle('Interview Question API')
+    .setDescription('API for managing interview questions')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();
+```
+
+**步骤 3：运行以下命令启动项目**
+
+```bash
+npm run start:dev
+```
+
+**步骤 4：访问 Swagger**
+打开浏览器，访问 `http://localhost:3000/api`，查看 Swagger 文档并测试 API。

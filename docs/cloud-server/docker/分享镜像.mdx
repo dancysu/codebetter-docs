@@ -1,0 +1,57 @@
+# 分享镜像
+
+在 Docker 中,镜像可以通过 Docker Hub 或其他镜像仓库进行分享。
+
+
+
+## 登录 Docker Hub
+
+在推送镜像之前,你需要先登录 Docker Hub
+
+```bash
+docker login
+```
+
+
+
+## 为镜像打标签
+
+在推送镜像之前,需要为镜像打上符合 Docker Hub 命名规范的标签。标签的格式为：
+
+```bash
+docker tag 本地镜像名 远程仓库名/镜像名:标签
+```
+
+- `本地镜像名`：本地已有的镜像名称。
+- `远程仓库名/镜像名`：远程仓库的名称（通常是你的 Docker Hub 用户名）和镜像名称。
+- `标签`：镜像的版本标签（例如 `latest`、`1.0` 等）。
+
+
+
+例如：
+
+假设你本地有一个镜像 `my-nginx-with-vim:1.0`,你想将其推送到 Docker Hub 的 `your-username` 账户下,并打上标签 `v1.0`。
+
+```bash
+docker tag my-nginx-with-vim:1.0 your-username/my-nginx-with-vim:v1.0
+```
+
+- 这条命令会为 `my-nginx-with-vim:1.0` 镜像创建一个新标签 `your-username/my-nginx-with-vim:v1.0`。
+
+
+
+## 推送镜像到远程仓库
+
+为镜像打上标签后,可以使用 `docker push` 命令将镜像推送到远程仓库。
+
+```bash
+docker push 远程仓库名/镜像名:标签
+```
+
+例如：
+
+```bash
+docker push your-username/my-nginx-with-vim:v1.0
+```
+
+- 这条命令会将 `your-username/my-nginx-with-vim:v1.0` 镜像推送到 Docker Hub。

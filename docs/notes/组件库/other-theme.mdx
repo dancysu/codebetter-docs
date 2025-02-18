@@ -1,0 +1,103 @@
+# 其它主题色
+
+为了满足不同场景的需求,按钮设计了五种不同的主题色：`default`、`primary`、`success`、`warning`、`error`。
+
+每种主题色都有其独特的背景色、边框色和字体色,以及鼠标悬停时的视觉效果。
+
+
+
+```scss [theme/src/button.scss]
+// 默认按钮
+.b-button--default {
+    background-color: #fff;
+    border-color: #e3e5f1;
+    color: #4d5059;
+    &:hover {
+        background-color: #f5f6fa;
+    }
+}
+
+// 主要按钮
+.b-button--primary {
+    background-color: #3069ff;
+    border-color: #3069ff;
+    color: #fff;
+    &:hover {
+        background-color: #6e96ff;
+        border-color: #6e96ff;
+    }
+}
+
+// 成功按钮
+.b-button--success {
+    background-color: #14cd70;
+    border-color: #14cd70;
+    color: #fff;
+    &:hover {
+        background-color: #5adc9b;
+        border-color: #5adc9b;
+    }
+}
+
+// 警告按钮
+.b-button--warning {
+    background-color: #ffa81a;
+    border-color: #ffa81a;
+    color: #fff;
+    &:hover {
+        background-color: #ffc25e;
+        border-color: #ffc25e;
+    }
+}
+
+// 错误按钮
+.b-button--error {
+    background-color: #ff4a5b;
+    border-color: #ff4a5b;
+    color: #fff;
+    &:hover {
+        background-color: #ff808c;
+        border-color: #ff808c;
+    }
+}
+```
+
+```vue [components/button/src/index.vue]
+<script lang="ts" setup>
+import { useNamespace } from "@better-ui/hooks";
+const ns = useNamespace("button");
+
+defineOptions({
+  name: "BButton",
+});
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default", // 默认值
+  },
+});
+</script>
+
+<template>
+  <button :class="[ns.b(), ns.m(type)]">
+    <span>
+      <slot v-if="$slots.default"></slot>
+    </span>
+  </button>
+</template>
+```
+
+```vue [play/src/App.vue]
+<template>
+  <div>
+    <b-button>默认</b-button>
+    <b-button type="primary">主要</b-button>
+    <b-button type="success">成功</b-button>
+    <b-button type="warning">警告</b-button>
+    <b-button type="error">错误</b-button>
+  </div>
+</template>
+```
+
+:::

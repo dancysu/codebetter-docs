@@ -1,0 +1,83 @@
+# 圆角按钮
+
+圆角按钮是指按钮左右两侧为半圆形
+
+
+
+```ts {14-16} [hooks/use-namespace/index.ts]
+export const useNamespace = (block) => {
+  // 命名前缀就是命名空间
+  const namespace = defaultNamespace;
+
+  // 生成 Block（块）
+  const b = (blockSuffix = "") =>
+    _bem(namespace, block, blockSuffix, null, null, null);
+  // 生成 Element（元素）
+  const e = (element) =>
+    element ? _bem(namespace, block, null, element, null, null) : "";
+  // 生成 Modifier（修改器）
+  const m = (modifier, value) =>
+    modifier ? _bem(namespace, block, null, null, modifier, value) : "";
+  // 状态设置
+  const is = (activeName, state) =>
+    activeName && state ? `is-${activeName}` : "";
+  return {
+    namespace,
+    b,
+    e,
+    m,
+    is,
+  };
+};
+```
+
+```scss [theme/src/button.scss]
+.suit-button {
+    &.is-round {
+        border-radius: 100px; // 圆角
+    }
+}
+```
+
+```vue [components/button/src/index.vue]
+<script lang="ts" setup>
+import { useNamespace } from "@suit-ui/hooks";
+defineOptions({
+  name: "SuitButton",
+});
+const ns = useNamespace("button");
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default", // 默认值
+  },
+  round: {
+    type: Boolean,
+    default: false,
+  },
+});
+</script>
+
+<template>
+  <button :class="[ns.b(), ns.m(type), ns.is('round', round)]">
+    <span>
+      <slot v-if="$slots.default"></slot>
+    </span>
+  </button>
+</template>
+```
+
+```vue {4} [play/src/App.vue]
+<template>
+  <div>
+    <suit-button>默认</suit-button>
+    <suit-button type="primary" round>主要</suit-button>
+    <suit-button type="success">成功</suit-button>
+    <suit-button type="warning">警告</suit-button>
+    <suit-button type="error">错误</suit-button>
+  </div>
+</template>
+```
+
+:::

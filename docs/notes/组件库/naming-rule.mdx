@@ -1,0 +1,137 @@
+# 封装BEM命名规则
+
+
+
+
+
+```ts [hooks/use-namespace/index.ts]
+// 默认命名前缀
+export const defaultNamespace = "b";
+
+export const useNamespace = (block) => {
+  // 命名前缀就是命名空间
+  const namespace = defaultNamespace;
+  return {
+    namespace,
+  };
+};
+
+/**
+ * _bem
+ * @param namespace 命名空间
+ * @param block 块
+ * @param blockSuffix 子级块
+ * @param element 元素
+ * @param modifier 修改器
+ * @param modifierValue 修改器的值
+ * @returns className
+ */
+const _bem = (
+  namespace,
+  block,
+  blockSuffix,
+  element,
+  modifier,
+  modifierValue
+) => {
+  // 默认 Block,例如：suit-tags
+  let className = `${namespace}-${block}`;
+  // 如果存在子级块,例如：suit-tags-wrap
+  blockSuffix && (className += `-${blockSuffix}`);
+  // 如果存在元素,例如：suit-tags-wrap__item
+  element && (className += `__${element}`);
+  // 如果存在修改器,例如：suit-tags-wrap__item--size
+  modifier && (className += `--${modifier}`);
+  // 如果存在修改器的值,例如：suit-tags-wrap__item--size_mini
+  modifierValue && (className += `_${modifierValue}`);
+  // 返回
+  return className;
+};
+```
+
+:::
+
+
+
+## 生成 Block
+
+```ts
+export const useNamespace = (block) => {
+  // 命名前缀就是命名空间
+  const namespace = defaultNamespace;
+
+  // 生成 Block
+  const b = (blockSuffix = "") => _bem(namespace, block, blockSuffix, null, null, null);
+  return {
+    namespace,
+    b,
+  };
+};
+```
+
+
+
+## 生成 Element 
+
+```ts
+export const useNamespace = (block) => {
+  // 命名前缀就是命名空间
+  const namespace = defaultNamespace;
+
+  // 生成 Block（块）
+  const b = (blockSuffix = "") =>
+    _bem(namespace, block, blockSuffix, null, null, null);
+  // 生成 Element（元素）
+  const e = (element) =>
+    element ? _bem(namespace, block, null, element, null, null) : "";
+  return {
+    namespace,
+    b,
+    e,
+  };
+};
+```
+
+## 生成Modifier
+
+```ts
+export const useNamespace = (block) => {
+  // 命名前缀就是命名空间
+  const namespace = defaultNamespace;
+
+  // 生成 Block（块）
+  const b = (blockSuffix = "") =>
+    _bem(namespace, block, blockSuffix, null, null, null);
+  // 生成 Element（元素）
+  const e = (element) =>
+    element ? _bem(namespace, block, null, element, null, null) : "";
+  // 生成 Modifier（修改器）
+  const m = (modifier, value) =>
+    modifier ? _bem(namespace, block, null, null, modifier, value) : "";
+  return {
+    namespace,
+    b,
+    e,
+    m,
+  };
+};
+```
+
+使用
+
+`components/button/src/button.vue`
+
+```vue
+<script lang="ts" setup>
+import { useNamespace } from "@better-ui/hooks";
+defineOptions({
+  name: "BButton",
+});
+const ns = useNamespace("button");
+</script>
+
+<template>
+  <button :class="[ns.b(), ns.m('primary')]">这是一个测试的按钮</button>
+</template>
+```
+

@@ -1,0 +1,110 @@
+# useState
+
+useState 是一个 React Hook（函数）,它允许我们向组件添加一个 **状态变量** ,从而控制影响组件的渲染结果。
+
+本质：和普通JS变量不同的是,状态变量一旦发生变化,组件的视图UI也会跟着变化（**数据驱动视图**）
+
+
+
+## 基本使用
+
+`useState` 接收一个参数作为状态的初始值,并返回一个包含两个元素的数组,第一个元素是当前的状态值,第二个元素是更新该状态的函数。
+
+**调用 `setState` 函数更新 `state` 将会`重新渲染组件`。**
+
+```tsx
+const [state, setState] = useState(initialState)
+```
+
+
+
+
+
+
+
+对于基本类型的使用
+
+```jsx [示例]
+import { useState } from "react";
+
+export default function App() {
+  let [count, setCount] = useState<number>(0);
+  function handler() {
+    setCount(count + 1);
+  }
+  return (
+    <>
+      <button onClick={handler}>{count}</button>
+    </>
+  );
+}
+```
+
+对于复杂类型的使用
+
+在 React 中,状态被认为是只读的,因此 **你应该替换它而不是改变现有对象**。
+
+数组
+
+```tsx
+import { useState } from "react";
+
+export default function App() {
+  let [arr, setArr] = useState([1, 2, 3]);
+  function handler() {
+    setArr([...arr, 4]);
+  }
+  return (
+    <>
+      <button onClick={handler}>{arr}</button>
+    </>
+  );
+}
+```
+
+对象
+
+```tsx
+import { useState } from "react";
+
+export default function App() {
+  let [obj, setObj] = useState(() => {
+    // 处理逻辑,一定要返回值
+    // 这个函数只会初始化执行一次
+    return {
+      name: "dancy",
+      age: 18,
+    };
+  });
+  function handler() {
+    // 写法一
+    // setObj({
+    //   ...obj,
+    //   age: obj.age + 1,
+    // });
+
+    // 写法二：传递一个更新函数
+    // setObj((prev) => {
+    //   return {
+    //     ...prev,
+    //     age: prev.age + 1,
+    //   };
+    // });
+
+    // 写法三
+    setObj(Object.assign({}, obj, { age: obj.age + 1 }));
+  }
+  return (
+    <>
+      <div>{obj.name}</div>
+      <div>{obj.age}</div>
+      <button onClick={handler}>更新</button>
+    </>
+  );
+}
+```
+
+
+
+
+

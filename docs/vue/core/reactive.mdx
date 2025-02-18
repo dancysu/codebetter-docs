@@ -1,0 +1,67 @@
+# reactive
+
+`reactive` 是 Vue 3 的 Composition API 中用于**创建响应式对象**的函数。
+
+:::details 特点
+
+- 深层次响应式：reactive 创建的响应式对象是深层次的，对象内部的属性和嵌套对象也会被转换为响应式的。
+- 对象类型数据：reactive 只能用于对象类型的数据，不能用于基本类型数据。
+- 不可变更新：只有用ref包裹的内容允许修改整体，如果用reactive包裹的内容，只能修改里面的某个元素，不能修改整体，因为 Vue 3 推荐使用不可变的方式更新响应式状态，如果你需要替换 `reactive` 对象的整体内容，应该使用 Object.assign() 或展开运算符来替换对象。
+
+:::
+
+```vue
+<script lang="ts" setup>
+import { reactive } from 'vue'
+
+// 创建一个响应式对象
+const state = reactive({
+  count: 0,
+  user: {
+    name: 'Dancy',
+  },
+})
+
+// 定义一个方法来修改响应式对象的属性
+const increment = () => {
+  state.count++
+}
+
+// 修改嵌套属性也是响应式的
+const updateName = () => {
+  state.user.name = 'New Name'
+}
+</script>
+
+<template>
+  <button @click="increment">{{ state.count }}</button>
+  <button @click="updateName">{{ state.user.name }}</button>
+</template>
+```
+
+
+
+## 更新对象
+
+在使用 `reactive` 包裹对象时，我们建议遵循不可变模式来管理响应式状态。这意味着在更新这些对象时，应避免直接修改对象本身，而是推荐使用 `Object.assign()` 方法或展开运算符（  ...  ）来创建一个新的对象实例，从而替换旧对象。
+
+对于通过 `ref` 创建的响应式对象，由于 `ref` 会生成一个包含 `.value` 属性的响应式引用，你可以直接更新这个 `.value` 属性的值。这样做时，实际上是在替换整个对象，Vue 的响应式系统能够检测到 `.value` 属性的变化，并自动触发视图的更新。
+
+无论是采用 `ref` 还是 `reactive`，Vue 3 都推崇以不可变的方式更新响应式状态，这有助于保持状态管理的一致性和效率。
+
+## ref 与 reactive 的对比
+
+|          | ref                            | reactive                                                     |
+| -------- | ------------------------------ | ------------------------------------------------------------ |
+| 数据定义 | 基本类型数据<br />对象类型数据 | 对象类型数据                                                 |
+| 使用     | ref创建的变量必须使用 `.value` | reactive重新分配一个新对象，会失去响应式（可以使用 `Object.assign()` 去整体替换） |
+
+:::tip 使用场景
+
+- 若需要一个基本类型的响应式数据，必须使用 `ref`
+
+- 若需要一个响应式对象，层级不深，`ref`、`reactive` 都可以
+
+- 若需要一个响应式对象，且层级较深，推荐使用 `reactive`
+
+:::

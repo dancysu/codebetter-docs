@@ -1,0 +1,23 @@
+# 类型断言
+
+在 TypeScript 中,类型断言用于告诉编译器你确信某个值的类型比它目前知道的类型更具体。这有两种主要形式：尖括号语法和 `as` 语法。
+
+## 尖括号语法
+
+```ts
+let str: any = "hello,world!"
+let strLength: number = (<string>str).length
+```
+
+在这个例子中,我们断言 someValue 是一个 string 类型,然后访问了 length 属性。
+
+## as语法
+
+as 语法是另一种类型断言的方式：
+
+```ts
+let str: any = "hello,world!"
+let strLength: number = (str as string).length
+```
+
+这与尖括号语法等效,但它更清晰,并且在某些场景下是必需的,例如：当你在 ts 中使用 jsx 时,只有 `as` 语法断言是被允许的

@@ -1,0 +1,34 @@
+# void类型
+
+在 TypeScript 中,void 类型是一种特殊的类型,它代表没有任何类型,或者说是“空”类型。void 主要用于两个场景：表示函数没有返回值,以及作为 undefined 的类型。
+
+
+
+:::details void的特性
+
+- 返回值：当一个函数不返回任何值时,其返回类型是 void。
+- undefined 的类型：undefined 是 void 的一个子类型,这意味着你可以将 undefined 赋值给 void 类型的变量,但不能将 void 类型的变量赋值给 undefined 类型的变量,除非在 TypeScript 配置中启用了 `--strict` 或 `--noImplicitAny` 选项。
+
+:::
+
+```ts
+// 可以把 undefined 类型赋值给 void 类型
+let vd: void = undefined;
+
+// 函数没有返回值,那么函数的返回值类型就是 void
+function fn(): void {
+  return undefined; // 正确,因为 undefined 是 void 的子类型
+}
+
+// 尝试将 void 类型赋值给其他类型会报错
+let num: number = vd; // 错误,因为 void 不能赋值给 number 类型
+```
+
+
+
+## 注意
+
+1. 赋值限制：由于 void 表示“无”,你不能将 void 类型的值赋给其他任何类型,除了 any 和 undefined （在非严格模式下）。
+
+2. 函数返回：如果你的函数确实没有返回值,应该将其返回类型声明为 void,这有助于 TypeScript 的类型检查。
+3. 与 any 的对比：any 类型可以赋值给任何类型,也可以从任何类型赋值,而 void 类型则相反,它只能从 undefined 赋值。

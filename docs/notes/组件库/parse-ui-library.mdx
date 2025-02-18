@@ -1,0 +1,527 @@
+# UI组件库解析
+
+## 定义文档组件
+
+在 `docs/examples/button` 目录下新增文件 `basis.vue`
+
+```vue
+<template>
+  <div>
+    <suit-button>默认</suit-button>
+    <suit-button type="primary">主要</suit-button>
+    <suit-button type="success">成功</suit-button>
+    <suit-button type="warning">警告</suit-button>
+    <suit-button type="error">错误</suit-button>
+  </div>
+</template>
+```
+
+
+
+## 读取容器信息
+
+自定义容器
+
+`docs/.vitepress/config.mts`
+
+```ts
+import path from "node:path";
+import fs from "node:fs";
+import { defineConfig } from "vitepress";
+import MdContainer from "markdown-it-container";
+
+export default defineConfig({
+  markdown: {
+    // md 是 markdown-it 的实例
+    config: (md) => {
+      // markdown-it的use方法用于安装插件
+      md.use(MdContainer, "demo", {
+        render(tokens, idx) {
+          // 拿到tokens中的内容
+          if (tokens[idx].nesting === 1) {
+            // 获取:::demo后跟随的描述文本
+            const info = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
+            const description = info && info.length > 1 ? info[1] : "";
+
+            // 获取文档组件路径
+            const nextToken = tokens[idx + 1];
+            const componentPath =
+              nextToken.type === "fence" ? nextToken.content : "";
+            return `<demo>`;
+          } else {
+            return `</demo>`;
+          }
+        },
+      });
+    },
+  },
+});
+```
+
+
+
+## 读取文档组件
+
+```ts
+import path from "node:path";
+import fs from "node:fs";
+import { defineConfig } from "vitepress";
+import MdContainer from "markdown-it-container";
+
+export default defineConfig({
+  markdown: {
+    // md 是 markdown-it 的实例
+    config: (md) => {
+      // markdown-it的use方法用于安装插件
+      md.use(MdContainer, "demo", {
+        render(tokens, idx) {
+          // 拿到tokens中的内容
+          if (tokens[idx].nesting === 1) {
+            // 获取:::demo后跟随的描述文本
+            const info = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
+            const description = info && info.length > 1 ? info[1] : "";
+
+            // 获取文档组件路径
+            const nextToken = tokens[idx + 1];
+            const componentPath =
+              nextToken.type === "fence" ? nextToken.content : "";
+
+            let source = "";
+            if (componentPath) {
+              // /better-ui/docs/examples/button/basis.vue
+              let file = path.resolve(
+                __dirname,
+                "../examples",
+                `${componentPath}.vue`
+              );
+              file = file.replace(/\s+/g, "");
+              source = fs.readFileSync(file, "utf-8");
+              console.log(source);
+            }
+            return `<demo>`;
+          } else {
+            return `</demo>`;
+          }
+        },
+      });
+    },
+  },
+});
+```
+
+## 渲染组件
+
+插槽渲染描述和源码
+
+```ts
+import path from "node:path";
+import fs from "node:fs";
+import { defineConfig } from "vitepress";
+import MdContainer from "markdown-it-container";
+
+export default defineConfig({
+  markdown: {
+    // md 是 markdown-it 的实例
+    config: (md) => {
+      // markdown-it的use方法用于安装插件
+      md.use(MdContainer, "demo", {
+        render(tokens, idx) {
+          // 拿到tokens中的内容
+          if (tokens[idx].nesting === 1) {
+            // 获取:::demo后跟随的描述文本
+            const info = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
+            const description = info && info.length > 1 ? info[1] : "";
+
+            // 获取文档组件路径
+            const nextToken = tokens[idx + 1];
+            const componentPath =
+              nextToken.type === "fence" ? nextToken.content : "";
+
+            let source = "";
+            if (componentPath) {
+              // /Users/dancy/Desktop/better-ui/docs/examples/button/basis.vue
+              let file = path.resolve(
+                __dirname,
+                "../examples",
+                `${componentPath}.vue`
+              );
+              file = file.replace(/\s+/g, "");
+              source = fs.readFileSync(file, "utf-8");
+            }
+            return `<demo path=${componentPath}>
+                      <template #description>${description ? `${md.render(description)}` : ""}</template>
+                      <template #source><pre><code class="language-html">${md.utils.escapeHtml(source)}</code></pre></template>
+                    `;
+          } else {
+            return `</demo>`;
+          }
+        },
+      });
+    },
+  },
+});
+```
+
+
+
+渲染演示组件
+
+`docs/.vitepress/components.js`
+
+```js
+const modulesFiles = import.meta.glob("../play/*/*.vue", {
+  eager: true,
+});
+
+// 自动化处理
+let modules = {};
+
+for (const [key, value] of Object.entries(modulesFiles)) {
+  const keys = key.split("/");
+  const name = keys.splice(1).join("/");
+  modules[name] = value.default;
+}
+
+export default modules;
+```
+
+
+
+`docs/.vitepress/components/demo/index.vue`
+
+```vue
+<script setup lang="ts">
+import { computed } from "vue";
+import modules from "../../components";
+const props = defineProps({
+  path: {
+    type: String,
+    default: "",
+  },
+});
+
+const demo = computed(() => {
+  const key = `examples/${props.path}.vue`;
+  return modules[key];
+});
+
+console.log(props.path);
+console.log(demo);
+</script>
+
+<template>
+  <div class="examples-container">
+    <div class="description"><slot name="description" /></div>
+    <div class="examples-body">
+      <div class="examples-inner">
+        <component :is="demo" />
+      </div>
+      <div class="source-inner"><slot name="source" /></div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped></style>
+```
+
+
+
+## 代码高亮
+
+```bash
+pnpm add -D prismjs
+```
+
+`.vitepress/components/demo/index.vue`
+
+为全局组件 Demo 引入 prism 组件包和样式
+
+```vue
+<script setup lang="ts">
+import { computed, onMounted } from "vue";
+import prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.min.css";
+import modules from "../../components";
+const props = defineProps({
+  path: {
+    type: String,
+    default: "",
+  },
+});
+
+const demo = computed(() => {
+  const key = `examples/${props.path}.vue`;
+  return modules[key];
+});
+
+onMounted(() => {
+  prism.highlightAll();
+});
+</script>
+
+<template>
+  <div class="examples-container">
+    <div class="description"><slot name="description" /></div>
+    <div class="examples-body">
+      <div class="examples-inner">
+        <component :is="demo" />
+      </div>
+      <div class="source-inner"><slot name="source" /></div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped></style>
+```
+
+`.vitepress/config.mts`
+
+为 code 标签添加类名 `language-html`,指定 prismjs 对象以什么类型的语言高亮代码块
+
+```ts
+import path from "node:path";
+import fs from "node:fs";
+import { defineConfig } from "vitepress";
+import MdContainer from "markdown-it-container";
+
+export default defineConfig({
+  markdown: {
+    // md 是 markdown-it 的实例
+    config: (md) => {
+      // markdown-it的use方法用于安装插件
+      md.use(MdContainer, "demo", {
+        render(tokens, idx) {
+          // 拿到tokens中的内容
+          if (tokens[idx].nesting === 1) {
+            // 获取:::demo后跟随的描述文本
+            const info = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
+            const description = info && info.length > 1 ? info[1] : "";
+
+            // 获取文档组件路径
+            const nextToken = tokens[idx + 1];
+            const componentPath =
+              nextToken.type === "fence" ? nextToken.content : "";
+
+            let source = "";
+            if (componentPath) {
+              // /Users/dancy/Desktop/better-ui/docs/examples/button/basis.vue
+              let file = path.resolve(
+                __dirname,
+                "../examples",
+                `${componentPath}.vue`
+              );
+              file = file.replace(/\s+/g, "");
+              source = fs.readFileSync(file, "utf-8");
+            }
+            return `<demo path=${componentPath}>
+                      <template #description>${description ? `${md.render(description)}` : ""}</template>
+                      <template #source><pre><code class="language-html">${md.utils.escapeHtml(source)}</code></pre></template>
+                    `;
+          } else {
+            return `</demo>`;
+          }
+        },
+      });
+    },
+  },
+});
+```
+
+### 自定义代码块高亮样式
+
+`.vitepress/theme/index.ts`
+
+```ts
+import './highlight.scss'
+```
+
+`highlight.scss`
+
+```scss
+pre[class*="language-"] {
+  background-color: #fff;
+  margin: 0;
+  padding: 0 24px 24px;
+  border-radius: 12px;
+}
+
+.vp-doc [class*="language-"] code {
+  padding: 0;
+}
+
+.token {
+  &.attr-name,
+  &.deleted,
+  &.namespace,
+  &.tag {
+    color: #477aff;
+  }
+  &.attr-value,
+  &.char,
+  &.regex,
+  &.string,
+  &.variable {
+    color: #3cc17e;
+  }
+
+  &.atrule,
+  &.builtin,
+  &.important,
+  &.keyword,
+  &.selector {
+    color: #dd6c77;
+  }
+
+  &.boolean,
+  &.function,
+  &.number {
+    color: #dda03e;
+  }
+
+  &.punctuation {
+    color: #8a9bc4;
+  }
+}
+```
+
+
+
+## 展开收起源码
+
+复制功能使用第三方插件 clipboard
+
+```bash
+pnpm add -D clipboard
+```
+
+
+
+```vue
+<script setup lang="ts">
+import { computed, ref, nextTick } from "vue";
+import modules from "../../components";
+import Clipboard from "clipboard";
+import prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.min.css";
+
+const slots = defineSlots();
+const props = defineProps({
+  path: {
+    type: String,
+    default: "",
+  },
+});
+
+const source = ref(false);
+const sourceRef = ref(null);
+const isCopySuccess = ref(false);
+
+const demo = computed(() => {
+  const key = `examples/${props.path}.vue`;
+  return modules[key];
+});
+
+// 复制的图标元素
+const iconCopy = computed(() => {});
+// 复制组件源码
+const copyToClipboard = async (event) => {
+  // const textToCopy = slots.source()[0]?.children[0]?.children;
+
+  // navigator.clipboard
+  //   .writeText(textToCopy)
+  //   .then(function () {
+  //     // 成功处理
+  //     console.log('复制成功')
+  //   })
+  //   .catch(function (error) {
+  //     // 错误处理
+  //     console.log('复制失败')
+  //   });
+  const clipboard = new Clipboard("#copy", {
+    text: () => slots.source()[0]?.children[0]?.children || "",
+  });
+  // 复制成功
+  clipboard.on("success", () => {
+    isCopySuccess.value = true;
+    clipboard.destroy();
+  });
+  // 复制失败
+  clipboard.on("error", () => {
+    isCopySuccess.value = false;
+    clipboard.destroy();
+  });
+};
+
+// 展开/收起组件源码
+const toggleSource = async () => {
+  source.value = !source.value;
+  await nextTick();
+  const children = sourceRef.value;
+  source.value && children && prism.highlightAllUnder(children);
+};
+</script>
+
+<template>
+  <div class="examples-container">
+    <!-- 描述 -->
+    <div class="description"><slot name="description" /></div>
+    <!-- 演示主体 -->
+    <div class="examples-body">
+      <!-- 组件渲染 -->
+      <div class="examples-inner">
+        <component :is="demo" />
+      </div>
+      <!-- 图标元素 -->
+      <div class="examples-control">
+        <!-- 复制 -->
+        <div
+          class="control-icon"
+          id="copy"
+          @click="copyToClipboard"
+          @mouseleave="isCopySuccess = false"
+        >
+          复制
+        </div>
+        <!-- 代码 -->
+        <div class="control-icon" @click="toggleSource">
+          展开
+        </div>
+      </div>
+      <!-- 组件源码 -->
+      <div v-if="source" ref="sourceRef" class="source-inner">
+        <slot name="source" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.examples-body {
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+}
+.examples-inner {
+  padding: 24px;
+}
+.examples-control {
+  text-align: center;
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px dashed #e4e4e7;
+  margin: 0;
+  .control-icon {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+</style>
+```
+

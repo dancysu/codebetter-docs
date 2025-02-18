@@ -1,0 +1,52 @@
+# 字体图标
+
+在项目中使用到的小图标,一般由公司设计师进行设计,如果如果自行设计这些图标会比较麻烦且耗费时间,这时候我们就可以使用到阿里巴巴矢量图库,设计好以后上传到阿里巴巴矢量图标库,然后方便程序员来进行使用。
+
+
+
+阿里巴巴矢量图库是阿里巴巴集团推出的一个免费的矢量图标库和图标管理工具。它汇集了大量的精美图标资源,包括品牌图标和各种主题和分类的图标。用户可以在阿里巴巴矢量图库中搜索和浏览所需的图标,也可以上传和管理自己的图标资源。
+
+
+
+小程序中的字体图标使用方式与 `Web` 开发中的使用方式是一样的。
+
+首先我们先找到所需的图标,加入到项目库,进入项目库中生成链接。也快将字体图标库下载到本地
+
+<img src="http://8.131.91.46:6677/mina/base/字体图标.jpg" style="zoom:50%; border: 1px solid #ccc" />
+
+
+
+点击链接,会将生成的 `CSS` 在新的链接页面进行打开,`ctrl + s`,将该文件重命名为`.wxss` 后缀名,然后保存到项目根目录下的`static` 文件夹下。
+
+<img src="http://8.131.91.46:6677/mina/base/字体图标 CSS.jpg" style="zoom:45%; border: 1px solid  #ccc" />
+
+
+
+在全局样式文件`app.wxss`中导入`fonts.wxss`字体图标文件,然后获取到图标类名,在项目中使用即可,应用于页面
+
+```css
+@import "./static/fonts.wxss";
+```
+
+```html
+<view class="myTest">
+  <view class="iconfont icon-tuikuan"></view>
+</view>
+```
+
+
+
+> 注意：使用字体图标可能会报错：
+>
+> ```shell
+> [渲染层网络层错误] Failed to load font http://at.alicdn.com/t/c/font_3946178_q5oidsl5xo.woff2?t=1680795910637 net::ERR_CACHE_MISS (env: Windows,mp,1.06.2303220; lib: 2.30.4)
+> ```
+>
+> 该错误可忽略,详见下面这个链接：
+>
+> https://developers.weixin.qq.com/miniprogram/dev/api/ui/font/wx.loadFontFace.html
+>
+> 
+>
+> **但在控制台出现错误,会影响开发调试,解决方案是：将字体图标转换成 base64 的格式**
+>

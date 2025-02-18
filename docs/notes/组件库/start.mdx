@@ -1,0 +1,154 @@
+# 开发环境搭建
+
+组件库将采用 Monorepo 结构,并使用 `pnpm + workspace` 的方式来构建我们的组件库。
+
+## （1）安装 pnpm
+
+在开始使用 `pnpm` 之前,我们需要先全局安装它。请在终端执行以下命令：
+
+```bash
+npm install -g pnpm
+```
+
+安装完成后,通过以下命令检查 `pnpm` 的版本,以确认安装成功：
+
+```bash
+pnpm -v
+```
+
+如果命令行显示了版本号,则表示 `pnpm` 已经成功安装。
+
+
+
+## （2）项目初始化
+
+**步骤 1：创建项目目录**
+
+创建一个名为 `better-ui` 的文件夹,这将作为我们的 UI 组件库的根目录。
+
+```bash
+mkdir better-ui
+```
+
+进入该文件夹
+
+```bash
+cd better-ui
+```
+
+**步骤 2：初始化 package.json**
+
+在项目根目录下,使用 `pnpm` 初始化 `package.json` 文件,这是管理项目依赖和脚本的关键文件。
+
+```bash
+pnpm init
+```
+
+**步骤 3：处理幽灵依赖**
+
+在使用 `pnpm` 管理项目依赖时,您可能会发现依赖项并没有直接安装在 `node_modules` 文件夹中,而是存放在 `.pnpm` 目录内。这种情况可能会导致无法直接使用这些依赖模块中的方法。为了解决这个问题,您可以在项目的根目录下创建一个 `.npmrc` 文件,并在其中添加以下配置项：
+
+```
+shamefully-hoist = true
+```
+
+此配置项允许 `pnpm` 将 `.pnpm` 目录下的依赖项“提升”到 `node_modules` 文件夹中,从而使得这些依赖项能够被正常访问和使用。
+
+**步骤 4：创建项目结构**
+
+为了更好地组织项目,我们需要在根目录下创建几个关键文件夹：
+
+- `play` ：演示库。用于调试开发环境。
+- `docs` ：文档库。用于组件的说明文档。
+- `packages` ：组件库。用于存放所有的组件及其它与组件相关的内容,如工具包 `utils` 等。
+
+```bash
+mkdir play docs packages
+```
+
+**步骤 5：建立工作区**
+
+采用 `pnpm + monorepo` 管理多个项目,需要用到 `pnpm-workspace.yaml` 配置文件,在 `workspace` 中指定需要包含的目录,也就是 `play`、`docs` 和 `packages` 三个目录。
+
+在项目根目录下创建 `pnpm-workspace.yaml` 文件,并写入需要包含的目录：
+
+```yaml
+packages:
+  - packages/*
+  - docs
+  - play
+```
+
+**步骤 6：初始化TypeScript配置**
+
+首选需要安装 `typescript` 作为开发依赖
+
+```bash
+pnpm install -D typescript -w
+```
+
+接下来,使用 `pnpm` 初始化 TypeScript 的配置文件 `tsconfig.json`,这对于 TypeScript 项目是必不可少的。
+
+```bash
+pnpm tsc --init
+```
+
+然后,根据项目需求配置 `tsconfig.json` 文件,如下所示：
+```json
+{
+  "compilerOptions": {
+    "module": "ESNext", // 打包类型
+    "declaration": false, // 不要声明文件
+    "noImplicitAny": false, // 支持类型不标注可以默认any
+    "removeComments": true, // 删除注释
+    "moduleResolution": "node", // 按node模块来解析
+    "esModuleInterop": true, // 支持es6, commonjs模块
+    "jsx": "preserve", // jsx不转
+    "noLib": false, // 不处理类库
+    "target": "es6", // 遵循es6版本
+    "sourceMap": true,
+    "lib": [ // 编译时用的库
+      "ESNext",
+      "DOM"
+    ],
+    "allowSyntheticDefaultImports": true, // 允许没有导出的模块中导入
+    "experimentalDecorators": true, // 允许装饰器语法
+    "forceConsistentCasingInFileNames": true, // 强制区分大小写
+    "resolveJsonModule": true, // 解析json模块
+    "strict": true, // 启用严格模式
+    "skipLibCheck": true, // 跳过类库检测
+  },
+  "exclude": [ // 排除的目录
+    "node_modules",
+    "**/__tests__",
+    "dist/**"
+  ]
+}
+```
+
+**步骤 7：安装 sass**
+
+```bash
+pnpm add -D sass sass-loader -w
+```
+
+**步骤 8：项目目录结构**
+
+```
+.
+├─ node_modules
+├─ build
+├─ docs
+├─ packages
+│  ├─ components
+│  ├─ constants
+│  ├─ hooks
+│  └─ utils
+├─ play
+├─ .nvmrc
+├─ package.json
+├─ npm-lock.yaml
+├─ pnpm-workspace.yaml
+└─ tsconfig.json
+```
+

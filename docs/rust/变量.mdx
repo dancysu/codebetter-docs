@@ -1,0 +1,10 @@
+# 变量
+声明变量使用 `let` 关键字
+```rust
+let name = String::new();
+```
+在 rust 中,所有变量默认是不可变的,如果想声明一个可修改的变量,那么在声明的时候加入 `mut` 关键字,表示变量是可修改的
+```rust
+let mut name = String::new();
+```
+`::` 表示 `new` 是 `String` 的关联函数

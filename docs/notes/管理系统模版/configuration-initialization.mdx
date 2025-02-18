@@ -1,0 +1,635 @@
+# 配置初始化
+
+## 配置路径别名
+
+**步骤1：安装 `@types/node`**
+
+为了确保 TypeScript 能够正确地为 Node.js 代码提供类型检查和自动补全功能,我们需要先安装 `@types/node`：
+
+```bash
+pnpm add -D @types/node
+```
+
+-----
+
+**步骤2：Vite 配置** (`vite.config.ts`)：
+
+Vite 在构建（或开发服务器启动）时使用这些别名。这意味着它们影响的是最终打包的代码,以及在开发服务器中代码的实时重载。
+
+```ts
+import { fileURLToPath, URL } from "node:url" // [!code focus]// [!code ++]
+import { defineConfig } from "vite"
+import vue from "@vitejs/plugin-vue"
+
+// https://vite.dev/config/
+export default defineConfig({
+	resolve: { // [!code focus]// [!code ++]
+		alias: { // [!code focus]// [!code ++]
+			"@": fileURLToPath(new URL("./src", import.meta.url)), // [!code focus]// [!code ++]
+		}, // [!code focus]// [!code ++]
+	}, // [!code focus]// [!code ++]
+	plugins: [vue()],
+})
+```
+
+-----
+
+**步骤3：TypeScript 配置** (`tsconfig.app.json`)：
+
+TypeScript 在编译时使用这些别名。这意味着它们主要用于类型检查和编译 TypeScript 代码到 JavaScript,而不直接影响最终打包的代码。
+
+```json
+{
+	"compilerOptions": {
+		"baseUrl": "./", // [!code focus]// [!code ++]
+		"paths": { // [!code focus]// [!code ++]
+			"@/*": ["src/*"] // [!code focus]// [!code ++]
+		} // [!code focus]// [!code ++]
+	}
+}
+```
+
+这样,你可以在项目中使用 `@` 别名来引用 `src` 目录下的文件,提高代码的可读性和维护性。
+
+
+
+## 配置环境变量
+
+**步骤 1：创建环境变量文件**
+
+在项目根目录下创建 `.env` 文件以及针对不同环境的文件：`.env.development`、`.env.staging`、`.env.production`。
+
+| 文件                                                | 说明                                |
+| --------------------------------------------------- | ----------------------------------- |
+| [.env](https://cn.vite.dev/guide/env-and-mode.html) | 所有情况下都会加载                  |
+| .env.local                                          | 所有情况下都会加载,但会被 git 忽略 |
+| .env.[mode]                                         | 只在指定模式下加载                  |
+| .env.[mode].local                                   | 只在指定模式下加载,但会被 git 忽略 |
+
+
+
+```bash [.env]
+# 所有环境共享的环境变量
+
+## 项目标题
+VITE_APP_TITLE = Vue3 Admin Template
+```
+
+```bash [.env.development]
+# 开发环境专用的环境变量
+
+## 后端接口地址（如果解决跨域问题采用反向代理就只需写相对路径）
+VITE_BASE_URL = /api
+```
+
+```bash [.env.staging]
+# 预发布环境专用的环境变量
+
+## 后端接口地址（如果解决跨域问题采用 CORS 就需要写绝对路径）
+VITE_BASE_URL = https://st.codebetter.cn/api
+```
+
+```bash [.env.production]
+# 生产环境专用的环境变量
+
+## 后端接口地址（如果解决跨域问题采用 CORS 就需要写绝对路径）
+VITE_BASE_URL = https://prod.codebetter.cn/api
+```
+
+:::
+
+-----
+
+**步骤 2：在代码中访问环境变量**
+
+只有以 `VITE_` 为前缀的变量才会暴露给经过 vite 处理的代码。在代码中,可以通过 `import.meta.env` 访问这些环境变量。
+
+```js
+console.log(import.meta.env.VITE_APP_TITLE) // Vue3 Admin Template
+```
+
+-----
+
+**步骤 3：配置构建脚本**
+
+在 package.json 文件中配置不同的构建脚本,以便于针对不同环境进行构建。
+
+```json
+{
+  "scripts": {
+    "dev": "vite --open",
+    "build:test": "vue-tsc -b && vite build --mode development",
+    "build:st": "vue-tsc -b && vite build --mode staging",
+    "build:prod": "vue-tsc -b && vite build --mode production",
+  }
+}
+```
+
+通过这些步骤,您可以根据不同的环境配置不同的环境变量,并且能够通过构建脚本来控制项目的构建过程。
+
+
+
+## CSS重置
+
+`reset.css` 和 `normalize.css` 是两种流行的样式重置方法,任选其一即可。
+
+:::details reset.css
+
+```css
+/* http://meyerweb.com/eric/tools/css/reset/
+   v5.0.1 | 20191019
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section {
+	display: block;
+}
+/* HTML5 hidden-attribute fix for newer browsers */
+*[hidden] {
+	display: none;
+}
+body {
+	line-height: 1;
+}
+menu,
+ol,
+ul {
+	list-style: none;
+}
+blockquote,
+q {
+	quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: "";
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+```
+
+:::
+
+:::details normalize.css
+
+```css
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+
+/* Document
+   ========================================================================== */
+
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+html {
+	line-height: 1.15; /* 1 */
+	-webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/* Sections
+   ========================================================================== */
+
+/**
+ * Remove the margin in all browsers.
+ */
+
+body {
+	margin: 0;
+}
+
+/**
+ * Render the `main` element consistently in IE.
+ */
+
+main {
+	display: block;
+}
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
+}
+
+/* Grouping content
+   ========================================================================== */
+
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+
+hr {
+	box-sizing: content-box; /* 1 */
+	height: 0; /* 1 */
+	overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+pre {
+	font-family: monospace, monospace; /* 1 */
+	font-size: 1em; /* 2 */
+}
+
+/* Text-level semantics
+   ========================================================================== */
+
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+
+a {
+	background-color: transparent;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+
+abbr[title] {
+	border-bottom: none; /* 1 */
+	text-decoration: underline; /* 2 */
+	text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+
+b,
+strong {
+	font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+code,
+kbd,
+samp {
+	font-family: monospace, monospace; /* 1 */
+	font-size: 1em; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+
+small {
+	font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+
+sub,
+sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+
+sub {
+	bottom: -0.25em;
+}
+
+sup {
+	top: -0.5em;
+}
+
+/* Embedded content
+   ========================================================================== */
+
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+
+img {
+	border-style: none;
+}
+
+/* Forms
+   ========================================================================== */
+
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+	font-family: inherit; /* 1 */
+	font-size: 100%; /* 1 */
+	line-height: 1.15; /* 1 */
+	margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+
+button,
+input {
+	/* 1 */
+	overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+
+button,
+select {
+	/* 1 */
+	text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+	-webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+	border-style: none;
+	padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+	outline: 1px dotted ButtonText;
+}
+
+/**
+ * Correct the padding in Firefox.
+ */
+
+fieldset {
+	padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+
+legend {
+	box-sizing: border-box; /* 1 */
+	color: inherit; /* 2 */
+	display: table; /* 1 */
+	max-width: 100%; /* 1 */
+	padding: 0; /* 3 */
+	white-space: normal; /* 1 */
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+
+progress {
+	vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+
+textarea {
+	overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+
+[type="checkbox"],
+[type="radio"] {
+	box-sizing: border-box; /* 1 */
+	padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+	height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+[type="search"] {
+	-webkit-appearance: textfield; /* 1 */
+	outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type="search"]::-webkit-search-decoration {
+	-webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+
+::-webkit-file-upload-button {
+	-webkit-appearance: button; /* 1 */
+	font: inherit; /* 2 */
+}
+
+/* Interactive
+   ========================================================================== */
+
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+
+details {
+	display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+
+summary {
+	display: list-item;
+}
+
+/* Misc
+   ========================================================================== */
+
+/**
+ * Add the correct display in IE 10+.
+ */
+
+template {
+	display: none;
+}
+
+/**
+ * Add the correct display in IE 10.
+ */
+
+[hidden] {
+	display: none;
+}
+```
+
+:::
